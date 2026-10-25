@@ -11,6 +11,9 @@
 #define NEPDATE_CAL_DAYS 109212
 /* Unix day of the epoch, AD 1844-04-11. */
 #define NEPDATE_CAL_EPOCH_UNIX_DAYS (-45920)
+/* FNV-1a 64 of the 3588 month lengths, one byte each; the C++ port builds the same
+ * value from the same file. */
+#define NEPDATE_CAL_FINGERPRINT 0xc2cdd10a9b668dc3ULL
 /* Entry 0 of nepdate_cal_ad_month_start is AD 1844-04. */
 #define NEPDATE_CAL_AD_FIRST_YEAR 1844
 #define NEPDATE_CAL_AD_FIRST_MONTH 4

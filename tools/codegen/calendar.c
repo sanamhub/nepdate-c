@@ -120,6 +120,14 @@ bool codegen_derive_tables(codegen_calendar *calendar, char *error, size_t error
     calendar->year_start[CODEGEN_YEARS] = start;
 
     calendar->epoch_unix_days = codegen_days_from_civil(1844, 4, 11);
+
+    uint64_t hash = UINT64_C(0xcbf29ce484222325);
+    for (int i = 0; i < CODEGEN_ALL_MONTHS; i++) {
+        hash = (hash ^ calendar->month_lengths[i / CODEGEN_MONTHS][i % CODEGEN_MONTHS]) *
+               UINT64_C(0x100000001b3);
+    }
+    calendar->fingerprint = hash;
+
     for (int j = 0; j < CODEGEN_AD_MONTHS; j++) {
         const int k = j + CODEGEN_AD_FIRST_MONTH - 1;
         calendar->ad_month_start[j] =
@@ -244,6 +252,11 @@ char *codegen_render_calendar_tables(const codegen_calendar *calendar) {
            "/* Unix day of the epoch, AD 1844-04-11. */\n"
            "#define NEPDATE_CAL_EPOCH_UNIX_DAYS (%ld)\n",
            calendar->epoch_unix_days);
+    append(&b,
+           "/* FNV-1a 64 of the 3588 month lengths, one byte each; the C++ port builds the same\n"
+           " * value from the same file. */\n"
+           "#define NEPDATE_CAL_FINGERPRINT 0x%016llxULL\n",
+           (unsigned long long)calendar->fingerprint);
     append(&b,
            "/* Entry 0 of nepdate_cal_ad_month_start is AD %d-%02d. */\n"
            "#define NEPDATE_CAL_AD_FIRST_YEAR %d\n"

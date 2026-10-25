@@ -5,6 +5,7 @@
 
 #include <stdbool.h>
 #include <stddef.h>
+#include <stdint.h>
 
 enum {
     CODEGEN_MIN_YEAR = 1901,
@@ -35,6 +36,9 @@ typedef struct {
     /* Unix day of the epoch, AD 1844-04-11. */
     long epoch_unix_days;
     unsigned long estimate_mul;
+    /* FNV-1a 64 of the 3588 month lengths, one byte each. The same value the C++ port builds from
+     * the same file, so a data change that only one port sees is caught. */
+    uint64_t fingerprint;
 } codegen_calendar;
 
 /* Parses the JSON text of bs-calendar.json into out and derives its tables. Returns false with a

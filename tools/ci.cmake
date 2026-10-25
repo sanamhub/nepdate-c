@@ -448,8 +448,9 @@ if("no-libc" IN_LIST gates)
             set(no_tool ON)
             break()
         endif()
-        # Compilers may emit calls to memcpy and memset for struct copies and zeroing (ADR-0004).
-        list(REMOVE_ITEM ci_symbols memcpy memset)
+        # Compilers may emit calls to memcpy and memset for struct copies and zeroing, and MSVC
+        # refers to the linker-provided __ImageBase (ADR-0004).
+        list(REMOVE_ITEM ci_symbols memcpy memset __ImageBase)
         if(ci_symbols)
             file(RELATIVE_PATH relative "${root}" "${object}")
             ci_fail(no-libc "${relative} needs ${ci_symbols}")

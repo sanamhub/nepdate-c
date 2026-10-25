@@ -2,6 +2,7 @@
 #include "harness.h"
 #include "json.h"
 
+#include <stddef.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -196,9 +197,11 @@ TEST(derived_tables_match_the_spec) {
     CHECK_EQ_INT(calendar->ad_month_start[CODEGEN_AD_MONTHS - 1] + 14, 109211);
     /* BS 2081-01-01 is AD 2024-04-13. */
     const long bs_2081 = calendar->year_start[2081 - 1901];
-    CHECK_EQ_INT(calendar->month_start[(2081 - 1901) * 12], bs_2081);
+    const size_t bs_2081_month = (size_t)(2081 - 1901) * (size_t)CODEGEN_MONTHS;
+    CHECK_EQ_INT(calendar->month_start[bs_2081_month], bs_2081);
     CHECK_EQ_INT(bs_2081 + calendar->epoch_unix_days, codegen_days_from_civil(2024, 4, 13));
-    CHECK_EQ_INT(calendar->ad_month_start[(2024 - 1844) * 12] + 12, bs_2081);
+    const size_t ad_2024_month = (size_t)(2024 - 1844) * (size_t)CODEGEN_MONTHS;
+    CHECK_EQ_INT(calendar->ad_month_start[ad_2024_month] + 12, bs_2081);
 
     /* Year lengths: 364 once, 365 221 times, 366 76 times, 367 once. */
     int histogram[4] = {0, 0, 0, 0};
@@ -222,7 +225,8 @@ TEST(derived_tables_match_the_spec) {
             hash = (hash ^ calendar->month_lengths[y][m]) * 0x100000001b3U;
         }
     }
-    CHECK(hash == 0xc2cdd10a9b668dc3U);
+    CHECK(hash == UINT64_C(0xc2cdd10a9b668dc3));
+    CHECK(calendar->fingerprint == UINT64_C(0xc2cdd10a9b668dc3));
     CHECK_EQ_INT(calendar->estimate_mul, 137797);
     free(calendar);
 }
@@ -266,6 +270,7 @@ TEST(rendered_header_is_lf_only_with_the_tables) {
     CHECK(strstr(text, "#define NEPDATE_CAL_MAX_YEAR 2199\n") != NULL);
     CHECK(strstr(text, "#define NEPDATE_CAL_DAYS 109212\n") != NULL);
     CHECK(strstr(text, "#define NEPDATE_CAL_EPOCH_UNIX_DAYS (-45920)\n") != NULL);
+    CHECK(strstr(text, "#define NEPDATE_CAL_FINGERPRINT 0xc2cdd10a9b668dc3ULL\n") != NULL);
     CHECK(strstr(text, "static const uint8_t nepdate_cal_month_length[3588] = {\n"
                        "    31, 31, 32, 31, 31, 31, 30, 29, 30, 29, 30, 30, /* 1901 */\n") != NULL);
     CHECK(strstr(text, "    109212, /* 2200 */\n};\n") != NULL);
