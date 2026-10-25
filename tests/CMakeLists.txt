@@ -13,6 +13,22 @@ nepdate_c_add_test_program(conversion_test conversion_test.c)
 nepdate_c_add_test_program(vectors_test vectors_test.c vectors.c)
 target_compile_definitions(vectors_test PRIVATE
     NEPDATE_C_SHARED_DIR="${PROJECT_SOURCE_DIR}/shared")
+# The sample of the 2^32 date values the property test checks on a normal CI job. Valgrind is far
+# slower than native code, so its preset checks a smaller sample; the full 2^32 sweep is an option.
+set(NEPDATE_C_BIT_PATTERN_BITS 24 CACHE STRING
+    "log2 of the number of date bit patterns bit_patterns_test checks")
+set(bit_pattern_bits ${NEPDATE_C_BIT_PATTERN_BITS})
+if(NEPDATE_C_TEST_LAUNCHER MATCHES "valgrind")
+    set(bit_pattern_bits 16)
+endif()
+nepdate_c_add_test_program(bit_patterns_test bit_patterns_test.c)
+target_compile_definitions(bit_patterns_test PRIVATE
+    NEPDATE_C_BIT_PATTERN_BITS=${bit_pattern_bits})
+option(NEPDATE_C_FULL_SWEEP "Check all 2^32 bit patterns in bit_patterns_test" OFF)
+if(NEPDATE_C_FULL_SWEEP)
+    target_compile_definitions(bit_patterns_test PRIVATE NEPDATE_C_FULL_SWEEP)
+    set_tests_properties(bit_patterns_test PROPERTIES TIMEOUT 3600)
+endif()
 
 # The harness must turn a failed check into a failed test and say where and why.
 nepdate_c_add_test_program(harness_failure harness_failure.c)
