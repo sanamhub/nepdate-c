@@ -1,0 +1,34 @@
+# install_consumer: installs this build tree to a scratch prefix and builds tests/consumer against
+# it. An instrumented tree can't be linked by a plain consumer, and a tree whose programs need an
+# emulator can't run one, so those builds skip it.
+if(NOT NEPDATE_C_INSTRUMENTED AND NOT CMAKE_CROSSCOMPILING_EMULATOR)
+    find_program(NEPDATE_C_PKG_CONFIG NAMES pkg-config pkgconf)
+    add_test(NAME install_consumer
+        COMMAND "${CMAKE_COMMAND}"
+            -DBUILD_DIR=${PROJECT_BINARY_DIR}
+            -DSOURCE_DIR=${CMAKE_CURRENT_SOURCE_DIR}/consumer
+            -DWORK=${CMAKE_CURRENT_BINARY_DIR}/install_consumer
+            -DGENERATOR=${CMAKE_GENERATOR}
+            -DMAKE_PROGRAM=${CMAKE_MAKE_PROGRAM}
+            -DC_COMPILER=${CMAKE_C_COMPILER}
+            -DTOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
+            -DBUILD_TYPE=${CMAKE_BUILD_TYPE}
+            -DLIBDIR=${CMAKE_INSTALL_LIBDIR}
+            -DINCLUDEDIR=${CMAKE_INSTALL_INCLUDEDIR}
+            -DBINDIR=${CMAKE_INSTALL_BINDIR}
+            -DPKG_CONFIG=${NEPDATE_C_PKG_CONFIG}
+            -P "${CMAKE_CURRENT_SOURCE_DIR}/install_consumer.cmake"
+    )
+endif()
+
+if(NEPDATE_C_CXX_HEADERS)
+    foreach(standard IN ITEMS 11 20)
+        add_executable(cxx_headers_${standard} cxx_headers.cpp)
+        set_target_properties(cxx_headers_${standard} PROPERTIES
+            CXX_STANDARD ${standard} CXX_STANDARD_REQUIRED ON CXX_EXTENSIONS OFF)
+        target_link_libraries(cxx_headers_${standard} PRIVATE nepdate-c::nepdate)
+        nepdate_c_set_cxx_warnings(cxx_headers_${standard})
+        nepdate_c_set_instrumentation(cxx_headers_${standard})
+        add_test(NAME cxx_headers_${standard} COMMAND cxx_headers_${standard})
+    endforeach()
+endif()
