@@ -24,6 +24,11 @@ include(CMakePackageConfigHelpers)
 include(cmake/warnings.cmake)
 include(cmake/instrumentation.cmake)
 
+# Programs go next to the DLL, so a shared build on Windows runs its tests without a PATH change.
+if(PROJECT_IS_TOP_LEVEL AND NOT DEFINED CMAKE_RUNTIME_OUTPUT_DIRECTORY)
+    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}/bin")
+endif()
+
 add_library(nepdate src/nepdate.c)
 add_library(nepdate-c::nepdate ALIAS nepdate)
 target_sources(nepdate

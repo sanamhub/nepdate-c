@@ -1,3 +1,21 @@
+# A test program: one C file using harness.h, linked with the library, run by CTest.
+function(nepdate_c_add_test_program name)
+    add_executable(${name} ${ARGN})
+    target_link_libraries(${name} PRIVATE nepdate-c::nepdate)
+    nepdate_c_set_warnings(${name})
+    nepdate_c_set_instrumentation(${name})
+    add_test(NAME ${name} COMMAND ${name})
+endfunction()
+
+nepdate_c_add_test_program(version_test version_test.c)
+
+# The harness must turn a failed check into a failed test and say where and why.
+nepdate_c_add_test_program(harness_failure harness_failure.c)
+set_tests_properties(harness_failure PROPERTIES WILL_FAIL TRUE)
+add_test(NAME harness_failure_output COMMAND harness_failure)
+set_tests_properties(harness_failure_output PROPERTIES PASS_REGULAR_EXPRESSION
+    "harness_failure\\.c:6: CHECK_EQ_INT\\(3, 4\\) failed: 3 != 4\n[^\n]*harness_failure\\.c:7: CHECK_EQ_STR\\(\"left\", \"right\"\\) failed: \"left\" != \"right\"")
+
 # install_consumer: installs this build tree to a scratch prefix and builds tests/consumer against
 # it. An instrumented tree can't be linked by a plain consumer, and a tree whose programs need an
 # emulator can't run one, so those builds skip it.

@@ -137,6 +137,9 @@
       "configurePreset": "dev",
       "output": {
         "outputOnFailure": true
+      },
+      "execution": {
+        "timeout": 300
       }
     },
     {
@@ -144,6 +147,9 @@
       "configurePreset": "release",
       "output": {
         "outputOnFailure": true
+      },
+      "execution": {
+        "timeout": 300
       }
     },
     {
@@ -151,6 +157,9 @@
       "configurePreset": "shared",
       "output": {
         "outputOnFailure": true
+      },
+      "execution": {
+        "timeout": 300
       }
     },
     {
@@ -158,6 +167,9 @@
       "configurePreset": "asan-ubsan",
       "output": {
         "outputOnFailure": true
+      },
+      "execution": {
+        "timeout": 300
       }
     },
     {
@@ -165,6 +177,9 @@
       "configurePreset": "msan",
       "output": {
         "outputOnFailure": true
+      },
+      "execution": {
+        "timeout": 300
       }
     },
     {
@@ -172,6 +187,9 @@
       "configurePreset": "coverage",
       "output": {
         "outputOnFailure": true
+      },
+      "execution": {
+        "timeout": 300
       }
     },
     {
@@ -179,6 +197,9 @@
       "configurePreset": "fuzz",
       "output": {
         "outputOnFailure": true
+      },
+      "execution": {
+        "timeout": 300
       }
     },
     {
@@ -186,6 +207,9 @@
       "configurePreset": "tidy",
       "output": {
         "outputOnFailure": true
+      },
+      "execution": {
+        "timeout": 300
       }
     },
     {
@@ -193,6 +217,9 @@
       "configurePreset": "cxx-headers",
       "output": {
         "outputOnFailure": true
+      },
+      "execution": {
+        "timeout": 300
       }
     }
   ],
