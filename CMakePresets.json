@@ -57,7 +57,8 @@
       "inherits": "base",
       "description": "MemorySanitizer, Clang on Linux",
       "cacheVariables": {
-        "NEPDATE_C_SANITIZE": "memory"
+        "NEPDATE_C_SANITIZE": "memory",
+        "NEPDATE_C_BIT_PATTERN_BITS": "20"
       }
     },
     {

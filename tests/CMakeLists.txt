@@ -23,8 +23,9 @@ nepdate_c_add_test_program(range_test range_test.c)
 nepdate_c_add_test_program(cs_phase1 cs_phase1.c)
 nepdate_c_add_test_program(cs_phase2 cs_phase2.c)
 
-# The sample of the 2^32 date values the property test checks on a normal CI job. Valgrind is far
-# slower than native code, so its preset checks a smaller sample; the full 2^32 sweep is an option.
+# The sample of the 2^32 date values the property test checks on a normal CI job. Valgrind and
+# MemorySanitizer are far slower than native code, so they check smaller samples (the msan preset
+# sets 20 bits); the full 2^32 sweep is an option and runs nightly.
 set(NEPDATE_C_BIT_PATTERN_BITS 24 CACHE STRING
     "log2 of the number of date bit patterns bit_patterns_test checks")
 set(bit_pattern_bits ${NEPDATE_C_BIT_PATTERN_BITS})
