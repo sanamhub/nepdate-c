@@ -72,6 +72,7 @@ static inline void harness_run(const char *name, void (*test)(void)) {
     const int failed_before = harness_checks_failed;
     test();
     harness_tests_run++;
+    /* cppcheck-suppress knownConditionTrueFalse ; test() changes the counter through CHECK */
     if (harness_checks_failed != failed_before) {
         harness_tests_failed++;
         (void)fprintf(stderr, "FAILED %s\n", name);

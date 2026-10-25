@@ -1,0 +1,26 @@
+# Weekly: replaces shared/ with the hub's main, regenerates src/generated and opens one PR on
+# bot/shared-sync (ADR-0001, hub ADR-0001 decision 3).
+#
+# regenerate builds only tools/codegen (tests off) and runs the codegen target.
+name: shared-sync
+
+on:
+  schedule:
+    - cron: "25 3 * * 2"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  sync:
+    permissions:
+      contents: write
+      pull-requests: write
+    uses: sanamhub/nepdate/.github/workflows/shared-sync.yml@94946acd87bf4775c481811c0cdd63a7aaef2c84 # main 2026-10-09
+    with:
+      regenerate: >-
+        cmake -S . -B build/codegen -DNEPDATE_C_BUILD_TOOLS=ON -DNEPDATE_C_BUILD_TESTS=OFF &&
+        cmake --build build/codegen --target codegen
+    secrets:
+      SYNC_APP_PRIVATE_KEY: ${{ secrets.SYNC_APP_PRIVATE_KEY }}
