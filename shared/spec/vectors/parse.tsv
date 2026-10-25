@@ -1,0 +1,70 @@
+input	strict	lenient
+2080/05/15	2080-05-15	2080-05-15
+2080-05-15	2080-05-15	2080-05-15
+2080.05.15	2080-05-15	2080-05-15
+2080_05_15	2080-05-15	2080-05-15
+2080 05 15	2080-05-15	2080-05-15
+2080\05\15	2080-05-15	2080-05-15
+2080।05।15	2080-05-15	2080-05-15
+2080|05|15	2080-05-15	2080-05-15
+2080/5/15	2080-05-15	2080-05-15
+  2080 / 05 / 15  	2080-05-15	2080-05-15
+2080//05//15	2080-05-15	2080-05-15
+/2080/05/15/	2080-05-15	2080-05-15
+2080/13/01	ERR:InvalidMonth	ERR:InvalidMonth
+2080/05/40	ERR:InvalidDay	ERR:InvalidDay
+2080/05	ERR:WrongGroupCount	ERR:Unrecognized
+2080	ERR:WrongGroupCount	ERR:Unrecognized
+2080/05/15/99	ERR:WrongGroupCount	ERR:Unrecognized
+abc/def/ghi	ERR:InvalidCharacter	ERR:Unrecognized
+	ERR:WrongGroupCount	ERR:Unrecognized
+1900/12/30	ERR:OutOfRange	ERR:OutOfRange
+1901/01/01	1901-01-01	1901-01-01
+2199/12/30	2199-12-30	2199-12-30
+2199/12/31	ERR:InvalidDay	ERR:InvalidDay
+2200/01/01	ERR:OutOfRange	ERR:OutOfRange
+२०८०/०५/१५	2080-05-15	2080-05-15
+2081/04/32	2081-04-32	2081-04-32
+2081/09/30	ERR:InvalidDay	ERR:InvalidDay
+15/05/2080	ERR:OutOfRange	2080-05-15
+80/05/15	ERR:OutOfRange	ERR:Ambiguous
+2080-5-1	2080-05-01	2080-05-01
+15 Shrawan 2080	ERR:InvalidCharacter	2080-04-15
+Shrawan 15, 2080	ERR:InvalidCharacter	2080-04-15
+15 साउन 2080	ERR:InvalidCharacter	2080-04-15
+१५ श्रावण २०८०	ERR:InvalidCharacter	2080-04-15
+2080/04/15 BS	ERR:InvalidCharacter	2080-04-15
+2080/04/15 B.S.	ERR:InvalidCharacter	2080-04-15
+15 साउन, 2080 गते	ERR:InvalidCharacter	2080-04-15
+Baisakh 1, 2081	ERR:InvalidCharacter	2081-01-01
+1 Baishakh 2081	ERR:InvalidCharacter	2081-01-01
+30 Chaitra 2080	ERR:InvalidCharacter	2080-12-30
+10/05/20	ERR:OutOfRange	ERR:Ambiguous
+not a date	ERR:InvalidCharacter	ERR:Unrecognized
+15.04.2080	ERR:OutOfRange	2080-04-15
+15-04-080	ERR:OutOfRange	ERR:Ambiguous
+2080/04/15/	2080-04-15	2080-04-15
+2080 Shrawan 15	ERR:InvalidCharacter	2080-04-15
+Shrawan Bhadra 2080	ERR:InvalidCharacter	ERR:Unrecognized
+15 Foo 2080	ERR:InvalidCharacter	ERR:Unrecognized
+12345/01/01	ERR:NumberTooLong	ERR:NumberTooLong
+2080/01/32	ERR:InvalidDay	ERR:InvalidDay
+2080/02/32	2080-02-32	2080-02-32
+२०८०-०४-३२ बि.सं.	ERR:InvalidCharacter	2080-04-32
+2080/04/15 VS	ERR:InvalidCharacter	2080-04-15
+Shr 15 2080	ERR:InvalidCharacter	2080-04-15
+15 SHRAWAN 2080	ERR:InvalidCharacter	2080-04-15
+15 shrawan 80	ERR:InvalidCharacter	ERR:Ambiguous
+2080/4/15 	2080-04-15	2080-04-15
+٢٠٨٠/٠٥/١٥	ERR:InvalidCharacter	ERR:Unrecognized
+2080 Shrawan ²	ERR:InvalidCharacter	ERR:Unrecognized
+2080.B.S. Shrawan 15	ERR:InvalidCharacter	ERR:Unrecognized
+Shr.15 2080	ERR:InvalidCharacter	ERR:Unrecognized
+15.Shrawan.2080	ERR:InvalidCharacter	ERR:Unrecognized
+B.S. 2080 Shrawan 15	ERR:InvalidCharacter	2080-04-15
+15 Kartik 2080	ERR:InvalidCharacter	2080-07-15
+15 ſhrawan 2080	ERR:InvalidCharacter	ERR:Unrecognized
+15 Ashwın 2080	ERR:InvalidCharacter	ERR:Unrecognized
+15 Shrawan 2080 Bſ	ERR:InvalidCharacter	ERR:Unrecognized
+15 सा‍उन 2080	ERR:InvalidCharacter	ERR:Unrecognized
+15 सा‌उन 2080	ERR:InvalidCharacter	ERR:Unrecognized

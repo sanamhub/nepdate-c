@@ -1,0 +1,70 @@
+{
+  "schema": 1,
+  "source": {
+    "repo": "https://github.com/RajuPrasai/NepDate",
+    "commit": "cb05cb65c7d3cb570c76992a8e83ed1e73213346",
+    "license": "MIT",
+    "imported": "2026-09-24"
+  },
+  "year": 2084,
+  "days": {
+    "2084-01-01": {
+      "holiday": true,
+      "events": [
+        {
+          "np": "नयाँ वर्ष २०८३",
+          "en": "New Year 2083"
+        }
+      ]
+    },
+    "2084-06-15": {
+      "events": [
+        {
+          "np": "राष्ट्रिय चलचित्र दिवस",
+          "en": "National Film Day"
+        }
+      ]
+    },
+    "2084-06-22": {
+      "events": [
+        {
+          "np": "प्रदोष व्रत",
+          "en": "Pradosh Brata"
+        }
+      ]
+    },
+    "2084-07-20": {
+      "events": [
+        {
+          "np": "निम्बार्काचार्य जयन्ती",
+          "en": "Nimbarkacharya Jayanti"
+        }
+      ]
+    },
+    "2084-08-16": {
+      "events": [
+        {
+          "np": "प्रदोष व्रत",
+          "en": "Pradosh Brata"
+        }
+      ]
+    },
+    "2084-08-18": {
+      "holiday": true,
+      "events": [
+        {
+          "np": "उँधौली पर्व",
+          "en": "Udhauli Festival"
+        }
+      ]
+    },
+    "2084-08-20": {
+      "events": [
+        {
+          "np": "प्रदोष व्रत",
+          "en": "Pradosh Brata"
+        }
+      ]
+    }
+  }
+}
