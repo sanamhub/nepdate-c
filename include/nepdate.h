@@ -78,6 +78,33 @@ typedef struct nepdate_ymd {
     int day;
 } nepdate_ymd;
 
+/* The twelve Bikram Sambat months, Baishakh = 1. */
+typedef enum nepdate_month {
+    NEPDATE_BAISHAKH = 1,
+    NEPDATE_JESTHA = 2,
+    NEPDATE_ASHAD = 3,
+    NEPDATE_SHRAWAN = 4,
+    NEPDATE_BHADRA = 5,
+    NEPDATE_ASHOJ = 6,
+    NEPDATE_KARTIK = 7,
+    NEPDATE_MANGSIR = 8,
+    NEPDATE_POUSH = 9,
+    NEPDATE_MAGH = 10,
+    NEPDATE_FALGUN = 11,
+    NEPDATE_CHAITRA = 12
+} nepdate_month;
+
+/* The days of the week, Sunday = 0 (ALGORITHM section 7). */
+typedef enum nepdate_weekday {
+    NEPDATE_SUNDAY = 0,
+    NEPDATE_MONDAY = 1,
+    NEPDATE_TUESDAY = 2,
+    NEPDATE_WEDNESDAY = 3,
+    NEPDATE_THURSDAY = 4,
+    NEPDATE_FRIDAY = 5,
+    NEPDATE_SATURDAY = 6
+} nepdate_weekday;
+
 /* Returns the version of the compiled library as "MAJOR.MINOR.PATCH" or
  * "MAJOR.MINOR.PATCH-PRERELEASE", a static string. It equals NEPDATE_VERSION_STRING when the header
  * and the library come from the same release. */
@@ -96,6 +123,47 @@ NEPDATE_API nepdate_status nepdate_from_bs(int year, int month, int day, nepdate
 /* Stores the BS year, month and day of date in *out. Returns NEPDATE_E_NULL when out is NULL and
  * NEPDATE_E_INVALID_DATE for a date no function made; *out is unchanged on error. */
 NEPDATE_API nepdate_status nepdate_to_bs(nepdate_date date, nepdate_ymd *out);
+
+/* Makes the AD (proleptic Gregorian) date year-month-day and stores the BS date in *out. The
+ * checks run in this order: NEPDATE_E_NULL when out is NULL, NEPDATE_E_INVALID_GREGORIAN for a
+ * month or day the Gregorian calendar doesn't have, then NEPDATE_E_OUT_OF_RANGE for a real date
+ * outside 1844-04-11..2143-04-15. Any int is accepted, INT_MIN and INT_MAX included. *out is
+ * unchanged on error. */
+NEPDATE_API nepdate_status nepdate_from_ad(int year, int month, int day, nepdate_date *out);
+
+/* Stores the AD year, month and day of date in *out. Returns NEPDATE_E_NULL when out is NULL and
+ * NEPDATE_E_INVALID_DATE for a date no function made; *out is unchanged on error. */
+NEPDATE_API nepdate_status nepdate_to_ad(nepdate_date date, nepdate_ymd *out);
+
+/* Stores the weekday of date in *out (ALGORITHM section 7). Returns NEPDATE_E_NULL when out is
+ * NULL and NEPDATE_E_INVALID_DATE for a date no function made; *out is unchanged on error. */
+NEPDATE_API nepdate_status nepdate_weekday_of(nepdate_date date, nepdate_weekday *out);
+
+/* Stores the month of date in *out. Returns NEPDATE_E_NULL when out is NULL and
+ * NEPDATE_E_INVALID_DATE for a date no function made; *out is unchanged on error. */
+NEPDATE_API nepdate_status nepdate_month_of(nepdate_date date, nepdate_month *out);
+
+/* Stores the day of the BS year of date in *out, 1 to 367. Returns NEPDATE_E_NULL when out is NULL
+ * and NEPDATE_E_INVALID_DATE for a date no function made; *out is unchanged on error. */
+NEPDATE_API nepdate_status nepdate_day_of_year(nepdate_date date, int *out);
+
+/* Stores the length in days of the BS month of date in *out, 29 to 32. Returns NEPDATE_E_NULL when
+ * out is NULL and NEPDATE_E_INVALID_DATE for a date no function made; *out is unchanged on error.
+ */
+NEPDATE_API nepdate_status nepdate_month_length(nepdate_date date, int *out);
+
+/* Stores the first day of the BS month of date in *out. Returns NEPDATE_E_NULL when out is NULL and
+ * NEPDATE_E_INVALID_DATE for a date no function made; *out is unchanged on error. */
+NEPDATE_API nepdate_status nepdate_first_day_of_month(nepdate_date date, nepdate_date *out);
+
+/* Stores the last day of the BS month of date in *out. Returns NEPDATE_E_NULL when out is NULL and
+ * NEPDATE_E_INVALID_DATE for a date no function made; *out is unchanged on error. */
+NEPDATE_API nepdate_status nepdate_last_day_of_month(nepdate_date date, nepdate_date *out);
+
+/* Compares a and b and stores -1, 0 or 1 in *out for a before, equal to, or after b. Returns
+ * NEPDATE_E_NULL when out is NULL and NEPDATE_E_INVALID_DATE when either date is not one this
+ * library made; *out is unchanged on error. */
+NEPDATE_API nepdate_status nepdate_compare(nepdate_date a, nepdate_date b, int *out);
 
 #ifdef __cplusplus
 }

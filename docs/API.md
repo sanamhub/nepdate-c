@@ -56,6 +56,17 @@ typedef enum nepdate_status {
 
 typedef struct nepdate_date { int32_t value; } nepdate_date;
 typedef struct nepdate_ymd { int year; int month; int day; } nepdate_ymd;
+
+typedef enum nepdate_month {
+    NEPDATE_BAISHAKH = 1, NEPDATE_JESTHA = 2, NEPDATE_ASHAD = 3, NEPDATE_SHRAWAN = 4,
+    NEPDATE_BHADRA = 5, NEPDATE_ASHOJ = 6, NEPDATE_KARTIK = 7, NEPDATE_MANGSIR = 8,
+    NEPDATE_POUSH = 9, NEPDATE_MAGH = 10, NEPDATE_FALGUN = 11, NEPDATE_CHAITRA = 12
+} nepdate_month;
+
+typedef enum nepdate_weekday {
+    NEPDATE_SUNDAY = 0, NEPDATE_MONDAY = 1, NEPDATE_TUESDAY = 2, NEPDATE_WEDNESDAY = 3,
+    NEPDATE_THURSDAY = 4, NEPDATE_FRIDAY = 5, NEPDATE_SATURDAY = 6
+} nepdate_weekday;
 ```
 
 | Status | Meaning |
@@ -74,6 +85,8 @@ rejects it with `NEPDATE_E_INVALID_DATE`. Every function that takes a `nepdate_d
 bit pattern without undefined behaviour.
 
 `nepdate_ymd` holds a year, a month (1 to 12) and a day, in either calendar.
+`nepdate_month` numbers the BS months 1 to 12 with Baishakh first. `nepdate_weekday` numbers the
+days 0 to 6 with Sunday first (`shared/spec/ALGORITHM.md` section 7).
 
 ```c
 const char *nepdate_status_name(nepdate_status status);
@@ -102,6 +115,46 @@ nepdate_ymd bs;
 if (nepdate_from_bs(2081, 4, 32, &date) == NEPDATE_OK &&
     nepdate_to_bs(date, &bs) == NEPDATE_OK) {
     /* bs is {2081, 4, 32}; nepdate_from_bs(2081, 4, 33, &date) is NEPDATE_E_INVALID_DAY */
+}
+```
+
+## AD conversion and derived properties
+
+```c
+nepdate_status nepdate_from_ad(int year, int month, int day, nepdate_date *out);
+nepdate_status nepdate_to_ad(nepdate_date date, nepdate_ymd *out);
+nepdate_status nepdate_weekday_of(nepdate_date date, nepdate_weekday *out);
+nepdate_status nepdate_month_of(nepdate_date date, nepdate_month *out);
+nepdate_status nepdate_day_of_year(nepdate_date date, int *out);
+nepdate_status nepdate_month_length(nepdate_date date, int *out);
+nepdate_status nepdate_first_day_of_month(nepdate_date date, nepdate_date *out);
+nepdate_status nepdate_last_day_of_month(nepdate_date date, nepdate_date *out);
+nepdate_status nepdate_compare(nepdate_date a, nepdate_date b, int *out);
+```
+
+`nepdate_from_ad` makes the proleptic Gregorian date. It checks, in this order: `NEPDATE_E_NULL`,
+`NEPDATE_E_INVALID_GREGORIAN` for a month or day the calendar doesn't have, then
+`NEPDATE_E_OUT_OF_RANGE` for a real date outside 1844-04-11 to 2143-04-15. So 2023-02-29 is
+`NEPDATE_E_INVALID_GREGORIAN` and 1844-04-10 is `NEPDATE_E_OUT_OF_RANGE`. Any `int` is accepted,
+`INT_MIN` and `INT_MAX` included. `nepdate_to_ad` returns the AD year, month and day of a date.
+
+`nepdate_weekday_of` and `nepdate_month_of` return the enumerators above. `nepdate_day_of_year` is 1
+to 367, `nepdate_month_length` 29 to 32, and `nepdate_first_day_of_month` and
+`nepdate_last_day_of_month` return dates in the same BS month. `nepdate_compare` stores -1, 0 or 1
+for `a` before, equal to, or after `b`.
+
+All of them return `NEPDATE_E_NULL` when an out-pointer is `NULL` and `NEPDATE_E_INVALID_DATE` when
+they are given a `nepdate_date` no function made, and leave the out object unchanged on error.
+`nepdate_compare` returns `NEPDATE_E_INVALID_DATE` when either date is invalid.
+
+```c
+nepdate_date date;
+nepdate_ymd ad;
+nepdate_weekday weekday;
+if (nepdate_from_ad(2024, 7, 30, &date) == NEPDATE_OK &&
+    nepdate_to_ad(date, &ad) == NEPDATE_OK &&
+    nepdate_weekday_of(date, &weekday) == NEPDATE_OK) {
+    /* ad is {2024, 7, 30}; weekday is NEPDATE_TUESDAY */
 }
 ```
 

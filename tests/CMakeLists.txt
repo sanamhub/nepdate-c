@@ -9,6 +9,10 @@ endfunction()
 
 nepdate_c_add_test_program(version_test version_test.c)
 nepdate_c_add_test_program(validation_test validation_test.c)
+nepdate_c_add_test_program(conversion_test conversion_test.c)
+nepdate_c_add_test_program(vectors_test vectors_test.c vectors.c)
+target_compile_definitions(vectors_test PRIVATE
+    NEPDATE_C_SHARED_DIR="${PROJECT_SOURCE_DIR}/shared")
 
 # The harness must turn a failed check into a failed test and say where and why.
 nepdate_c_add_test_program(harness_failure harness_failure.c)

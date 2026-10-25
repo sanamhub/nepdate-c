@@ -6,13 +6,14 @@
 
 #include <limits.h>
 #include <stddef.h>
+#include <stdint.h>
 
 static const int extremes[] = {INT_MIN, INT_MIN + 1, -1,   0,    1,    12,          13,     32,
                                33,      1900,        1901, 2199, 2200, INT_MAX - 1, INT_MAX};
 enum { EXTREMES = sizeof extremes / sizeof extremes[0] };
 
-/* The status ALGORITHM section 3 gives for year, month and day, with month lengths from
- * nepdate_from_bs itself only where the year and month are valid. */
+/* The status ALGORITHM section 3 gives for year, month and day. The day limit comes from the
+ * month length of the generated table, read through the library. */
 static nepdate_status expected_status(int year, int month, int day) {
     if (year < 1901 || year > 2199) {
         return NEPDATE_E_OUT_OF_RANGE;
@@ -20,10 +21,16 @@ static nepdate_status expected_status(int year, int month, int day) {
     if (month < 1 || month > 12) {
         return NEPDATE_E_INVALID_MONTH;
     }
-    if (day < 1 || day > 32) {
+    if (day < 1) {
         return NEPDATE_E_INVALID_DAY;
     }
-    return NEPDATE_OK;
+    nepdate_date first = {0};
+    int length = 0;
+    if (nepdate_from_bs(year, month, 1, &first) != NEPDATE_OK ||
+        nepdate_month_length(first, &length) != NEPDATE_OK) {
+        return NEPDATE_E_INVALID_DAY;
+    }
+    return day <= length ? NEPDATE_OK : NEPDATE_E_INVALID_DAY;
 }
 
 TEST(status_names) {
@@ -39,8 +46,13 @@ TEST(status_names) {
     CHECK_EQ_STR(nepdate_status_name(NEPDATE_E_UNRECOGNIZED), "NEPDATE_E_UNRECOGNIZED");
     CHECK_EQ_STR(nepdate_status_name(NEPDATE_E_INVALID_DATE), "NEPDATE_E_INVALID_DATE");
     CHECK_EQ_STR(nepdate_status_name(NEPDATE_E_NULL), "NEPDATE_E_NULL");
-    CHECK_EQ_STR(nepdate_status_name((nepdate_status)12), "unknown");
-    CHECK_EQ_STR(nepdate_status_name((nepdate_status)255), "unknown");
+    // A value outside the enum is the point: status_name must not read past its table.
+    // NOLINTNEXTLINE(clang-analyzer-optin.core.EnumCastOutOfRange): testing an unknown status
+    const nepdate_status unknown = (nepdate_status)12;
+    CHECK_EQ_STR(nepdate_status_name(unknown), "unknown");
+    // NOLINTNEXTLINE(clang-analyzer-optin.core.EnumCastOutOfRange): testing an unknown status
+    const nepdate_status far = (nepdate_status)255;
+    CHECK_EQ_STR(nepdate_status_name(far), "unknown");
 }
 
 TEST(status_values_are_fixed) {
@@ -95,12 +107,7 @@ TEST(extreme_arguments_return_an_error) {
                 const int day = extremes[k];
                 nepdate_date date = {-7};
                 const nepdate_status status = nepdate_from_bs(year, month, day, &date);
-                nepdate_status expected = expected_status(year, month, day);
-                /* Only day 32 depends on the month: 2199-12 has 30 days, 2199-01 31. */
-                if (expected == NEPDATE_OK && day == 32) {
-                    expected = status == NEPDATE_OK ? NEPDATE_OK : NEPDATE_E_INVALID_DAY;
-                }
-                CHECK_EQ_INT(status, expected);
+                CHECK_EQ_INT(status, expected_status(year, month, day));
                 if (status != NEPDATE_OK) {
                     CHECK_EQ_INT(date.value, -7);
                 }
