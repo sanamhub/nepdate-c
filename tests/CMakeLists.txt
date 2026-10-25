@@ -20,8 +20,15 @@ nepdate_c_add_test_program(fiscal_test fiscal_test.c vectors.c)
 target_compile_definitions(fiscal_test PRIVATE
     NEPDATE_C_SHARED_DIR="${PROJECT_SOURCE_DIR}/shared")
 nepdate_c_add_test_program(range_test range_test.c)
+nepdate_c_add_test_program(format_test format_test.c vectors.c)
+target_compile_definitions(format_test PRIVATE
+    NEPDATE_C_SHARED_DIR="${PROJECT_SOURCE_DIR}/shared")
+nepdate_c_add_test_program(parse_test parse_test.c vectors.c)
+target_compile_definitions(parse_test PRIVATE
+    NEPDATE_C_SHARED_DIR="${PROJECT_SOURCE_DIR}/shared")
 nepdate_c_add_test_program(cs_phase1 cs_phase1.c)
 nepdate_c_add_test_program(cs_phase2 cs_phase2.c)
+nepdate_c_add_test_program(cs_phase3 cs_phase3.c)
 
 # The sample of the 2^32 date values the property test checks on a normal CI job. Valgrind and
 # MemorySanitizer are far slower than native code, so they check smaller samples (the msan preset
@@ -41,9 +48,9 @@ if(NEPDATE_C_FULL_SWEEP)
     set_tests_properties(bit_patterns_test PROPERTIES TIMEOUT 3600)
 endif()
 
-# Every phase-1 and phase-2 row of the C# catalogue, or a comment naming the deviation or the later
+# Every phase-1 to phase-3 row of the C# catalogue, or a comment naming the deviation or the later
 # phase. Each phase has its own test source, so each test checks its own rows.
-foreach(phase IN ITEMS 1 2)
+foreach(phase IN ITEMS 1 2 3)
     add_test(NAME catalog_coverage_${phase}
         COMMAND "${CMAKE_COMMAND}"
             -DPHASE=${phase}

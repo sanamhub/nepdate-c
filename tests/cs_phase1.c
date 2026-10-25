@@ -9,6 +9,7 @@
 
 #include <stddef.h>
 #include <stdlib.h>
+#include <string.h>
 
 static nepdate_date date_of(int year, int month, int day) {
     nepdate_date date = {0};
@@ -24,6 +25,11 @@ static nepdate_status bs_status(int year, int month, int day) {
 static nepdate_status ad_status(int year, int month, int day) {
     nepdate_date date = {0};
     return nepdate_from_ad(year, month, day, &date);
+}
+
+static nepdate_status parse_status(const char *text) {
+    nepdate_date date = {0};
+    return nepdate_parse(text, strlen(text), &date);
 }
 
 static int compare(nepdate_date a, nepdate_date b) {
@@ -242,54 +248,45 @@ TEST(constructor_invalid_day_thirty_three) {
     CHECK_EQ_INT(bs_status(2080, 1, 33), NEPDATE_E_INVALID_DAY);
 }
 
-/* The rows below parse a string. The date they expect is built with the constructor until the
- * parser exists; the check that the string is accepted belongs to the formatting phase. */
-/* pending phase 3: needs parse; the constructor checks the date until then. */
-TEST(valid_string_slash) { CHECK_EQ_INT(to_bs(date_of(2080, 5, 15)).year, 2080); }
-/* pending phase 3: needs parse; the constructor checks the date until then. */
-TEST(valid_string_dash) { CHECK_EQ_INT(to_bs(date_of(2080, 5, 15)).year, 2080); }
-/* pending phase 3: needs parse; the constructor checks the date until then. */
-TEST(valid_string_dot) { CHECK_EQ_INT(to_bs(date_of(2080, 5, 15)).year, 2080); }
-/* pending phase 3: needs parse; the constructor checks the date until then. */
-TEST(valid_string_underscore) { CHECK_EQ_INT(to_bs(date_of(2080, 5, 15)).year, 2080); }
-/* pending phase 3: needs parse; the constructor checks the date until then. */
-TEST(valid_string_backslash) { CHECK_EQ_INT(to_bs(date_of(2080, 5, 15)).year, 2080); }
-/* pending phase 3: needs parse; the constructor checks the date until then. */
-TEST(valid_string_space) { CHECK_EQ_INT(to_bs(date_of(2080, 5, 15)).year, 2080); }
+/* The rows below parse a string with the strict parser. */
+TEST(valid_string_slash) {
+    CHECK_EQ_INT(parse_status("2080/05/15"), NEPDATE_OK);
+    CHECK_EQ_INT(to_bs(date_of(2080, 5, 15)).year, 2080);
+}
+TEST(valid_string_dash) { CHECK_EQ_INT(parse_status("2080-05-15"), NEPDATE_OK); }
+TEST(valid_string_dot) { CHECK_EQ_INT(parse_status("2080.05.15"), NEPDATE_OK); }
+TEST(valid_string_underscore) { CHECK_EQ_INT(parse_status("2080_05_15"), NEPDATE_OK); }
+TEST(valid_string_backslash) { CHECK_EQ_INT(parse_status("2080\\05\\15"), NEPDATE_OK); }
+TEST(valid_string_space) { CHECK_EQ_INT(parse_status("2080 05 15"), NEPDATE_OK); }
 /* cs-deviation: NepaliDateConstructionTests.Constructor_AutoAdjustedFormats_CreatesInstance#1 D-06
  * (autoAdjust guesses the field order) */
 /* cs-deviation: NepaliDateConstructionTests.Constructor_AutoAdjustedFormats_CreatesInstance#2 D-06
  * (autoAdjust guesses the field order) */
-/* pending phase 3: needs parse; the constructor checks the date until then. */
-TEST(auto_adjusted_plain) { CHECK_EQ_INT(to_bs(date_of(2080, 5, 15)).year, 2080); }
+TEST(auto_adjusted_plain) { CHECK_EQ_INT(parse_status("2080/05/15"), NEPDATE_OK); }
 /* cs-deviation: NepaliDateConstructionTests.Constructor_AutoAdjustedFormats_CreatesInstance#4 D-06
  * (2-digit years are not expanded) */
 /* cs-deviation: NepaliDateConstructionTests.Constructor_AutoAdjust_MonthOverflowWithBoundaryDay_SwapsAsDocumented#1 D-06 (autoAdjust swaps month and day) */
 /* cs-deviation: NepaliDateConstructionTests.Constructor_AutoAdjust_MonthOverflowWithBoundaryDay_SwapsAsDocumented#2 D-06 (autoAdjust swaps month and day) */
 /* cs-deviation: NepaliDateConstructionTests.TryParse_AutoAdjust_MonthOverflowWithBoundaryDay_SwapsAsDocumented D-06 (autoAdjust swaps month and day) */
 
-/* cs-pending: NepaliDateConstructionTests.Constructor_InvalidStringFormats_ThrowsException#1 phase 3: needs parse */
-TEST(invalid_string_empty) { SKIP("phase 3: needs parse"); }
-/* cs-pending: NepaliDateConstructionTests.Constructor_InvalidStringFormats_ThrowsException#2 phase 3: needs parse */
-TEST(invalid_string_text) { SKIP("phase 3: needs parse"); }
-/* cs-pending: NepaliDateConstructionTests.Constructor_InvalidStringFormats_ThrowsException#3 phase 3: needs parse */
-TEST(invalid_string_two_groups) { SKIP("phase 3: needs parse"); }
-/* pending phase 3: needs parse; the constructor checks the date until then. */
-TEST(valid_format_invalid_date) { CHECK_EQ_INT(bs_status(2080, 5, 40), NEPDATE_E_INVALID_DAY); }
+TEST(invalid_string_empty) { CHECK_EQ_INT(parse_status(""), NEPDATE_E_WRONG_GROUP_COUNT); }
+TEST(invalid_string_text) { CHECK_EQ_INT(parse_status("invalid"), NEPDATE_E_INVALID_CHARACTER); }
+TEST(invalid_string_two_groups) {
+    CHECK_EQ_INT(parse_status("2080/5"), NEPDATE_E_WRONG_GROUP_COUNT);
+}
+TEST(valid_format_invalid_date) { CHECK_EQ_INT(parse_status("2080/5/40"), NEPDATE_E_INVALID_DAY); }
 TEST(english_date_converts) {
     nepdate_date date = {0};
     CHECK_EQ_INT(nepdate_from_ad(2023, 8, 30, &date), NEPDATE_OK);
     const nepdate_ymd ymd = to_bs(date);
     CHECK(ymd.year == 2080 && ymd.month == 5 && ymd.day == 13);
 }
-/* cs-pending: NepaliDateConstructionTests.TryParse_ValidString_ReturnsTrueWithCorrectDate phase 3: needs parse */
-TEST(try_parse_valid_string) { SKIP("phase 3: needs parse"); }
-/* cs-pending: NepaliDateConstructionTests.TryParse_InvalidString_ReturnsFalseWithDefault#1 phase 3: needs parse */
-TEST(try_parse_invalid_empty) { SKIP("phase 3: needs parse"); }
-/* cs-pending: NepaliDateConstructionTests.TryParse_InvalidString_ReturnsFalseWithDefault#2 phase 3: needs parse */
-TEST(try_parse_invalid_text) { SKIP("phase 3: needs parse"); }
-/* cs-pending: NepaliDateConstructionTests.TryParse_InvalidString_ReturnsFalseWithDefault#3 phase 3: needs parse */
-TEST(try_parse_invalid_two_groups) { SKIP("phase 3: needs parse"); }
+TEST(try_parse_valid_string) { CHECK_EQ_INT(parse_status("2080/05/15"), NEPDATE_OK); }
+TEST(try_parse_invalid_empty) { CHECK_EQ_INT(parse_status(""), NEPDATE_E_WRONG_GROUP_COUNT); }
+TEST(try_parse_invalid_text) { CHECK_EQ_INT(parse_status("invalid"), NEPDATE_E_INVALID_CHARACTER); }
+TEST(try_parse_invalid_two_groups) {
+    CHECK_EQ_INT(parse_status("2080/5"), NEPDATE_E_WRONG_GROUP_COUNT);
+}
 
 TEST(english_date_conversion) {
     const nepdate_ymd ad = to_ad(date_of(2080, 5, 15));
@@ -315,45 +312,31 @@ TEST(day_of_year_shrawan) {
 /* cs-n/a: NepaliDatePropertiesTests.Equals_DifferentType_ReturnsFalse C dates compare with dates
  * only, so the call doesn't compile */
 
-/* pending phase 3: needs parse; the constructor checks the date until then. */
-TEST(all_separators_slash) { CHECK_EQ_INT(to_bs(date_of(2080, 5, 15)).year, 2080); }
-/* pending phase 3: needs parse; the constructor checks the date until then. */
-TEST(all_separators_dash) { CHECK_EQ_INT(to_bs(date_of(2080, 5, 15)).year, 2080); }
-/* pending phase 3: needs parse; the constructor checks the date until then. */
-TEST(all_separators_dot) { CHECK_EQ_INT(to_bs(date_of(2080, 5, 15)).year, 2080); }
-/* pending phase 3: needs parse; the constructor checks the date until then. */
-TEST(all_separators_underscore) { CHECK_EQ_INT(to_bs(date_of(2080, 5, 15)).year, 2080); }
-/* pending phase 3: needs parse; the constructor checks the date until then. */
-TEST(all_separators_backslash) { CHECK_EQ_INT(to_bs(date_of(2080, 5, 15)).year, 2080); }
-/* pending phase 3: needs parse; the constructor checks the date until then. */
-TEST(all_separators_space) { CHECK_EQ_INT(to_bs(date_of(2080, 5, 15)).year, 2080); }
-/* pending phase 3: needs parse; the constructor checks the date until then. */
-TEST(all_separators_danda) { CHECK_EQ_INT(to_bs(date_of(2080, 5, 15)).year, 2080); }
-/* pending phase 3: needs parse; the constructor checks the date until then. */
-TEST(all_separators_pipe) { CHECK_EQ_INT(to_bs(date_of(2080, 5, 15)).year, 2080); }
-/* cs-pending: OptimizationVerificationTests.Constructor_InvalidStrings_ThrowsException#1 phase 3: needs parse */
-TEST(invalid_strings_empty) { SKIP("phase 3: needs parse"); }
-/* cs-pending: OptimizationVerificationTests.Constructor_InvalidStrings_ThrowsException#2 phase 3: needs parse */
-TEST(invalid_strings_text) { SKIP("phase 3: needs parse"); }
-/* cs-pending: OptimizationVerificationTests.Constructor_InvalidStrings_ThrowsException#3 phase 3: needs parse */
-TEST(invalid_strings_two_groups) { SKIP("phase 3: needs parse"); }
-/* cs-pending: OptimizationVerificationTests.Constructor_InvalidStrings_ThrowsException#4 phase 3: needs parse */
-TEST(invalid_strings_one_group) { SKIP("phase 3: needs parse"); }
-/* cs-pending: OptimizationVerificationTests.Constructor_InvalidStrings_ThrowsException#5 phase 3: needs parse */
-TEST(invalid_strings_extra_group) { SKIP("phase 3: needs parse"); }
-/* cs-pending: OptimizationVerificationTests.Constructor_InvalidStrings_ThrowsException#6 phase 3: needs parse */
-TEST(invalid_strings_words) { SKIP("phase 3: needs parse"); }
-/* cs-n/a: OptimizationVerificationTests.Constructor_NullString_ThrowsException C has no null
- * string; a missing string is a NULL pointer, which the parser will reject */
-/* pending phase 3: needs parse; the constructor checks the date until then. */
-TEST(without_leading_zeros_1) { CHECK_EQ_INT(to_bs(date_of(2080, 5, 15)).year, 2080); }
-/* pending phase 3: needs parse; the constructor checks the date until then. */
-TEST(without_leading_zeros_2) { CHECK_EQ_INT(to_bs(date_of(2080, 5, 5)).day, 5); }
-/* pending phase 3: needs parse; the constructor checks the date until then. */
-TEST(without_leading_zeros_3) {
-    const nepdate_ymd ymd = to_bs(date_of(2080, 1, 1));
-    CHECK(ymd.year == 2080 && ymd.month == 1 && ymd.day == 1);
+TEST(all_separators_slash) { CHECK_EQ_INT(parse_status("2080/05/15"), NEPDATE_OK); }
+TEST(all_separators_dash) { CHECK_EQ_INT(parse_status("2080-05-15"), NEPDATE_OK); }
+TEST(all_separators_dot) { CHECK_EQ_INT(parse_status("2080.05.15"), NEPDATE_OK); }
+TEST(all_separators_underscore) { CHECK_EQ_INT(parse_status("2080_05_15"), NEPDATE_OK); }
+TEST(all_separators_backslash) { CHECK_EQ_INT(parse_status("2080\\05\\15"), NEPDATE_OK); }
+TEST(all_separators_space) { CHECK_EQ_INT(parse_status("2080 05 15"), NEPDATE_OK); }
+TEST(all_separators_danda) { CHECK_EQ_INT(parse_status("2080।05।15"), NEPDATE_OK); }
+TEST(all_separators_pipe) { CHECK_EQ_INT(parse_status("2080|05|15"), NEPDATE_OK); }
+TEST(invalid_strings_empty) { CHECK_EQ_INT(parse_status(""), NEPDATE_E_WRONG_GROUP_COUNT); }
+TEST(invalid_strings_text) { CHECK_EQ_INT(parse_status("invalid"), NEPDATE_E_INVALID_CHARACTER); }
+TEST(invalid_strings_two_groups) {
+    CHECK_EQ_INT(parse_status("2080/05"), NEPDATE_E_WRONG_GROUP_COUNT);
 }
+TEST(invalid_strings_one_group) { CHECK_EQ_INT(parse_status("2080"), NEPDATE_E_WRONG_GROUP_COUNT); }
+TEST(invalid_strings_extra_group) {
+    CHECK_EQ_INT(parse_status("2080/05/15/99"), NEPDATE_E_WRONG_GROUP_COUNT);
+}
+TEST(invalid_strings_words) {
+    CHECK_EQ_INT(parse_status("abc/def/ghi"), NEPDATE_E_INVALID_CHARACTER);
+}
+/* cs-n/a: OptimizationVerificationTests.Constructor_NullString_ThrowsException C has no null
+ * string; a missing string is a NULL pointer, which the parser rejects */
+TEST(without_leading_zeros_1) { CHECK_EQ_INT(parse_status("2080/5/15"), NEPDATE_OK); }
+TEST(without_leading_zeros_2) { CHECK_EQ_INT(parse_status("2080/05/5"), NEPDATE_OK); }
+TEST(without_leading_zeros_3) { CHECK_EQ_INT(parse_status("2080/1/1"), NEPDATE_OK); }
 
 TEST(operator_equality) { CHECK_EQ_INT(compare(date_of(2080, 5, 15), date_of(2080, 5, 15)), 0); }
 TEST(operator_inequality) { CHECK(compare(date_of(2080, 5, 15), date_of(2080, 5, 16)) != 0); }
