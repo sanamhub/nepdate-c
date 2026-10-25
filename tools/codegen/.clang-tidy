@@ -1,0 +1,6 @@
+# The generator only. Disabled checks and why:
+# - misc-no-recursion: the JSON reader recurses once per nesting level, and json.c stops at
+#   JSON_MAX_DEPTH, so the depth is bounded. The library itself never recurses.
+InheritParentConfig: true
+Checks: >
+  -misc-no-recursion

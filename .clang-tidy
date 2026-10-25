@@ -1,0 +1,27 @@
+# clang-tidy 18, the tidy gate (ADR-0004). Disabled checks and why:
+# - readability-magic-numbers: calendar code is full of numbers the spec names (1901, 12, 32); a
+#   constant for each would hide them, not explain them.
+# - readability-identifier-length: the spec's algorithms use single-letter names (y, m, d), and
+#   loops use i; renaming them would drift from the text the code transcribes.
+# - clang-analyzer-security.insecureAPI.DeprecatedOrUnsafeBufferHandling: it asks for the Annex K
+#   functions (snprintf_s, memcpy_s), which C11 makes optional and glibc, musl and Apple's libc
+#   don't provide. The library calls none of these functions; the tools and tests pass a size to
+#   every call.
+# - bugprone-easily-swappable-parameters: the API takes (year, month, day) in the spec's order, and
+#   the tools take (path, content) pairs; the check can't be met without wrapping each integer or
+#   string in a struct.
+Checks: >
+  -*,
+  bugprone-*,
+  -bugprone-easily-swappable-parameters,
+  cert-*,
+  clang-analyzer-*,
+  -clang-analyzer-security.insecureAPI.DeprecatedOrUnsafeBufferHandling,
+  misc-*,
+  performance-*,
+  portability-*,
+  readability-*,
+  -readability-magic-numbers,
+  -readability-identifier-length
+WarningsAsErrors: '*'
+HeaderFilterRegex: '(include|src|tools|tests)/'

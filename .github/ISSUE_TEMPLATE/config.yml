@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Security vulnerability
+    url: https://github.com/sanamhub/nepdate-c/security/advisories/new
+    about: Report privately. Don't open a public issue.
+  - name: A wrong date, holiday or tithi in the data
+    url: https://github.com/sanamhub/nepdate/issues/new/choose
+    about: Data is shared by every port and fixed in the hub, so report it there.

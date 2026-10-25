@@ -1,0 +1,46 @@
+name: Bug report
+description: The library returns a wrong result or an unexpected status, crashes, or doesn't compile.
+labels: ["bug"]
+body:
+  - type: textarea
+    id: input
+    attributes:
+      label: Input
+      description: The call and its arguments, as a short C snippet.
+      placeholder: nepdate_version()
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual
+      description: The result, the nepdate_status value, the crash, or the compiler error.
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: nepdate-c version
+      placeholder: 0.1.0
+    validations:
+      required: true
+  - type: input
+    id: compiler
+    attributes:
+      label: Compiler and version
+      placeholder: GCC 14.2, Clang 18.1, MSVC 19.44, zig 0.17
+    validations:
+      required: true
+  - type: input
+    id: os
+    attributes:
+      label: Operating system and architecture
+      placeholder: Ubuntu 24.04, x86_64
+    validations:
+      required: true

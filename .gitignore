@@ -1,0 +1,20 @@
+# CMake build trees and local presets
+/build*/
+/out/
+CMakeUserPresets.json
+
+# IDEs
+/.vs/
+/.vscode/
+/.idea/
+
+# Coverage
+*.gcda
+*.gcno
+/coverage/
+
+# libFuzzer output (commit reproducers to the corpus by hand)
+crash-*
+leak-*
+timeout-*
+oom-*

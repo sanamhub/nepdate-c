@@ -1,0 +1,293 @@
+{
+  "version": 6,
+  "cmakeMinimumRequired": {
+    "major": 3,
+    "minor": 25,
+    "patch": 0
+  },
+  "configurePresets": [
+    {
+      "name": "base",
+      "hidden": true,
+      "description": "Ninja, Debug, tests on. The compiler is whatever CMake finds (CI picks it per job).",
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/build/${presetName}",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug",
+        "CMAKE_EXPORT_COMPILE_COMMANDS": "ON",
+        "NEPDATE_C_BUILD_TESTS": "ON",
+        "NEPDATE_C_BUILD_TOOLS": "OFF"
+      }
+    },
+    {
+      "name": "dev",
+      "inherits": "base",
+      "description": "Debug, static library, tests and tools/codegen",
+      "cacheVariables": {
+        "NEPDATE_C_BUILD_TOOLS": "ON"
+      }
+    },
+    {
+      "name": "release",
+      "inherits": "base",
+      "description": "Release, static library and tests",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release"
+      }
+    },
+    {
+      "name": "shared",
+      "inherits": "base",
+      "description": "Debug, shared library and tests",
+      "cacheVariables": {
+        "BUILD_SHARED_LIBS": "ON"
+      }
+    },
+    {
+      "name": "asan-ubsan",
+      "inherits": "base",
+      "description": "AddressSanitizer and UBSan, or /fsanitize=address on MSVC, tools/codegen included",
+      "cacheVariables": {
+        "NEPDATE_C_SANITIZE": "address,undefined",
+        "NEPDATE_C_BUILD_TOOLS": "ON"
+      }
+    },
+    {
+      "name": "msan",
+      "inherits": "base",
+      "description": "MemorySanitizer, Clang on Linux",
+      "cacheVariables": {
+        "NEPDATE_C_SANITIZE": "memory"
+      }
+    },
+    {
+      "name": "coverage",
+      "inherits": "base",
+      "description": "GCC --coverage for gcovr",
+      "cacheVariables": {
+        "NEPDATE_C_COVERAGE": "ON"
+      }
+    },
+    {
+      "name": "fuzz",
+      "inherits": "base",
+      "description": "Clang with libFuzzer instrumentation, ASan and UBSan",
+      "cacheVariables": {
+        "NEPDATE_C_SANITIZE": "address,undefined,fuzzer-no-link"
+      }
+    },
+    {
+      "name": "tidy",
+      "inherits": "base",
+      "description": "clang-tidy on every C source",
+      "cacheVariables": {
+        "NEPDATE_C_BUILD_TOOLS": "ON",
+        "CMAKE_C_CLANG_TIDY": "clang-tidy"
+      }
+    },
+    {
+      "name": "cxx-headers",
+      "inherits": "base",
+      "description": "The public headers compiled as C++11 and C++20",
+      "cacheVariables": {
+        "NEPDATE_C_CXX_HEADERS": "ON"
+      }
+    },
+    {
+      "name": "analyzer",
+      "inherits": "base",
+      "description": "GCC -fanalyzer on the library, tests and tools",
+      "cacheVariables": {
+        "NEPDATE_C_BUILD_TOOLS": "ON",
+        "NEPDATE_C_ANALYZER": "ON"
+      }
+    },
+    {
+      "name": "valgrind",
+      "inherits": "base",
+      "description": "Every test program under Valgrind memcheck, leaks are errors, tools/codegen included",
+      "cacheVariables": {
+        "NEPDATE_C_TEST_LAUNCHER": "valgrind;--error-exitcode=99;--leak-check=full;--errors-for-leak-kinds=all;--track-origins=yes",
+        "NEPDATE_C_BUILD_TOOLS": "ON"
+      }
+    }
+  ],
+  "buildPresets": [
+    {
+      "name": "dev",
+      "configurePreset": "dev"
+    },
+    {
+      "name": "release",
+      "configurePreset": "release"
+    },
+    {
+      "name": "shared",
+      "configurePreset": "shared"
+    },
+    {
+      "name": "asan-ubsan",
+      "configurePreset": "asan-ubsan"
+    },
+    {
+      "name": "msan",
+      "configurePreset": "msan"
+    },
+    {
+      "name": "coverage",
+      "configurePreset": "coverage"
+    },
+    {
+      "name": "fuzz",
+      "configurePreset": "fuzz"
+    },
+    {
+      "name": "tidy",
+      "configurePreset": "tidy"
+    },
+    {
+      "name": "cxx-headers",
+      "configurePreset": "cxx-headers"
+    },
+    {
+      "name": "analyzer",
+      "configurePreset": "analyzer"
+    },
+    {
+      "name": "valgrind",
+      "configurePreset": "valgrind"
+    }
+  ],
+  "testPresets": [
+    {
+      "name": "dev",
+      "configurePreset": "dev",
+      "output": {
+        "outputOnFailure": true
+      },
+      "execution": {
+        "timeout": 300
+      }
+    },
+    {
+      "name": "release",
+      "configurePreset": "release",
+      "output": {
+        "outputOnFailure": true
+      },
+      "execution": {
+        "timeout": 300
+      }
+    },
+    {
+      "name": "shared",
+      "configurePreset": "shared",
+      "output": {
+        "outputOnFailure": true
+      },
+      "execution": {
+        "timeout": 300
+      }
+    },
+    {
+      "name": "asan-ubsan",
+      "configurePreset": "asan-ubsan",
+      "output": {
+        "outputOnFailure": true
+      },
+      "execution": {
+        "timeout": 300
+      }
+    },
+    {
+      "name": "msan",
+      "configurePreset": "msan",
+      "output": {
+        "outputOnFailure": true
+      },
+      "execution": {
+        "timeout": 300
+      }
+    },
+    {
+      "name": "coverage",
+      "configurePreset": "coverage",
+      "output": {
+        "outputOnFailure": true
+      },
+      "execution": {
+        "timeout": 300
+      }
+    },
+    {
+      "name": "fuzz",
+      "configurePreset": "fuzz",
+      "output": {
+        "outputOnFailure": true
+      },
+      "execution": {
+        "timeout": 300
+      }
+    },
+    {
+      "name": "tidy",
+      "configurePreset": "tidy",
+      "output": {
+        "outputOnFailure": true
+      },
+      "execution": {
+        "timeout": 300
+      }
+    },
+    {
+      "name": "cxx-headers",
+      "configurePreset": "cxx-headers",
+      "output": {
+        "outputOnFailure": true
+      },
+      "execution": {
+        "timeout": 300
+      }
+    },
+    {
+      "name": "analyzer",
+      "configurePreset": "analyzer",
+      "output": {
+        "outputOnFailure": true
+      },
+      "execution": {
+        "timeout": 300
+      }
+    },
+    {
+      "name": "valgrind",
+      "configurePreset": "valgrind",
+      "output": {
+        "outputOnFailure": true
+      },
+      "execution": {
+        "timeout": 300
+      }
+    }
+  ],
+  "workflowPresets": [
+    {
+      "name": "dev",
+      "description": "Configure, build and test the dev preset",
+      "steps": [
+        {
+          "type": "configure",
+          "name": "dev"
+        },
+        {
+          "type": "build",
+          "name": "dev"
+        },
+        {
+          "type": "test",
+          "name": "dev"
+        }
+      ]
+    }
+  ]
+}

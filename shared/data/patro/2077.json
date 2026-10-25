@@ -1,0 +1,2262 @@
+{
+  "schema": 1,
+  "source": {
+    "repo": "https://github.com/RajuPrasai/NepDate",
+    "commit": "cb05cb65c7d3cb570c76992a8e83ed1e73213346",
+    "license": "MIT",
+    "imported": "2026-09-24"
+  },
+  "year": 2077,
+  "days": {
+    "2077-01-01": {
+      "holiday": true,
+      "events": [
+        {
+          "np": "नयाँ वर्ष २०७७ प्रारम्भ",
+          "en": "New Year 2077"
+        },
+        {
+          "np": "मेष संक्रान्ति",
+          "en": "Mesh Sankranti"
+        },
+        {
+          "np": "बिस्का जात्रा",
+          "en": "Bisket Jatra"
+        }
+      ]
+    },
+    "2077-01-03": {
+      "events": [
+        {
+          "np": "बुधाष्टमी व्रत",
+          "en": "Budhashtami Brata"
+        }
+      ]
+    },
+    "2077-01-06": {
+      "events": [
+        {
+          "np": "वरुथिनी एकादशी व्रत",
+          "en": "Varuthini Ekadashi Brata"
+        },
+        {
+          "np": "विश्व सम्पदा दिवस",
+          "en": "World Heritage Day"
+        }
+      ]
+    },
+    "2077-01-08": {
+      "events": [
+        {
+          "np": "छन्द दिवस",
+          "en": "Chhanda Day"
+        }
+      ]
+    },
+    "2077-01-11": {
+      "events": [
+        {
+          "np": "मातातीर्थ औंसी",
+          "en": "Matatirtha Aunsi"
+        },
+        {
+          "np": "लोकतन्त्र दिवस",
+          "en": "Democracy Day"
+        },
+        {
+          "np": "अन्तर्राष्ट्रिय पुस्तक दिवस",
+          "en": "International Book Day"
+        },
+        {
+          "np": "प्रतिलिपि अधिकार दिवस",
+          "en": "Copyright Day"
+        }
+      ]
+    },
+    "2077-01-12": {
+      "events": [
+        {
+          "np": "मत्स्यन्द्रनाथ रथारोहण",
+          "en": "Matsyendranath Ratharohan"
+        },
+        {
+          "np": "विसं २०७२ सालको महाभुकम्पको सम्झना",
+          "en": "2072 BS Great Earthquake Remembrance"
+        }
+      ]
+    },
+    "2077-01-13": {
+      "events": [
+        {
+          "np": "परशुराम जयन्ती",
+          "en": "Parashurama Jayanti"
+        },
+        {
+          "np": "विश्व औंलो दिवस",
+          "en": "World Malaria Day"
+        }
+      ]
+    },
+    "2077-01-14": {
+      "events": [
+        {
+          "np": "अक्षय तृतीया",
+          "en": "Akshaya Tritiya"
+        },
+        {
+          "np": "विश्व बौद्धिक सम्पत्ति दिवस",
+          "en": "World Intellectual Property Day"
+        }
+      ]
+    },
+    "2077-01-15": {
+      "events": [
+        {
+          "np": "मत्स्यन्द्रनाथ रथ यात्रा प्रारम्भ",
+          "en": "Matsyendranath Rath Yatra Start"
+        }
+      ]
+    },
+    "2077-01-16": {
+      "events": [
+        {
+          "np": "आद्यगुरु शंकराचार्य जयन्ती",
+          "en": "Shankaracharya Jayanti"
+        },
+        {
+          "np": "रामानुजाचार्य जयन्ती",
+          "en": "Ramanujacharya Jayanti"
+        },
+        {
+          "np": "काममा सुरक्षा र स्वास्थ्यको लागि विश्व दिवस",
+          "en": "World Day for Safety and Health at Work"
+        }
+      ]
+    },
+    "2077-01-17": {
+      "events": [
+        {
+          "np": "गङ्गा सप्तमी व्रत",
+          "en": "Ganga Saptami Brata"
+        },
+        {
+          "np": "विश्व नृत्य दिवस",
+          "en": "World Dance Day"
+        }
+      ]
+    },
+    "2077-01-19": {
+      "holiday": true,
+      "events": [
+        {
+          "np": "अन्तर्राष्ट्रिय श्रमिक दिवस",
+          "en": "International Labour Day"
+        }
+      ]
+    },
+    "2077-01-20": {
+      "events": [
+        {
+          "np": "सीता नवमी व्रत",
+          "en": "Sita Navami Brata"
+        }
+      ]
+    },
+    "2077-01-21": {
+      "events": [
+        {
+          "np": "मोहिनी एकादशी व्रत",
+          "en": "Mohini Ekadashi Brata"
+        },
+        {
+          "np": "विश्व प्रेस स्वतन्त्रता दिवस",
+          "en": "World Press Freedom Day"
+        },
+        {
+          "np": "विश्व हाँसाे दिवस",
+          "en": "World Laughter Day"
+        }
+      ]
+    },
+    "2077-01-24": {
+      "events": [
+        {
+          "np": "किराँत समाज सुधार दिवस",
+          "en": "Kirat Social Reform Day"
+        },
+        {
+          "np": "नृसिंह जयन्ती",
+          "en": "Narasimha Jayanti"
+        }
+      ]
+    },
+    "2077-01-25": {
+      "holiday": true,
+      "events": [
+        {
+          "np": "बुद्ध जयन्ती",
+          "en": "Buddha Jayanti"
+        },
+        {
+          "np": "उभौली पर्व",
+          "en": "Ubhauli Festival"
+        },
+        {
+          "np": "चण्डेश्वरी जात्रा",
+          "en": "Chandeshwari Jatra"
+        },
+        {
+          "np": "कुर्म जयन्ती , गोरखनाथ जयन्ती",
+          "en": "Kurma Jayanti, Gorakhnath Jayanti"
+        }
+      ]
+    },
+    "2077-01-26": {
+      "events": [
+        {
+          "np": "कानून दिवस",
+          "en": "Law Day"
+        },
+        {
+          "np": "विश्व रेडक्रस दिवस",
+          "en": "World Red Cross Day"
+        }
+      ]
+    },
+    "2077-01-30": {
+      "events": [
+        {
+          "np": "विश्व नर्स दिवस",
+          "en": "World Nurses Day"
+        }
+      ]
+    },
+    "2077-02-01": {
+      "events": [
+        {
+          "np": "वृष संक्रान्ति",
+          "en": "Vrisha Sankranti"
+        }
+      ]
+    },
+    "2077-02-02": {
+      "events": [
+        {
+          "np": "अन्तर्राष्ट्रिय परिवार दिवस",
+          "en": "International Day of Families"
+        }
+      ]
+    },
+    "2077-02-04": {
+      "events": [
+        {
+          "np": "विश्व दूरसञ्चार दिवस",
+          "en": "World Telecommunication and Information Society Day"
+        },
+        {
+          "np": "विश्व उच्च रक्तचाप दिवस",
+          "en": "World Hypertension Day"
+        }
+      ]
+    },
+    "2077-02-05": {
+      "events": [
+        {
+          "np": "अपरा एकादशी व्रत",
+          "en": "Apara Ekadashi Brata"
+        },
+        {
+          "np": "चित्तधर हृदय जन्मजयन्ती",
+          "en": "Chittadhar Hridaya Jayanti"
+        }
+      ]
+    },
+    "2077-02-07": {
+      "events": [
+        {
+          "np": "चलचित्र पत्रकारिता दिवस",
+          "en": "Film Journalism Day"
+        }
+      ]
+    },
+    "2077-02-08": {
+      "events": [
+        {
+          "np": "सिथि चःह्रे",
+          "en": "Sithi Chahre"
+        }
+      ]
+    },
+    "2077-02-09": {
+      "events": [
+        {
+          "np": "युगकवि सिद्धिचरण श्रेष्ठ जन्म जयन्ती",
+          "en": "Siddhi Charan Shrestha Jayanti"
+        },
+        {
+          "np": "शनि जयन्ती व्रत",
+          "en": "Shani Jayanti Brata"
+        },
+        {
+          "np": "अन्तर्राष्ट्रिय जैविक विविधता दिवस",
+          "en": "International Day for Biological Diversity"
+        }
+      ]
+    },
+    "2077-02-10": {
+      "events": [
+        {
+          "np": "गोसाइकुण्ड स्नान आरम्भ",
+          "en": "Gosainkunda Snan Start"
+        }
+      ]
+    },
+    "2077-02-12": {
+      "holiday": true,
+      "events": [
+        {
+          "np": "ईद उल फितर",
+          "en": "Eid ul-Fitr"
+        }
+      ]
+    },
+    "2077-02-13": {
+      "events": [
+        {
+          "np": "मङ्गल चौथी व्रत",
+          "en": "Mangala Chauthi Brata"
+        }
+      ]
+    },
+    "2077-02-15": {
+      "events": [
+        {
+          "np": "गणतन्त्र दिवस",
+          "en": "Republic Day"
+        },
+        {
+          "np": "सिथि नखः",
+          "en": "Sithi Nakha"
+        }
+      ]
+    },
+    "2077-02-18": {
+      "events": [
+        {
+          "np": "वन उपभोक्ता दिवस",
+          "en": "Forest User Day"
+        },
+        {
+          "np": "विश्व धुम्रपान रहित दिवस",
+          "en": "World No Tobacco Day"
+        }
+      ]
+    },
+    "2077-02-19": {
+      "events": [
+        {
+          "np": "गङ्गादशहरा व्रत",
+          "en": "Ganga Dashahara Brata"
+        },
+        {
+          "np": "गोसाइकुण्ड स्नान समाप्ति",
+          "en": "Gosainkunda Snan End"
+        }
+      ]
+    },
+    "2077-02-20": {
+      "events": [
+        {
+          "np": "निर्जला एकादशी व्रत (तुलसीको दल राख्ने दिन )",
+          "en": "Nirjala Ekadashi Brata (Day to Plant Tulashi)"
+        }
+      ]
+    },
+    "2077-02-22": {
+      "events": [
+        {
+          "np": "निर्दोष बालबालिका माथि अत्याचार विरुद्धको दिवस",
+          "en": "Day Against Atrocities on Innocent Children"
+        }
+      ]
+    },
+    "2077-02-23": {
+      "events": [
+        {
+          "np": "ज्यापुन्ही",
+          "en": "Jyapu Day"
+        },
+        {
+          "np": "विश्व वातावरण दिवस",
+          "en": "World Environment Day"
+        }
+      ]
+    },
+    "2077-02-27": {
+      "events": [
+        {
+          "np": "मङ्गल चौथी व्रत",
+          "en": "Mangala Chauthi Brata"
+        }
+      ]
+    },
+    "2077-02-30": {
+      "events": [
+        {
+          "np": "विश्व बालश्रम विरुद्ध दिवस",
+          "en": "World Day Against Child Labour"
+        }
+      ]
+    },
+    "2077-02-31": {
+      "events": [
+        {
+          "np": "नेपाल गौरव यात्रा",
+          "en": "Nepal Gaurav Journey"
+        }
+      ]
+    },
+    "2077-02-32": {
+      "events": [
+        {
+          "np": "विश्व रक्तदाता दिवस",
+          "en": "World Blood Donor Day"
+        }
+      ]
+    },
+    "2077-03-01": {
+      "events": [
+        {
+          "np": "मिथुन संक्रान्ति",
+          "en": "Mithuna Sankranti"
+        },
+        {
+          "np": "विश्व अग्रज दुर्व्यवहार जागरुकता दिवस",
+          "en": "World Elder Abuse Awareness Day"
+        }
+      ]
+    },
+    "2077-03-03": {
+      "events": [
+        {
+          "np": "योगिनी एकादशी व्रत",
+          "en": "Yogini Ekadashi Brata"
+        },
+        {
+          "np": "विश्व खडेरी विरुद्ध संघर्ष दिवस",
+          "en": "World Day to Combat Desertification and Drought"
+        }
+      ]
+    },
+    "2077-03-05": {
+      "events": [
+        {
+          "np": "द्वन्द्वमा यौन हिंसा उन्मूलनको लागि अन्तर्राष्ट्रिय दिवस",
+          "en": "International Day for the Elimination of Sexual Violence in Conflict"
+        }
+      ]
+    },
+    "2077-03-06": {
+      "events": [
+        {
+          "np": "विश्व शरणार्थी दिवस",
+          "en": "World Refugee Day"
+        }
+      ]
+    },
+    "2077-03-07": {
+      "events": [
+        {
+          "np": "खण्डग्रास सूर्यग्रहण",
+          "en": "Partial Solar Eclipse"
+        },
+        {
+          "np": "विश्व योग दिवस",
+          "en": "World Yoga Day"
+        },
+        {
+          "np": "संगीत दिवस",
+          "en": "Music Day"
+        }
+      ]
+    },
+    "2077-03-09": {
+      "events": [
+        {
+          "np": "अन्तर्राष्ट्रिय एकल महिला दिवस",
+          "en": "International Day of Widows"
+        }
+      ]
+    },
+    "2077-03-12": {
+      "events": [
+        {
+          "np": "अन्तर्राष्ट्रिय लागू पदार्थ तथा अवैध तस्करी विरुद्ध दिवस",
+          "en": "International Day Against Drug Abuse and Illicit Trafficking"
+        }
+      ]
+    },
+    "2077-03-15": {
+      "events": [
+        {
+          "np": "दहीचिउरा खाने दिन",
+          "en": "Dahi Chiura Eating Day"
+        },
+        {
+          "np": "राष्ट्रिय धान दिवस",
+          "en": "National Rice Day"
+        }
+      ]
+    },
+    "2077-03-17": {
+      "events": [
+        {
+          "np": "हरिशयनी एकादशी व्रत",
+          "en": "Harishayani Ekadashi Brata"
+        },
+        {
+          "np": "चतुर्मास व्रत आरम्भ",
+          "en": "Chaturmas Brata Start"
+        }
+      ]
+    },
+    "2077-03-18": {
+      "events": [
+        {
+          "np": "विश्व खेलकुद पत्रकार दिवस",
+          "en": "World Sports Journalist Day"
+        }
+      ]
+    },
+    "2077-03-20": {
+      "events": [
+        {
+          "np": "अन्तर्राष्ट्रिय सहकारी दिवस",
+          "en": "International Day of Cooperatives"
+        }
+      ]
+    },
+    "2077-03-21": {
+      "events": [
+        {
+          "np": "गुरु पुर्णिमा",
+          "en": "Guru Purnima"
+        },
+        {
+          "np": "व्यासजयन्ती",
+          "en": "Vyas Jayanti"
+        }
+      ]
+    },
+    "2077-03-27": {
+      "events": [
+        {
+          "np": "विश्व जनसंख्या दिवस",
+          "en": "World Population Day"
+        }
+      ]
+    },
+    "2077-03-28": {
+      "events": [
+        {
+          "np": "रविसप्तमी व्रत",
+          "en": "Ravi Saptami Brata"
+        }
+      ]
+    },
+    "2077-03-29": {
+      "events": [
+        {
+          "np": "भानु जयन्ती",
+          "en": "Bhanu Jayanti"
+        }
+      ]
+    },
+    "2077-03-31": {
+      "events": [
+        {
+          "np": "विश्व युवा दक्षता दिवस",
+          "en": "World Youth Skills Day"
+        }
+      ]
+    },
+    "2077-04-01": {
+      "events": [
+        {
+          "np": "कामिका एकादशी",
+          "en": "Kamika Ekadashi"
+        },
+        {
+          "np": "कर्कट सङ्क्रान्ति",
+          "en": "Karkat Sankranti"
+        },
+        {
+          "np": "लुतो फाल्ने दिन",
+          "en": "Luto Falne Din"
+        },
+        {
+          "np": "दक्षिणायन आरम्भ",
+          "en": "Dakshinayan Start"
+        }
+      ]
+    },
+    "2077-04-04": {
+      "events": [
+        {
+          "np": "गथांमुगः चःह्रे",
+          "en": "Gathemangal Chahre"
+        }
+      ]
+    },
+    "2077-04-05": {
+      "events": [
+        {
+          "np": "सोमबारे औंसी व्रत",
+          "en": "Sombare Aunsi Brata"
+        }
+      ]
+    },
+    "2077-04-06": {
+      "events": [
+        {
+          "np": "गुंलापर्व आरम्भ",
+          "en": "Gunla Festival Start"
+        }
+      ]
+    },
+    "2077-04-08": {
+      "events": [
+        {
+          "np": "वराह जयन्ती",
+          "en": "Varaha Jayanti"
+        }
+      ]
+    },
+    "2077-04-10": {
+      "events": [
+        {
+          "np": "नाग पञ्चमी व्रत",
+          "en": "Nag Panchami Brata"
+        },
+        {
+          "np": "कल्की जयन्ती",
+          "en": "Kalki Jayanti"
+        }
+      ]
+    },
+    "2077-04-11": {
+      "events": [
+        {
+          "np": "विश्व बुवाआमा दिवस",
+          "en": "World Parents Day"
+        }
+      ]
+    },
+    "2077-04-12": {
+      "events": [
+        {
+          "np": "तुलसीदास जयन्ती",
+          "en": "Tulashidas Jayanti"
+        }
+      ]
+    },
+    "2077-04-13": {
+      "events": [
+        {
+          "np": "विश्व हेपाटाइटिस दिवस",
+          "en": "World Hepatitis Day"
+        }
+      ]
+    },
+    "2077-04-14": {
+      "events": [
+        {
+          "np": "विश्व बाघ दिवस",
+          "en": "World Tiger Day"
+        }
+      ]
+    },
+    "2077-04-15": {
+      "events": [
+        {
+          "np": "पुत्रदा एकादशी व्रत",
+          "en": "Putrada Ekadashi Brata"
+        },
+        {
+          "np": "खीर खाने दिन",
+          "en": "Kheer Khane Din"
+        },
+        {
+          "np": "अन्तर्राष्ट्रिय मानव बेचबिखन विरुद्ध दिवस",
+          "en": "World Day Against Human Trafficking"
+        },
+        {
+          "np": "अन्तर्राष्ट्रिय मित्रता दिवस",
+          "en": "International Friendship Day"
+        }
+      ]
+    },
+    "2077-04-17": {
+      "events": [
+        {
+          "np": "ईल उद अधा",
+          "en": "Eid ul-Adha"
+        },
+        {
+          "np": "विश्व स्तनपान सप्ताह प्रारम्भ",
+          "en": "World Breastfeeding Week Start"
+        }
+      ]
+    },
+    "2077-04-19": {
+      "events": [
+        {
+          "np": "जनै पूर्णिमा",
+          "en": "Janai Purnima"
+        },
+        {
+          "np": "रक्षा बन्धन",
+          "en": "Raksha Bandhan"
+        },
+        {
+          "np": "क्वाटी खाने दिन",
+          "en": "Kwati Eating Day"
+        },
+        {
+          "np": "संस्कृत दिवस",
+          "en": "Sanskrit Day"
+        }
+      ]
+    },
+    "2077-04-20": {
+      "holiday": true,
+      "events": [
+        {
+          "np": "गाईजात्रा (काठमाडौँ उपत्यका मात्र)",
+          "en": "Gaijatra (Kathmandu Valley Only)"
+        }
+      ]
+    },
+    "2077-04-21": {
+      "events": [
+        {
+          "np": "रोपाईं जात्रा",
+          "en": "Ropain Jatra"
+        }
+      ]
+    },
+    "2077-04-25": {
+      "events": [
+        {
+          "np": "अन्तर्राष्ट्रिय आदिवासी दिवस",
+          "en": "International Day of Indigenous Peoples"
+        }
+      ]
+    },
+    "2077-04-27": {
+      "events": [
+        {
+          "np": "श्रीकृष्ण जन्माष्टमी",
+          "en": "Shree Krishna Janmashtami"
+        }
+      ]
+    },
+    "2077-04-28": {
+      "events": [
+        {
+          "np": "हिलेजात्रा",
+          "en": "Hile Jatra"
+        },
+        {
+          "np": "अन्तर्राष्ट्रिय युवा दिवस",
+          "en": "International Youth Day"
+        }
+      ]
+    },
+    "2077-04-31": {
+      "events": [
+        {
+          "np": "अजा एकादशी व्रत",
+          "en": "Aja Ekadashi Brata"
+        }
+      ]
+    },
+    "2077-05-01": {
+      "events": [
+        {
+          "np": "सिंह संक्रान्ति",
+          "en": "Simha Sankranti"
+        }
+      ]
+    },
+    "2077-05-03": {
+      "events": [
+        {
+          "np": "कुशे औंसी",
+          "en": "Kushe Aunsi"
+        },
+        {
+          "np": "बुबाको मुख हेर्ने दिन",
+          "en": "Father's Day (Kushe Aunsi)"
+        },
+        {
+          "np": "मोतीराम जन्मजयन्ती",
+          "en": "Motiram Bhatta Jayanti"
+        }
+      ]
+    },
+    "2077-05-04": {
+      "events": [
+        {
+          "np": "दर खाने दिन",
+          "en": "Daar Khane Din"
+        },
+        {
+          "np": "गुंला पर्व समाप्ति",
+          "en": "Gunla Festival End"
+        }
+      ]
+    },
+    "2077-05-05": {
+      "holiday": true,
+      "events": [
+        {
+          "np": "हरितालिका तीज (महिला बिदा)",
+          "en": "Haritalika Teej (Women's Holiday)"
+        }
+      ]
+    },
+    "2077-05-06": {
+      "events": [
+        {
+          "np": "गणेश चतुर्थी व्रत",
+          "en": "Ganesh Chaturthi Brata"
+        },
+        {
+          "np": "राष्ट्रिय धर्मसभा दिवस",
+          "en": "National Religious Assembly Day"
+        }
+      ]
+    },
+    "2077-05-07": {
+      "events": [
+        {
+          "np": "ऋषिपञ्चमी व्रत",
+          "en": "Rishi Panchami Brata"
+        }
+      ]
+    },
+    "2077-05-08": {
+      "events": [
+        {
+          "np": "सुर्यषष्ठी",
+          "en": "Surya Shashthi"
+        }
+      ]
+    },
+    "2077-05-09": {
+      "events": [
+        {
+          "np": "महालक्ष्मी व्रतआरम्भ",
+          "en": "Mahalaxmi Brata Start"
+        }
+      ]
+    },
+    "2077-05-10": {
+      "holiday": true,
+      "events": [
+        {
+          "np": "गौरा पर्व",
+          "en": "Gaura Festival"
+        },
+        {
+          "np": "बुधाष्टमी व्रत",
+          "en": "Budhashtami Brata"
+        }
+      ]
+    },
+    "2077-05-13": {
+      "events": [
+        {
+          "np": "हरिपरिवर्तिनी एकादशी व्रत",
+          "en": "Hariparivarttini Ekadashi Brata"
+        },
+        {
+          "np": "वामन द्वादशी व्रत",
+          "en": "Vamana Dwadashi Brata"
+        },
+        {
+          "np": "विश्व आणविक परिक्षण विरुद्धको दिवस",
+          "en": "International Day Against Nuclear Tests"
+        }
+      ]
+    },
+    "2077-05-16": {
+      "holiday": true,
+      "events": [
+        {
+          "np": "इन्द्रजात्रा (उपत्यका मात्र)",
+          "en": "Indra Jatra (Valley Only)"
+        },
+        {
+          "np": "अनन्त चतुर्दशी व्रत",
+          "en": "Ananta Chaturdashi Brata"
+        }
+      ]
+    },
+    "2077-05-17": {
+      "events": [
+        {
+          "np": "सोह्रश्राद्ध प्रारम्भ (प्रतिपदा श्राद्ध)",
+          "en": "Sohra Shraddha Start (Pratipadha Shraddha)"
+        }
+      ]
+    },
+    "2077-05-18": {
+      "events": [
+        {
+          "np": "द्वितीया श्राद्ध",
+          "en": "Dwitiya Shraddha"
+        }
+      ]
+    },
+    "2077-05-19": {
+      "events": [
+        {
+          "np": "तृतीया श्राद्ध",
+          "en": "Tritiya Shraddha"
+        }
+      ]
+    },
+    "2077-05-21": {
+      "events": [
+        {
+          "np": "चतुर्थी श्राद्ध",
+          "en": "Chaturthi Shraddha"
+        }
+      ]
+    },
+    "2077-05-22": {
+      "events": [
+        {
+          "np": "निजामती सेवा दिवस",
+          "en": "Civil Service Day"
+        },
+        {
+          "np": "पञ्चमी श्राद्ध",
+          "en": "Panchami Shraddha"
+        }
+      ]
+    },
+    "2077-05-23": {
+      "events": [
+        {
+          "np": "अन्तर्राष्ट्रिय साक्षरता दिवस",
+          "en": "International Literacy Day"
+        },
+        {
+          "np": "विश्व फिजियोथेरापी दिवस",
+          "en": "World Physiotherapy Day"
+        },
+        {
+          "np": "षष्ठी श्राद्ध",
+          "en": "Shashthi Shraddha"
+        }
+      ]
+    },
+    "2077-05-24": {
+      "events": [
+        {
+          "np": "महालक्ष्मी व्रत समाप्ति",
+          "en": "Mahalaxmi Brata End"
+        },
+        {
+          "np": "सप्तमी श्राद्ध",
+          "en": "Saptami Shraddha"
+        }
+      ]
+    },
+    "2077-05-25": {
+      "holiday": true,
+      "events": [
+        {
+          "np": "जितिया पर्व (महिला बिदा)",
+          "en": "Jitiya Festival (Women's Holiday)"
+        },
+        {
+          "np": "विश्व आत्महत्या रोकथाम दिवस",
+          "en": "World Suicide Prevention Day"
+        },
+        {
+          "np": "अष्टमी श्राद्ध",
+          "en": "Ashtami Shraddha"
+        }
+      ]
+    },
+    "2077-05-26": {
+      "events": [
+        {
+          "np": "नवमी श्राद्ध",
+          "en": "Navami Shraddha"
+        }
+      ]
+    },
+    "2077-05-27": {
+      "events": [
+        {
+          "np": "प्राथमिक उपचार दिवस",
+          "en": "First Aid Day"
+        },
+        {
+          "np": "दशमी श्राद्ध",
+          "en": "Dashami Shraddha"
+        }
+      ]
+    },
+    "2077-05-28": {
+      "events": [
+        {
+          "np": "इन्दिरा एकादशी व्रत",
+          "en": "Indira Ekadashi Brata"
+        },
+        {
+          "np": "एकादशी श्राद्ध",
+          "en": "Ekadashi Shraddha"
+        }
+      ]
+    },
+    "2077-05-29": {
+      "events": [
+        {
+          "np": "राष्ट्रिय बाल दिवस",
+          "en": "National Children's Day"
+        },
+        {
+          "np": "द्वादशी श्राद्ध",
+          "en": "Dwadashi Shraddha"
+        }
+      ]
+    },
+    "2077-05-30": {
+      "events": [
+        {
+          "np": "त्रयोदशी श्राद्ध",
+          "en": "Trayodashi Shraddha"
+        },
+        {
+          "np": "मघा श्राद्ध",
+          "en": "Magha Shraddha"
+        }
+      ]
+    },
+    "2077-05-31": {
+      "events": [
+        {
+          "np": "विश्व ओजोन तह बचाउ दिवस",
+          "en": "World Ozone Day"
+        },
+        {
+          "np": "चतुर्दशी श्राद्ध",
+          "en": "Chaturdashi Shraddha"
+        }
+      ]
+    },
+    "2077-06-01": {
+      "events": [
+        {
+          "np": "विश्वकर्मा पूजा",
+          "en": "Vishwakarma Puja"
+        },
+        {
+          "np": "कन्या संक्रान्ति",
+          "en": "Kanya Sankranti"
+        },
+        {
+          "np": "राष्ट्रिय चलचित्र दिवस",
+          "en": "National Film Day"
+        },
+        {
+          "np": "राष्ट्रिय विज्ञान दिवस",
+          "en": "National Science Day"
+        },
+        {
+          "np": "वास्तु दिवस",
+          "en": "Vastu Day"
+        },
+        {
+          "np": "औंसी श्राद्ध",
+          "en": "Aunsi Shraddha"
+        },
+        {
+          "np": "पितृ विसर्जन",
+          "en": "Pitru Visarjan"
+        }
+      ]
+    },
+    "2077-06-02": {
+      "events": [
+        {
+          "np": "अधिकमास आरम्भ",
+          "en": "Adhik Maas Start"
+        },
+        {
+          "np": "मत्स्यनारायण मेला शुरू",
+          "en": "Matsyanarayana Mela Start"
+        }
+      ]
+    },
+    "2077-06-03": {
+      "holiday": true,
+      "events": [
+        {
+          "np": "संविधान दिवस",
+          "en": "Constitution Day"
+        }
+      ]
+    },
+    "2077-06-05": {
+      "events": [
+        {
+          "np": "विश्व शान्ति दिवस",
+          "en": "World Peace Day"
+        },
+        {
+          "np": "विश्व अल्जाइमर्स दिवस",
+          "en": "World Alzheimer's Day"
+        }
+      ]
+    },
+    "2077-06-06": {
+      "events": [
+        {
+          "np": "सामाजिक सेवा दिवस",
+          "en": "Social Service Day"
+        }
+      ]
+    },
+    "2077-06-07": {
+      "events": [
+        {
+          "np": "अन्तर्राष्ट्रिय सांकेतिक भाषा दिवस",
+          "en": "International Day of Sign Languages"
+        }
+      ]
+    },
+    "2077-06-10": {
+      "events": [
+        {
+          "np": "अन्तराष्ट्रिय परमाणु हतियार निर्मुल दिवस",
+          "en": "International Day for the Elimination of Nuclear Weapons"
+        }
+      ]
+    },
+    "2077-06-11": {
+      "events": [
+        {
+          "np": "पद्मिनी एकादशी व्रत",
+          "en": "Padmini Ekadashi Brata"
+        },
+        {
+          "np": "विश्व पर्यटन दिवस",
+          "en": "World Tourism Day"
+        }
+      ]
+    },
+    "2077-06-12": {
+      "events": [
+        {
+          "np": "विश्व रेबिज विरुद्ध दिवस",
+          "en": "World Rabies Day"
+        },
+        {
+          "np": "अन्तर्राष्ट्रिय सूचनामा विश्वव्यापी पहुँचको दिवस",
+          "en": "International Day for Universal Access to Information"
+        }
+      ]
+    },
+    "2077-06-13": {
+      "events": [
+        {
+          "np": "विश्व मुटु दिवस",
+          "en": "World Heart Day"
+        }
+      ]
+    },
+    "2077-06-15": {
+      "events": [
+        {
+          "np": "अन्तर्राष्ट्रिय ज्येष्ठ नागरिक दिवस",
+          "en": "International Day of Older Persons"
+        }
+      ]
+    },
+    "2077-06-16": {
+      "events": [
+        {
+          "np": "विश्व अहिंसा दिवस",
+          "en": "World Non-Violence Day"
+        },
+        {
+          "np": "विश्व मुस्कान दिवस",
+          "en": "World Smile Day"
+        }
+      ]
+    },
+    "2077-06-18": {
+      "events": [
+        {
+          "np": "विश्व पशु दिवस",
+          "en": "World Animal Day"
+        }
+      ]
+    },
+    "2077-06-19": {
+      "events": [
+        {
+          "np": "विश्व शिक्षक दिवस",
+          "en": "World Teachers Day"
+        }
+      ]
+    },
+    "2077-06-20": {
+      "events": [
+        {
+          "np": "मङ्गल चौथी व्रत",
+          "en": "Mangala Chauthi Brata"
+        }
+      ]
+    },
+    "2077-06-22": {
+      "events": [
+        {
+          "np": "विश्व दृष्टि दिवस",
+          "en": "World Sight Day"
+        }
+      ]
+    },
+    "2077-06-23": {
+      "events": [
+        {
+          "np": "विश्व हुलाक दिवस",
+          "en": "World Post Day"
+        }
+      ]
+    },
+    "2077-06-24": {
+      "events": [
+        {
+          "np": "विश्व मानसिक स्वास्थ्य दिवस",
+          "en": "World Mental Health Day"
+        }
+      ]
+    },
+    "2077-06-25": {
+      "events": [
+        {
+          "np": "गैर आवासीय नेपाली दिवस",
+          "en": "Non-Resident Nepali Day"
+        }
+      ]
+    },
+    "2077-06-27": {
+      "events": [
+        {
+          "np": "परमा एकादशी व्रत",
+          "en": "Parama Ekadashi Brata"
+        },
+        {
+          "np": "अन्तर्राष्ट्रिय प्राकृतिक प्रकोप नियन्त्रण दिवस",
+          "en": "International Day for Natural Disaster Reduction"
+        }
+      ]
+    },
+    "2077-06-29": {
+      "events": [
+        {
+          "np": "विश्व हातधुने दिवस",
+          "en": "World Handwashing Day"
+        },
+        {
+          "np": "अन्तर्राष्ट्रिय ग्रामीण महिला दिवस",
+          "en": "International Day of Rural Women"
+        }
+      ]
+    },
+    "2077-06-30": {
+      "events": [
+        {
+          "np": "अधिकमास समाप्ति",
+          "en": "Adhik Maas End"
+        },
+        {
+          "np": "मत्स्यनारायण मेला समाप्ति",
+          "en": "Matsyanarayana Mela End"
+        },
+        {
+          "np": "विश्व खाद्य दिवस",
+          "en": "World Food Day"
+        }
+      ]
+    },
+    "2077-07-01": {
+      "events": [
+        {
+          "np": "घटस्थापना व्रत",
+          "en": "Ghatasthapana Brata"
+        },
+        {
+          "np": "नवरात्र आरम्भ",
+          "en": "Navaratri Start"
+        },
+        {
+          "np": "तुला संक्रान्ति",
+          "en": "Tula Sankranti"
+        },
+        {
+          "np": "अन्तर्राष्ट्रिय गरिबी निवारण दिवस",
+          "en": "International Day for the Eradication of Poverty"
+        }
+      ]
+    },
+    "2077-07-04": {
+      "events": [
+        {
+          "np": "मंगलचौथी व्रत",
+          "en": "Mangala Chauthi Brata"
+        }
+      ]
+    },
+    "2077-07-07": {
+      "holiday": true,
+      "events": [
+        {
+          "np": "फूलपाती",
+          "en": "Fulpati"
+        }
+      ]
+    },
+    "2077-07-08": {
+      "holiday": true,
+      "events": [
+        {
+          "np": "महाअष्टमी व्रत",
+          "en": "Maha Ashtami Brata"
+        },
+        {
+          "np": "संयुक्त राष्ट्रसंघ दिवस",
+          "en": "United Nations Day"
+        },
+        {
+          "np": "विश्व विकास सूचना दिवस",
+          "en": "World Development Information Day"
+        }
+      ]
+    },
+    "2077-07-09": {
+      "holiday": true,
+      "events": [
+        {
+          "np": "महानवमी व्रत",
+          "en": "Maha Navami Brata"
+        },
+        {
+          "np": "स्याकूट्याकू",
+          "en": "Syakutaku"
+        }
+      ]
+    },
+    "2077-07-10": {
+      "holiday": true,
+      "events": [
+        {
+          "np": "विजयादशमी",
+          "en": "Vijaya Dashami"
+        },
+        {
+          "np": "अन्तरलिङ्गी जनचेतना दिवस",
+          "en": "Intersex Awareness Day"
+        }
+      ]
+    },
+    "2077-07-11": {
+      "holiday": true,
+      "events": [
+        {
+          "np": "पापांकुशा एकादशी",
+          "en": "Papankusha Ekadashi"
+        }
+      ]
+    },
+    "2077-07-14": {
+      "events": [
+        {
+          "np": "कोजाग्रत पूर्णिमा",
+          "en": "Kojagrat Purnima"
+        }
+      ]
+    },
+    "2077-07-15": {
+      "events": [
+        {
+          "np": "कार्तिक स्नान",
+          "en": "Kartik Snan"
+        },
+        {
+          "np": "आकाशदीपदान आरम्भ",
+          "en": "Akashdip Daan Start"
+        },
+        {
+          "np": "विश्व शहरीकरण दिवस",
+          "en": "World Urbanization Day"
+        }
+      ]
+    },
+    "2077-07-23": {
+      "events": [
+        {
+          "np": "विश्व रेडियोग्राफी दिवस",
+          "en": "World Radiography Day"
+        }
+      ]
+    },
+    "2077-07-24": {
+      "events": [
+        {
+          "np": "विश्व स्वतन्त्रता दिवस",
+          "en": "World Freedom Day"
+        }
+      ]
+    },
+    "2077-07-25": {
+      "events": [
+        {
+          "np": "महागुरु फाल्गुनन्द जयन्ती",
+          "en": "Mahaguru Phalgunanda Jayanti"
+        },
+        {
+          "np": "शान्ति र विकाशका लागी विश्व विज्ञान दिवस",
+          "en": "World Science Day for Peace and Development"
+        }
+      ]
+    },
+    "2077-07-26": {
+      "events": [
+        {
+          "np": "रमा एकादशी व्रत",
+          "en": "Rama Ekadashi Brata"
+        }
+      ]
+    },
+    "2077-07-28": {
+      "events": [
+        {
+          "np": "काग तिहार",
+          "en": "Kag Tihar"
+        },
+        {
+          "np": "धन त्रयोदशी व्रत (धन्तेरस)",
+          "en": "Dhanteras"
+        },
+        {
+          "np": "धनवन्तरी जयन्ती",
+          "en": "Dhanvantari Jayanti"
+        }
+      ]
+    },
+    "2077-07-29": {
+      "holiday": true,
+      "events": [
+        {
+          "np": "लक्ष्मी पुजा व्रत",
+          "en": "Laxmi Puja Brata"
+        },
+        {
+          "np": "महाकवि लक्ष्मीप्रसाद देवकोटा जन्म जयन्ती",
+          "en": "Laxmiprasad Devkota Jayanti"
+        },
+        {
+          "np": "कुकुर तिहार",
+          "en": "Kukur Tihar"
+        },
+        {
+          "np": "नरक चतुर्दशी",
+          "en": "Narak Chaturdashi"
+        },
+        {
+          "np": "विश्व मधुमेह दिवस",
+          "en": "World Diabetes Day"
+        },
+        {
+          "np": "सुखरात्री",
+          "en": "Sukharatri"
+        }
+      ]
+    },
+    "2077-07-30": {
+      "holiday": true,
+      "events": [
+        {
+          "np": "म्हपूजा",
+          "en": "Mha Puja"
+        },
+        {
+          "np": "गाईगोरु पूजा",
+          "en": "Gai Goru Puja"
+        },
+        {
+          "np": "हलि तिहार",
+          "en": "Hali Tihar"
+        }
+      ]
+    },
+    "2077-08-01": {
+      "holiday": true,
+      "events": [
+        {
+          "np": "भाइटीका",
+          "en": "Bhai Tika"
+        },
+        {
+          "np": "गोवर्धन पूजा",
+          "en": "Govardhan Puja"
+        },
+        {
+          "np": "नेपाल सम्वत ११४१ प्रारम्भ",
+          "en": "Nepal Sambat 1141"
+        },
+        {
+          "np": "अन्तर्राष्ट्रिय सहनशीलता दिवस",
+          "en": "International Day for Tolerance"
+        }
+      ]
+    },
+    "2077-08-02": {
+      "holiday": true,
+      "events": [
+        {
+          "np": "किजा पूजा",
+          "en": "Kija Puja"
+        }
+      ]
+    },
+    "2077-08-04": {
+      "events": [
+        {
+          "np": "विश्व शौचालय दिवस",
+          "en": "World Toilet Day"
+        }
+      ]
+    },
+    "2077-08-05": {
+      "holiday": true,
+      "events": [
+        {
+          "np": "छठपर्व व्रत",
+          "en": "Chhath Brata"
+        },
+        {
+          "np": "अन्तर्राष्ट्रिय बाल दिवस",
+          "en": "International Children's Day"
+        }
+      ]
+    },
+    "2077-08-06": {
+      "events": [
+        {
+          "np": "विश्व टेलिभिजन दिवस",
+          "en": "World Television Day"
+        }
+      ]
+    },
+    "2077-08-08": {
+      "events": [
+        {
+          "np": "कुष्मान्ड नवमी व्रत",
+          "en": "Kushmanda Navami Brata"
+        }
+      ]
+    },
+    "2077-08-10": {
+      "events": [
+        {
+          "np": "अन्तर्राष्ट्रिय महिला हिंसा अन्त्य दिवस",
+          "en": "International Day for the Elimination of Violence Against Women"
+        }
+      ]
+    },
+    "2077-08-11": {
+      "events": [
+        {
+          "np": "हरिबोधिनी एकादशी व्रत (तुलसी विवाह)",
+          "en": "Haribodini Ekadashi Brata (Tulashi Vivah)"
+        }
+      ]
+    },
+    "2077-08-15": {
+      "events": [
+        {
+          "np": "गुरु नानक जयन्ती",
+          "en": "Guru Nanak Jayanti"
+        },
+        {
+          "np": "चतुर्मास व्रत समाप्ति",
+          "en": "Chaturmas Brata End"
+        },
+        {
+          "np": "कार्तिक स्नान समाप्ति",
+          "en": "Kartik Snan End"
+        }
+      ]
+    },
+    "2077-08-16": {
+      "events": [
+        {
+          "np": "विश्व एड्स दिवस",
+          "en": "World AIDS Day"
+        }
+      ]
+    },
+    "2077-08-17": {
+      "events": [
+        {
+          "np": "अन्तर्राष्ट्रिय दासता उन्मूलन दिवस",
+          "en": "International Day for the Abolition of Slavery"
+        }
+      ]
+    },
+    "2077-08-20": {
+      "events": [
+        {
+          "np": "अन्तर्राष्ट्रिय स्वयंसेवक दिवस",
+          "en": "International Volunteer Day"
+        },
+        {
+          "np": "विश्व माटो दिवस",
+          "en": "World Soil Day"
+        }
+      ]
+    },
+    "2077-08-22": {
+      "events": [
+        {
+          "np": "अन्तर्राष्ट्रिय नागरिक उड्डयन दिवस",
+          "en": "International Civil Aviation Day"
+        }
+      ]
+    },
+    "2077-08-24": {
+      "events": [
+        {
+          "np": "अन्तर्राष्ट्रिय भ्रष्टाचार विरुद्ध दिवस",
+          "en": "International Anti-Corruption Day"
+        }
+      ]
+    },
+    "2077-08-25": {
+      "events": [
+        {
+          "np": "अन्तर्राष्ट्रिय मानव अधिकार दिवस",
+          "en": "International Human Rights Day"
+        }
+      ]
+    },
+    "2077-08-26": {
+      "events": [
+        {
+          "np": "उत्पत्तिका एकादशी व्रत",
+          "en": "Utpattika Ekadashi Brata"
+        },
+        {
+          "np": "अन्तर्राष्ट्रिय पर्वत दिवस",
+          "en": "International Mountain Day"
+        }
+      ]
+    },
+    "2077-08-27": {
+      "events": [
+        {
+          "np": "अन्तर्राष्ट्रिय तटस्थ दिवस",
+          "en": "International Day of Neutrality"
+        }
+      ]
+    },
+    "2077-08-28": {
+      "events": [
+        {
+          "np": "बाला चतुर्दशी व्रत",
+          "en": "Bala Chaturdashi Brata"
+        },
+        {
+          "np": "शतबीज छर्ने",
+          "en": "Shatbij Chharne"
+        }
+      ]
+    },
+    "2077-08-29": {
+      "events": [
+        {
+          "np": "सोमबारे औंसी व्रत",
+          "en": "Sombare Aunsi Brata"
+        }
+      ]
+    },
+    "2077-09-01": {
+      "events": [
+        {
+          "np": "धनु संक्रान्ति",
+          "en": "Dhanu Sankranti"
+        }
+      ]
+    },
+    "2077-09-03": {
+      "events": [
+        {
+          "np": "अन्तर्राष्ट्रिय आप्रवासी दिवस",
+          "en": "International Migrants Day"
+        }
+      ]
+    },
+    "2077-09-04": {
+      "events": [
+        {
+          "np": "विवाह पञ्चमी",
+          "en": "Vivaha Panchami"
+        }
+      ]
+    },
+    "2077-09-10": {
+      "holiday": true,
+      "events": [
+        {
+          "np": "क्रिसमस-डे ( इसाई धर्मावलम्वीलाइ मात्र )",
+          "en": "Christmas Day (Christians Only)"
+        },
+        {
+          "np": "मोक्षदा एकादशी",
+          "en": "Mokshada Ekadashi"
+        },
+        {
+          "np": "गीता जयन्ती",
+          "en": "Gita Jayanti"
+        }
+      ]
+    },
+    "2077-09-15": {
+      "holiday": true,
+      "events": [
+        {
+          "np": "उधौली पर्व",
+          "en": "Udhauli Festival"
+        },
+        {
+          "np": "धान्यपुर्णिमा",
+          "en": "Dhanya Purnima"
+        },
+        {
+          "np": "तमु ल्होसार",
+          "en": "Tamu Losar"
+        },
+        {
+          "np": "योमरी पुन्हि",
+          "en": "Yomari Punhi"
+        },
+        {
+          "np": "ज्यापु दिवस",
+          "en": "Jyapu Day"
+        }
+      ]
+    },
+    "2077-09-17": {
+      "events": [
+        {
+          "np": "सन् २०२१ प्रारम्भ",
+          "en": "New Year 2021"
+        },
+        {
+          "np": "राष्ट्रिय टोपी दिवस",
+          "en": "National Topi Day"
+        }
+      ]
+    },
+    "2077-09-21": {
+      "events": [
+        {
+          "np": "गुरु गोबिन्द सिंह जयन्ती",
+          "en": "Guru Gobind Singh Jayanti"
+        }
+      ]
+    },
+    "2077-09-24": {
+      "events": [
+        {
+          "np": "नेपाल ज्योतिष परिषद स्थापना दिवस",
+          "en": "Nepal Astrology Council Founding Day"
+        }
+      ]
+    },
+    "2077-09-25": {
+      "events": [
+        {
+          "np": "सफला एकादशी",
+          "en": "Saphala Ekadashi"
+        }
+      ]
+    },
+    "2077-09-27": {
+      "events": [
+        {
+          "np": "पृथ्वी जयन्ती",
+          "en": "Prithvi Jayanti"
+        },
+        {
+          "np": "राष्ट्रिय एकता दिवस",
+          "en": "National Unity Day"
+        }
+      ]
+    },
+    "2077-09-29": {
+      "events": [
+        {
+          "np": "पौषे औँशी (गोकर्ण, बराहक्षेत्र आदीमा तिर्थ श्राद्ध)",
+          "en": "Paushe Aunsi (Pilgrim Shraddha)"
+        }
+      ]
+    },
+    "2077-10-01": {
+      "holiday": true,
+      "events": [
+        {
+          "np": "माघे संक्रान्ति",
+          "en": "Maghe Sankranti"
+        },
+        {
+          "np": "मकर संक्रान्ति",
+          "en": "Makar Sankranti"
+        },
+        {
+          "np": "घ्यु चाकु खाने दिन",
+          "en": "Ghiu Chaku Khane Din"
+        },
+        {
+          "np": "उत्तरायण आरम्भ",
+          "en": "Uttarayan Start"
+        },
+        {
+          "np": "मकर स्नान आरम्भ",
+          "en": "Makar Snan Start"
+        },
+        {
+          "np": "तोल ल्होसार",
+          "en": "Tol Losar"
+        },
+        {
+          "np": "राष्ट्रिय योग दिवस",
+          "en": "National Yoga Day"
+        }
+      ]
+    },
+    "2077-10-02": {
+      "events": [
+        {
+          "np": "राष्ट्रिय भुकम्प सुरक्षा दिवस",
+          "en": "National Earthquake Safety Day"
+        }
+      ]
+    },
+    "2077-10-11": {
+      "events": [
+        {
+          "np": "पुत्रदा एकादशी व्रत",
+          "en": "Putrada Ekadashi Brata"
+        }
+      ]
+    },
+    "2077-10-13": {
+      "events": [
+        {
+          "np": "अन्तर्राष्ट्रिय भन्सार दिवस",
+          "en": "International Customs Day"
+        }
+      ]
+    },
+    "2077-10-15": {
+      "events": [
+        {
+          "np": "श्री स्वस्थानी व्रत कथा प्रारम्भ",
+          "en": "Swasthani Brata Katha Begins"
+        },
+        {
+          "np": "माघ स्नान",
+          "en": "Magh Snan"
+        },
+        {
+          "np": "नेपाल नर्सिङ्ग दिवस",
+          "en": "Nepal Nursing Day"
+        }
+      ]
+    },
+    "2077-10-16": {
+      "events": [
+        {
+          "np": "शहीद दिवस",
+          "en": "Martyrs Day"
+        }
+      ]
+    },
+    "2077-10-18": {
+      "events": [
+        {
+          "np": "विश्व कुष्ठरोग दिवस",
+          "en": "World Leprosy Day"
+        }
+      ]
+    },
+    "2077-10-20": {
+      "events": [
+        {
+          "np": "विश्व सिमसार दिवस",
+          "en": "World Wetlands Day"
+        }
+      ]
+    },
+    "2077-10-22": {
+      "events": [
+        {
+          "np": "विश्व क्यान्सर दिवस",
+          "en": "World Cancer Day"
+        }
+      ]
+    },
+    "2077-10-26": {
+      "events": [
+        {
+          "np": "षट्तिला एकादशी",
+          "en": "Shattila Ekadashi"
+        }
+      ]
+    },
+    "2077-10-27": {
+      "events": [
+        {
+          "np": "सुरक्षित इन्टरनेट दिवस",
+          "en": "Safer Internet Day"
+        }
+      ]
+    },
+    "2077-10-29": {
+      "events": [
+        {
+          "np": "विज्ञानमा महिला पहुँचको अन्तर्राष्ट्रिय दिवस",
+          "en": "International Day of Women and Girls in Science"
+        }
+      ]
+    },
+    "2077-10-30": {
+      "holiday": true,
+      "events": [
+        {
+          "np": "सोनाम ल्होछार",
+          "en": "Sonam Lhochar"
+        },
+        {
+          "np": "ग्याल्पो ल्होछार",
+          "en": "Gyalpo Lhochar"
+        },
+        {
+          "np": "श्रीबल्लभ जयन्ती",
+          "en": "Shreeballabha Jayanti"
+        },
+        {
+          "np": "मकर स्नान समाप्ति",
+          "en": "Makar Snan End"
+        }
+      ]
+    },
+    "2077-11-01": {
+      "events": [
+        {
+          "np": "कुम्भ संक्रान्ति",
+          "en": "Kumbha Sankranti"
+        },
+        {
+          "np": "विश्व रेडियो दिवस",
+          "en": "World Radio Day"
+        }
+      ]
+    },
+    "2077-11-02": {
+      "events": [
+        {
+          "np": "प्रणय दिवस",
+          "en": "Valentine's Day"
+        }
+      ]
+    },
+    "2077-11-04": {
+      "holiday": true,
+      "events": [
+        {
+          "np": "वसन्तपञ्चमी व्रत (सरस्वती पूजा)",
+          "en": "Vasanta Panchami Brata (Saraswati Puja)"
+        }
+      ]
+    },
+    "2077-11-07": {
+      "events": [
+        {
+          "np": "प्रजातन्त्र दिवस",
+          "en": "Democracy Day"
+        }
+      ]
+    },
+    "2077-11-08": {
+      "events": [
+        {
+          "np": "सामाजिक न्याय दिवस",
+          "en": "Social Justice Day"
+        }
+      ]
+    },
+    "2077-11-11": {
+      "events": [
+        {
+          "np": "भीमा एकादशी व्रत",
+          "en": "Bhima Ekadashi Brata"
+        }
+      ]
+    },
+    "2077-11-12": {
+      "events": [
+        {
+          "np": "भिष्म द्वादशी",
+          "en": "Bhishma Dwadashi"
+        }
+      ]
+    },
+    "2077-11-15": {
+      "events": [
+        {
+          "np": "श्री स्वस्थानी व्रत समाप्ती",
+          "en": "Shree Swasthani Brata End"
+        },
+        {
+          "np": "माघ स्नान समाप्ती",
+          "en": "Magh Snan End"
+        },
+        {
+          "np": "विश्व गैरसरकारी संस्था दिवस",
+          "en": "World NGO Day"
+        }
+      ]
+    },
+    "2077-11-17": {
+      "events": [
+        {
+          "np": "शून्य भेदभाव दिवस",
+          "en": "Zero Discrimination Day"
+        }
+      ]
+    },
+    "2077-11-19": {
+      "events": [
+        {
+          "np": "विश्व वन्यजन्तु दिवस",
+          "en": "World Wildlife Day"
+        }
+      ]
+    },
+    "2077-11-24": {
+      "holiday": true,
+      "events": [
+        {
+          "np": "नारी दिवस",
+          "en": "Women's Day"
+        }
+      ]
+    },
+    "2077-11-25": {
+      "events": [
+        {
+          "np": "विजया एकादशी",
+          "en": "Vijaya Ekadashi"
+        }
+      ]
+    },
+    "2077-11-27": {
+      "holiday": true,
+      "events": [
+        {
+          "np": "महा शिवरात्री",
+          "en": "Maha Shivaratri"
+        },
+        {
+          "np": "नेपाली सेना दिवस",
+          "en": "Nepal Army Day"
+        },
+        {
+          "np": "सिलाचःह्रे पूजा",
+          "en": "Sila Chahre Puja"
+        }
+      ]
+    },
+    "2077-12-01": {
+      "events": [
+        {
+          "np": "मीन संक्रान्ति",
+          "en": "Meena Sankranti"
+        }
+      ]
+    },
+    "2077-12-02": {
+      "events": [
+        {
+          "np": "विश्व उपभोक्ता अधिकार दिवस",
+          "en": "World Consumer Rights Day"
+        }
+      ]
+    },
+    "2077-12-09": {
+      "events": [
+        {
+          "np": "विश्व जल दिवस",
+          "en": "World Water Day"
+        }
+      ]
+    },
+    "2077-12-11": {
+      "events": [
+        {
+          "np": "विश्व क्षयरोग दिवस",
+          "en": "World Tuberculosis Day"
+        }
+      ]
+    },
+    "2077-12-12": {
+      "events": [
+        {
+          "np": "आमलकी एकादशी व्रत",
+          "en": "Amalaki Ekadashi Brata"
+        }
+      ]
+    },
+    "2077-12-14": {
+      "events": [
+        {
+          "np": "विश्व नेवाः दिवस",
+          "en": "World Newar Day"
+        }
+      ]
+    },
+    "2077-12-15": {
+      "holiday": true,
+      "events": [
+        {
+          "np": "फागु पुर्णिमा (पहाडी जिल्ला बिदा)",
+          "en": "Fagu Purnima Holi (Hill Districts Holiday)"
+        }
+      ]
+    },
+    "2077-12-16": {
+      "holiday": true,
+      "events": [
+        {
+          "np": "फागु पुर्णिमा (तराइ बिदा)",
+          "en": "Fagu Purnima Holi (Terai Holiday)"
+        },
+        {
+          "np": "तेल लगाउने र आँपको मुजुरा खाने दिन",
+          "en": "Aampko mujura Khane Din (Traditional Ritual Day)"
+        },
+        {
+          "np": "गणगौर पूजा प्रारम्भ",
+          "en": "Gangaur Puja Start"
+        }
+      ]
+    },
+    "2077-12-18": {
+      "events": [
+        {
+          "np": "पारलैङ्गिक दृश्यताको अन्तर्राष्ट्रिय दिवस",
+          "en": "International Transgender Day of Visibility"
+        }
+      ]
+    },
+    "2077-12-19": {
+      "events": [
+        {
+          "np": "विश्व मूर्ख दिवस",
+          "en": "April Fool's Day"
+        }
+      ]
+    },
+    "2077-12-22": {
+      "events": [
+        {
+          "np": "रविसप्तमी व्रत",
+          "en": "Ravi Saptami Brata"
+        }
+      ]
+    },
+    "2077-12-23": {
+      "events": [
+        {
+          "np": "शीतलाष्टमी व्रत",
+          "en": "Sheetalashtami Brata"
+        }
+      ]
+    },
+    "2077-12-24": {
+      "events": [
+        {
+          "np": "अन्तर्राष्ट्रिय विकास र शान्तिको लागि खेलकुद दिवस",
+          "en": "International Day of Sport for Development and Peace"
+        }
+      ]
+    },
+    "2077-12-26": {
+      "events": [
+        {
+          "np": "पापमोचनी एकादशी व्रत",
+          "en": "Papmochani Ekadashi Brata"
+        }
+      ]
+    },
+    "2077-12-28": {
+      "events": [
+        {
+          "np": "पाहाँचःह्रे",
+          "en": "Pahanchahre"
+        }
+      ]
+    },
+    "2077-12-29": {
+      "holiday": true,
+      "events": [
+        {
+          "np": "घोडेजात्रा",
+          "en": "Ghode Jatra"
+        }
+      ]
+    },
+    "2077-12-30": {
+      "events": [
+        {
+          "np": "सोमबारे औंसी व्रत",
+          "en": "Sombare Aunsi Brata"
+        },
+        {
+          "np": "अन्तर्राष्ट्रिय मानव अन्तरिक्ष विमान दिवस",
+          "en": "International Day of Human Space Flight"
+        }
+      ]
+    },
+    "2077-12-31": {
+      "events": [
+        {
+          "np": "तेल लगाउने र नीमको पात खाने दिन",
+          "en": "Neem Leaf Ritual Day"
+        }
+      ]
+    }
+  }
+}

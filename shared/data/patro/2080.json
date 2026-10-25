@@ -1,0 +1,4394 @@
+{
+  "schema": 1,
+  "source": {
+    "repo": "https://github.com/RajuPrasai/NepDate",
+    "commit": "cb05cb65c7d3cb570c76992a8e83ed1e73213346",
+    "license": "MIT",
+    "imported": "2026-09-24"
+  },
+  "year": 2080,
+  "days": {
+    "2080-01-01": {
+      "tithi": {
+        "np": "नवमी",
+        "en": "Navami"
+      },
+      "holiday": true,
+      "events": [
+        {
+          "np": "नयाँ वर्ष",
+          "en": "New Year"
+        },
+        {
+          "np": "मेष संक्रान्ति",
+          "en": "Mesh Sankranti"
+        },
+        {
+          "np": "बिस्का: जात्रा",
+          "en": "Bisket Jatra"
+        }
+      ]
+    },
+    "2080-01-02": {
+      "tithi": {
+        "np": "दशमी",
+        "en": "Dashami"
+      }
+    },
+    "2080-01-03": {
+      "tithi": {
+        "np": "एकादशी",
+        "en": "Ekadashi"
+      },
+      "events": [
+        {
+          "np": "वरुथिनी एकादशी व्रत",
+          "en": "Varuthini Ekadashi Brata"
+        }
+      ]
+    },
+    "2080-01-04": {
+      "tithi": {
+        "np": "द्वादशी",
+        "en": "Dwadashi"
+      },
+      "events": [
+        {
+          "np": "सोम प्रदोष व्रत",
+          "en": "Soma Pradosh Brata"
+        }
+      ]
+    },
+    "2080-01-05": {
+      "tithi": {
+        "np": "त्रयोदशी",
+        "en": "Trayodashi"
+      }
+    },
+    "2080-01-06": {
+      "tithi": {
+        "np": "चतुर्दशी",
+        "en": "Chaturdashi"
+      }
+    },
+    "2080-01-07": {
+      "tithi": {
+        "np": "औंसी",
+        "en": "Aunsi"
+      },
+      "events": [
+        {
+          "np": "मातातीर्थ औंसी",
+          "en": "Matatirtha Aunsi"
+        }
+      ]
+    },
+    "2080-01-08": {
+      "tithi": {
+        "np": "प्रतिपदा",
+        "en": "Pratipadha"
+      },
+      "events": [
+        {
+          "np": "छन्द दिवस",
+          "en": "Chhanda Day"
+        },
+        {
+          "np": "मत्स्यन्द्रनाथ रथारोहण",
+          "en": "Matsyendranath Ratharohan"
+        }
+      ]
+    },
+    "2080-01-09": {
+      "tithi": {
+        "np": "द्वितीया",
+        "en": "Dwitiya"
+      },
+      "holiday": true,
+      "events": [
+        {
+          "np": "ईद उल फितर",
+          "en": "Eid ul-Fitr"
+        },
+        {
+          "np": "परशुराम जयन्ती",
+          "en": "Parashurama Jayanti"
+        },
+        {
+          "np": "विश्व पृथ्वी दिवस",
+          "en": "World Earth Day"
+        }
+      ]
+    },
+    "2080-01-10": {
+      "tithi": {
+        "np": "तृतिया",
+        "en": "Tritiya"
+      },
+      "events": [
+        {
+          "np": "अक्षय तृतीया",
+          "en": "Akshaya Tritiya"
+        },
+        {
+          "np": "अन्तर्राष्ट्रिय पुस्तक दिवस",
+          "en": "International Book Day"
+        },
+        {
+          "np": "प्रतिलिपि अधिकार दिवस",
+          "en": "Copyright Day"
+        }
+      ]
+    },
+    "2080-01-11": {
+      "tithi": {
+        "np": "चतुर्थी",
+        "en": "Chaturthi"
+      },
+      "events": [
+        {
+          "np": "लोकतन्त्र दिवस",
+          "en": "Democracy Day"
+        },
+        {
+          "np": "मत्स्यन्द्रनाथ रथ यात्रा प्रारम्भ",
+          "en": "Matsyendranath Rath Yatra Start"
+        },
+        {
+          "np": "आद्यगुरु शंकराचार्य जयन्ती",
+          "en": "Shankaracharya Jayanti"
+        }
+      ]
+    },
+    "2080-01-12": {
+      "tithi": {
+        "np": "पञ्चमी",
+        "en": "Panchami"
+      },
+      "events": [
+        {
+          "np": "विसं २०७२ सालको महाभुकम्पको सम्झना",
+          "en": "2072 BS Great Earthquake Remembrance"
+        },
+        {
+          "np": "रामानुजाचार्य जयन्ती",
+          "en": "Ramanujacharya Jayanti"
+        },
+        {
+          "np": "विश्व औंलो दिवस",
+          "en": "World Malaria Day"
+        }
+      ]
+    },
+    "2080-01-13": {
+      "tithi": {
+        "np": "षष्ठी",
+        "en": "Shashthi"
+      },
+      "events": [
+        {
+          "np": "विश्व बौद्धिक सम्पत्ति दिवस",
+          "en": "World Intellectual Property Day"
+        }
+      ]
+    },
+    "2080-01-14": {
+      "tithi": {
+        "np": "सप्तमी",
+        "en": "Saptami"
+      },
+      "events": [
+        {
+          "np": "गङ्गा सप्तमी व्रत",
+          "en": "Ganga Saptami Brata"
+        }
+      ]
+    },
+    "2080-01-15": {
+      "tithi": {
+        "np": "अष्टमी",
+        "en": "Ashtami"
+      },
+      "events": [
+        {
+          "np": "काममा सुरक्षा र स्वास्थ्यको लागि विश्व दिवस",
+          "en": "World Day for Safety and Health at Work"
+        }
+      ]
+    },
+    "2080-01-16": {
+      "tithi": {
+        "np": "नवमी",
+        "en": "Navami"
+      },
+      "events": [
+        {
+          "np": "सीता नवमी व्रत",
+          "en": "Sita Navami Brata"
+        },
+        {
+          "np": "विश्व नृत्य दिवस",
+          "en": "World Dance Day"
+        }
+      ]
+    },
+    "2080-01-17": {
+      "tithi": {
+        "np": "दशमी",
+        "en": "Dashami"
+      }
+    },
+    "2080-01-18": {
+      "tithi": {
+        "np": "एकादशी",
+        "en": "Ekadashi"
+      },
+      "holiday": true,
+      "events": [
+        {
+          "np": "मोहिनी एकादशी व्रत",
+          "en": "Mohini Ekadashi Brata"
+        },
+        {
+          "np": "अन्तर्राष्ट्रिय श्रमिक दिवस",
+          "en": "International Labour Day"
+        }
+      ]
+    },
+    "2080-01-19": {
+      "tithi": {
+        "np": "द्वादशी",
+        "en": "Dwadashi"
+      }
+    },
+    "2080-01-20": {
+      "tithi": {
+        "np": "त्रयोदशी",
+        "en": "Trayodashi"
+      },
+      "events": [
+        {
+          "np": "प्रदोष व्रत",
+          "en": "Pradosh Brata"
+        },
+        {
+          "np": "विश्व प्रेस स्वतन्त्रता दिवस",
+          "en": "World Press Freedom Day"
+        }
+      ]
+    },
+    "2080-01-21": {
+      "tithi": {
+        "np": "चतुर्दशी",
+        "en": "Chaturdashi"
+      },
+      "events": [
+        {
+          "np": "नरसिंह जयन्ती",
+          "en": "Narasimha Jayanti"
+        }
+      ]
+    },
+    "2080-01-22": {
+      "tithi": {
+        "np": "पूर्णिमा",
+        "en": "Purnima"
+      },
+      "holiday": true,
+      "events": [
+        {
+          "np": "बुद्ध जयन्ती",
+          "en": "Buddha Jayanti"
+        },
+        {
+          "np": "उभौली पर्व",
+          "en": "Ubhauli Festival"
+        },
+        {
+          "np": "चण्डेश्वरी जात्रा",
+          "en": "Chandeshwari Jatra"
+        },
+        {
+          "np": "चण्डी पूर्णिमा",
+          "en": "Chandi Purnima"
+        },
+        {
+          "np": "कुर्म जयन्ती",
+          "en": "Kurma Jayanti"
+        },
+        {
+          "np": "गोरखनाथ जयन्ती",
+          "en": "Gorakhnath Jayanti"
+        },
+        {
+          "np": "पूर्णिमा व्रत",
+          "en": "Purnima Brata"
+        },
+        {
+          "np": "बैसाख स्नान समाप्ति",
+          "en": "Baisakh Snan End"
+        }
+      ]
+    },
+    "2080-01-23": {
+      "tithi": {
+        "np": "प्रतिपदा",
+        "en": "Pratipadha"
+      }
+    },
+    "2080-01-24": {
+      "tithi": {
+        "np": "द्वितीया",
+        "en": "Dwitiya"
+      },
+      "events": [
+        {
+          "np": "विश्व हाँसो दिवस",
+          "en": "World Laughter Day"
+        },
+        {
+          "np": "किराँत समाज सुधार दिवस",
+          "en": "Kirat Social Reform Day"
+        }
+      ]
+    },
+    "2080-01-25": {
+      "tithi": {
+        "np": "तृतिया",
+        "en": "Tritiya"
+      },
+      "events": [
+        {
+          "np": "विश्व रेडक्रस दिवस",
+          "en": "World Red Cross Day"
+        }
+      ]
+    },
+    "2080-01-26": {
+      "tithi": {
+        "np": "चतुर्थी",
+        "en": "Chaturthi"
+      },
+      "events": [
+        {
+          "np": "कानून दिवस",
+          "en": "Law Day"
+        }
+      ]
+    },
+    "2080-01-27": {
+      "tithi": {
+        "np": "पञ्चमी",
+        "en": "Panchami"
+      }
+    },
+    "2080-01-28": {
+      "tithi": {
+        "np": "षष्ठी",
+        "en": "Shashthi"
+      },
+      "events": [
+        {
+          "np": "महिला ज्योतिष संघ स्थापना दिवस",
+          "en": "Women's Astrology Association Founding Day"
+        }
+      ]
+    },
+    "2080-01-29": {
+      "tithi": {
+        "np": "सप्तमी",
+        "en": "Saptami"
+      },
+      "events": [
+        {
+          "np": "विश्व नर्स दिवस",
+          "en": "World Nurses Day"
+        }
+      ]
+    },
+    "2080-01-30": {
+      "tithi": {
+        "np": "अष्टमी",
+        "en": "Ashtami"
+      }
+    },
+    "2080-01-31": {
+      "tithi": {
+        "np": "नवमी*",
+        "en": "Navami (K)"
+      }
+    },
+    "2080-02-01": {
+      "tithi": {
+        "np": "एकादशी",
+        "en": "Ekadashi"
+      },
+      "events": [
+        {
+          "np": "अपरा एकादशी व्रत",
+          "en": "Apara Ekadashi Brata"
+        },
+        {
+          "np": "वृष संक्रान्ति",
+          "en": "Vrisha Sankranti"
+        },
+        {
+          "np": "अन्तर्राष्ट्रिय परिवार दिवस",
+          "en": "International Day of Families"
+        },
+        {
+          "np": "चित्तधर हृदय जन्म जयन्ती",
+          "en": "Chittadhar Hridaya Jayanti"
+        }
+      ]
+    },
+    "2080-02-02": {
+      "tithi": {
+        "np": "द्वादशी",
+        "en": "Dwadashi"
+      }
+    },
+    "2080-02-03": {
+      "tithi": {
+        "np": "त्रयोदशी",
+        "en": "Trayodashi"
+      },
+      "events": [
+        {
+          "np": "प्रदोष व्रत",
+          "en": "Pradosh Brata"
+        },
+        {
+          "np": "विश्व दूरसञ्चार दिवस",
+          "en": "World Telecommunication and Information Society Day"
+        },
+        {
+          "np": "विश्व उच्च रक्तचाप दिवस",
+          "en": "World Hypertension Day"
+        }
+      ]
+    },
+    "2080-02-04": {
+      "tithi": {
+        "np": "चतुर्दशी",
+        "en": "Chaturdashi"
+      },
+      "events": [
+        {
+          "np": "सिथि चःह्रे",
+          "en": "Sithi Chahre"
+        }
+      ]
+    },
+    "2080-02-05": {
+      "tithi": {
+        "np": "औंसी",
+        "en": "Aunsi"
+      },
+      "events": [
+        {
+          "np": "बटसावित्री व्रत",
+          "en": "Vat Savitri Brata"
+        },
+        {
+          "np": "शनि जयन्ती",
+          "en": "Shani Jayanti"
+        }
+      ]
+    },
+    "2080-02-06": {
+      "tithi": {
+        "np": "प्रतिपदा",
+        "en": "Pratipadha"
+      },
+      "events": [
+        {
+          "np": "गोसाइकुण्ड स्नान आरम्भ",
+          "en": "Gosainkunda Snan Start"
+        },
+        {
+          "np": "दशहरा स्नान आरम्भ",
+          "en": "Dashahara Snan Start"
+        }
+      ]
+    },
+    "2080-02-07": {
+      "tithi": {
+        "np": "द्वितीया",
+        "en": "Dwitiya"
+      }
+    },
+    "2080-02-08": {
+      "tithi": {
+        "np": "तृतिया",
+        "en": "Tritiya"
+      },
+      "events": [
+        {
+          "np": "अन्तर्राष्ट्रिय जैविक विविधता दिवस",
+          "en": "International Day for Biological Diversity"
+        }
+      ]
+    },
+    "2080-02-09": {
+      "tithi": {
+        "np": "चतुर्थी",
+        "en": "Chaturthi"
+      },
+      "events": [
+        {
+          "np": "मङ्गल चौथी व्रत",
+          "en": "Mangala Chauthi Brata"
+        }
+      ]
+    },
+    "2080-02-10": {
+      "tithi": {
+        "np": "पञ्चमी",
+        "en": "Panchami"
+      }
+    },
+    "2080-02-11": {
+      "tithi": {
+        "np": "षष्ठी",
+        "en": "Shashthi"
+      },
+      "events": [
+        {
+          "np": "भोटो जात्रा (काठमाडौँ उपत्यका बिदा )",
+          "en": "Bhoto Jatra (Kathmandu Valley Holiday)"
+        },
+        {
+          "np": "सिथि नख:",
+          "en": "Sithi Nakha"
+        }
+      ]
+    },
+    "2080-02-12": {
+      "tithi": {
+        "np": "सप्तमी*",
+        "en": "Saptami (K)"
+      }
+    },
+    "2080-02-13": {
+      "tithi": {
+        "np": "सप्तमी",
+        "en": "Saptami"
+      }
+    },
+    "2080-02-14": {
+      "tithi": {
+        "np": "अष्टमी",
+        "en": "Ashtami"
+      }
+    },
+    "2080-02-15": {
+      "tithi": {
+        "np": "नवमी",
+        "en": "Navami"
+      },
+      "holiday": true,
+      "events": [
+        {
+          "np": "गणतन्त्र दिवस",
+          "en": "Republic Day"
+        }
+      ]
+    },
+    "2080-02-16": {
+      "tithi": {
+        "np": "दशमी",
+        "en": "Dashami"
+      },
+      "events": [
+        {
+          "np": "गङ्गादशहरा व्रत",
+          "en": "Ganga Dashahara Brata"
+        },
+        {
+          "np": "गोसाइकुण्ड स्नान समाप्ति",
+          "en": "Gosainkunda Snan End"
+        }
+      ]
+    },
+    "2080-02-17": {
+      "tithi": {
+        "np": "एकादशी",
+        "en": "Ekadashi"
+      },
+      "events": [
+        {
+          "np": "निर्जला एकादशी व्रत (तुलसीको दल राख्ने दिन )",
+          "en": "Nirjala Ekadashi Brata (Day to Plant Tulashi)"
+        },
+        {
+          "np": "विश्व सुर्तीजन्य पदार्थ विरुद्धको दिवस",
+          "en": "World No Tobacco Day"
+        }
+      ]
+    },
+    "2080-02-18": {
+      "tithi": {
+        "np": "द्वादशी",
+        "en": "Dwadashi"
+      },
+      "events": [
+        {
+          "np": "विश्व बुवाआमा दिवस",
+          "en": "World Parents Day"
+        }
+      ]
+    },
+    "2080-02-19": {
+      "tithi": {
+        "np": "त्रयोदशी",
+        "en": "Trayodashi"
+      }
+    },
+    "2080-02-20": {
+      "tithi": {
+        "np": "चतुर्दशी",
+        "en": "Chaturdashi"
+      },
+      "events": [
+        {
+          "np": "पूर्णिमा व्रत",
+          "en": "Purnima Brata"
+        }
+      ]
+    },
+    "2080-02-21": {
+      "tithi": {
+        "np": "पूर्णिमा",
+        "en": "Purnima"
+      },
+      "events": [
+        {
+          "np": "ज्या: पुन्हि",
+          "en": "Jya Punhi"
+        },
+        {
+          "np": "जातीय भेदभाव तथा छुवाछुत उन्मुलन राष्ट्रिय दिवस",
+          "en": "National Day Against Caste Discrimination and Untouchability"
+        },
+        {
+          "np": "निर्दोष बालबालिका माथि अत्याचार विरुद्धको दिवस",
+          "en": "Day Against Atrocities on Innocent Children"
+        }
+      ]
+    },
+    "2080-02-22": {
+      "tithi": {
+        "np": "प्रतिपदा",
+        "en": "Pratipadha"
+      },
+      "events": [
+        {
+          "np": "विश्व वातावरण दिवस",
+          "en": "World Environment Day"
+        }
+      ]
+    },
+    "2080-02-23": {
+      "tithi": {
+        "np": "द्वितीया*",
+        "en": "Dwitiya (K)"
+      }
+    },
+    "2080-02-24": {
+      "tithi": {
+        "np": "चतुर्थी",
+        "en": "Chaturthi"
+      }
+    },
+    "2080-02-25": {
+      "tithi": {
+        "np": "पञ्चमी",
+        "en": "Panchami"
+      }
+    },
+    "2080-02-26": {
+      "tithi": {
+        "np": "षष्ठी",
+        "en": "Shashthi"
+      }
+    },
+    "2080-02-27": {
+      "tithi": {
+        "np": "सप्तमी",
+        "en": "Saptami"
+      }
+    },
+    "2080-02-28": {
+      "tithi": {
+        "np": "अष्टमी",
+        "en": "Ashtami"
+      }
+    },
+    "2080-02-29": {
+      "tithi": {
+        "np": "नवमी",
+        "en": "Navami"
+      },
+      "events": [
+        {
+          "np": "विश्व बालश्रम विरुद्ध दिवस",
+          "en": "World Day Against Child Labour"
+        }
+      ]
+    },
+    "2080-02-30": {
+      "tithi": {
+        "np": "दशमी",
+        "en": "Dashami"
+      }
+    },
+    "2080-02-31": {
+      "tithi": {
+        "np": "एकादशी",
+        "en": "Ekadashi"
+      },
+      "events": [
+        {
+          "np": "योगिनी एकादशी व्रत",
+          "en": "Yogini Ekadashi Brata"
+        },
+        {
+          "np": "विश्व रक्तदाता दिवस",
+          "en": "World Blood Donor Day"
+        }
+      ]
+    },
+    "2080-02-32": {
+      "tithi": {
+        "np": "द्वादशी",
+        "en": "Dwadashi"
+      },
+      "events": [
+        {
+          "np": "प्रदोष व्रत",
+          "en": "Pradosh Brata"
+        },
+        {
+          "np": "विश्व अग्रज दुर्व्यवहार जागरुकता दिवस",
+          "en": "World Elder Abuse Awareness Day"
+        }
+      ]
+    },
+    "2080-03-01": {
+      "tithi": {
+        "np": "त्रयोदशी",
+        "en": "Trayodashi"
+      },
+      "events": [
+        {
+          "np": "मिथुन संक्रान्ति",
+          "en": "Mithuna Sankranti"
+        },
+        {
+          "np": "अन्तर्राष्ट्रिय परिवार रेमिटेयान्स दिवस",
+          "en": "International Day of Family Remittances"
+        }
+      ]
+    },
+    "2080-03-02": {
+      "tithi": {
+        "np": "चतुर्दशी",
+        "en": "Chaturdashi"
+      },
+      "events": [
+        {
+          "np": "विश्व खडेरी विरुद्ध संघर्ष दिवस",
+          "en": "World Day to Combat Desertification and Drought"
+        }
+      ]
+    },
+    "2080-03-03": {
+      "tithi": {
+        "np": "औंसी",
+        "en": "Aunsi"
+      },
+      "events": [
+        {
+          "np": "अन्तर्राष्ट्रिय बुवा दिवस",
+          "en": "International Father's Day"
+        }
+      ]
+    },
+    "2080-03-04": {
+      "tithi": {
+        "np": "प्रतिपदा",
+        "en": "Pratipadha"
+      }
+    },
+    "2080-03-05": {
+      "tithi": {
+        "np": "द्वितीया",
+        "en": "Dwitiya"
+      },
+      "events": [
+        {
+          "np": "द्वन्द्वमा यौन हिंसा उन्मूलनको लागि अन्तर्राष्ट्रिय दिवस",
+          "en": "International Day for the Elimination of Sexual Violence in Conflict"
+        },
+        {
+          "np": "विश्व शरणार्थी दिवस",
+          "en": "World Refugee Day"
+        }
+      ]
+    },
+    "2080-03-06": {
+      "tithi": {
+        "np": "तृतिया",
+        "en": "Tritiya"
+      },
+      "events": [
+        {
+          "np": "विश्व योग दिवस",
+          "en": "World Yoga Day"
+        },
+        {
+          "np": "संगीत दिवस",
+          "en": "Music Day"
+        }
+      ]
+    },
+    "2080-03-07": {
+      "tithi": {
+        "np": "चतुर्थी",
+        "en": "Chaturthi"
+      }
+    },
+    "2080-03-08": {
+      "tithi": {
+        "np": "पञ्चमी",
+        "en": "Panchami"
+      }
+    },
+    "2080-03-09": {
+      "tithi": {
+        "np": "षष्ठी",
+        "en": "Shashthi"
+      }
+    },
+    "2080-03-10": {
+      "tithi": {
+        "np": "सप्तमी",
+        "en": "Saptami"
+      },
+      "events": [
+        {
+          "np": "रविसप्तमी व्रत",
+          "en": "Ravi Saptami Brata"
+        },
+        {
+          "np": "सूर्य पूजा",
+          "en": "Surya Puja"
+        },
+        {
+          "np": "भूमी पूजा",
+          "en": "Bhumi Puja"
+        }
+      ]
+    },
+    "2080-03-11": {
+      "tithi": {
+        "np": "अष्टमी",
+        "en": "Ashtami"
+      },
+      "events": [
+        {
+          "np": "अन्तर्राष्ट्रिय लागू पदार्थ तथा अवैध तस्करी विरुद्ध दिवस",
+          "en": "International Day Against Drug Abuse and Illicit Trafficking"
+        }
+      ]
+    },
+    "2080-03-12": {
+      "tithi": {
+        "np": "नवमी",
+        "en": "Navami"
+      }
+    },
+    "2080-03-13": {
+      "tithi": {
+        "np": "दशमी",
+        "en": "Dashami"
+      }
+    },
+    "2080-03-14": {
+      "tithi": {
+        "np": "एकादशी",
+        "en": "Ekadashi"
+      },
+      "holiday": true,
+      "events": [
+        {
+          "np": "हरिशयनी एकादशी व्रत (तुलसी रोप्ने)",
+          "en": "Harishayani Ekadashi Brata (Plant Tulashi)"
+        },
+        {
+          "np": "ईद उल अधा",
+          "en": "Eid ul-Adha"
+        },
+        {
+          "np": "चतुर्मास व्रत आरम्भ",
+          "en": "Chaturmas Brata Start"
+        }
+      ]
+    },
+    "2080-03-15": {
+      "tithi": {
+        "np": "द्वादशी",
+        "en": "Dwadashi"
+      },
+      "events": [
+        {
+          "np": "दहीचिउरा खाने दिन",
+          "en": "Dahi Chiura Eating Day"
+        },
+        {
+          "np": "राष्ट्रिय धान दिवस",
+          "en": "National Rice Day"
+        }
+      ]
+    },
+    "2080-03-16": {
+      "tithi": {
+        "np": "त्रयोदशी",
+        "en": "Trayodashi"
+      },
+      "events": [
+        {
+          "np": "शनि प्रदोष व्रत",
+          "en": "Shani Pradosh Brata"
+        },
+        {
+          "np": "अन्तर्राष्ट्रिय सहकारी दिवस",
+          "en": "International Day of Cooperatives"
+        }
+      ]
+    },
+    "2080-03-17": {
+      "tithi": {
+        "np": "चतुर्दशी",
+        "en": "Chaturdashi"
+      },
+      "events": [
+        {
+          "np": "विश्व खेलकुद पत्रकार दिवस",
+          "en": "World Sports Journalist Day"
+        }
+      ]
+    },
+    "2080-03-18": {
+      "tithi": {
+        "np": "पूर्णिमा",
+        "en": "Purnima"
+      },
+      "events": [
+        {
+          "np": "गुरु पुर्णिमा व्रत",
+          "en": "Guru Purnima Brata"
+        },
+        {
+          "np": "व्यास जयन्ती",
+          "en": "Vyas Jayanti"
+        },
+        {
+          "np": "पूर्णिमा व्रत",
+          "en": "Purnima Brata"
+        }
+      ]
+    },
+    "2080-03-19": {
+      "tithi": {
+        "np": "प्रतिपदा",
+        "en": "Pratipadha"
+      }
+    },
+    "2080-03-20": {
+      "tithi": {
+        "np": "द्वितीया",
+        "en": "Dwitiya"
+      }
+    },
+    "2080-03-21": {
+      "tithi": {
+        "np": "तृतिया",
+        "en": "Tritiya"
+      }
+    },
+    "2080-03-22": {
+      "tithi": {
+        "np": "चतुर्थी*",
+        "en": "Chaturthi (K)"
+      }
+    },
+    "2080-03-23": {
+      "tithi": {
+        "np": "पञ्चमी*",
+        "en": "Panchami (K)"
+      }
+    },
+    "2080-03-24": {
+      "tithi": {
+        "np": "सप्तमी",
+        "en": "Saptami"
+      },
+      "events": [
+        {
+          "np": "रवी सप्तमी व्रत",
+          "en": "Ravi Saptami Brata"
+        }
+      ]
+    },
+    "2080-03-25": {
+      "tithi": {
+        "np": "अष्टमी",
+        "en": "Ashtami"
+      }
+    },
+    "2080-03-26": {
+      "tithi": {
+        "np": "नवमी",
+        "en": "Navami"
+      },
+      "events": [
+        {
+          "np": "विश्व जनसंख्या दिवस",
+          "en": "World Population Day"
+        }
+      ]
+    },
+    "2080-03-27": {
+      "tithi": {
+        "np": "दशमी",
+        "en": "Dashami"
+      }
+    },
+    "2080-03-28": {
+      "tithi": {
+        "np": "एकादशी",
+        "en": "Ekadashi"
+      },
+      "events": [
+        {
+          "np": "कामिका एकादशी व्रत",
+          "en": "Kamika Ekadashi Brata"
+        }
+      ]
+    },
+    "2080-03-29": {
+      "tithi": {
+        "np": "द्वादशी",
+        "en": "Dwadashi"
+      },
+      "events": [
+        {
+          "np": "भानु जयन्ती",
+          "en": "Bhanu Jayanti"
+        }
+      ]
+    },
+    "2080-03-30": {
+      "tithi": {
+        "np": "त्रयोदशी",
+        "en": "Trayodashi"
+      },
+      "events": [
+        {
+          "np": "गथांमुगः चःह्रे",
+          "en": "Gathemangal Chahre"
+        },
+        {
+          "np": "शनि प्रदोष व्रत",
+          "en": "Shani Pradosh Brata"
+        },
+        {
+          "np": "विश्व युवा दक्षता दिवस",
+          "en": "World Youth Skills Day"
+        }
+      ]
+    },
+    "2080-03-31": {
+      "tithi": {
+        "np": "चतुर्दशी",
+        "en": "Chaturdashi"
+      }
+    },
+    "2080-04-01": {
+      "tithi": {
+        "np": "औंसी",
+        "en": "Aunsi"
+      },
+      "events": [
+        {
+          "np": "कर्कट सङ्क्रान्ति",
+          "en": "Karkat Sankranti"
+        },
+        {
+          "np": "लुतो फाल्ने दिन",
+          "en": "Luto Falne Din"
+        },
+        {
+          "np": "सोमबारे औंसी",
+          "en": "Sombare Aunsi"
+        }
+      ]
+    },
+    "2080-04-02": {
+      "tithi": {
+        "np": "प्रतिपदा",
+        "en": "Pratipadha"
+      },
+      "events": [
+        {
+          "np": "मलमास शुरू",
+          "en": "Malamas Start"
+        },
+        {
+          "np": "मत्स्यनारायण मेला शुरू",
+          "en": "Matsyanarayana Mela Start"
+        }
+      ]
+    },
+    "2080-04-03": {
+      "tithi": {
+        "np": "द्वितीया",
+        "en": "Dwitiya"
+      }
+    },
+    "2080-04-04": {
+      "tithi": {
+        "np": "तृतिया",
+        "en": "Tritiya"
+      }
+    },
+    "2080-04-05": {
+      "tithi": {
+        "np": "चतुर्थी*",
+        "en": "Chaturthi (K)"
+      }
+    },
+    "2080-04-06": {
+      "tithi": {
+        "np": "चतुर्थी",
+        "en": "Chaturthi"
+      }
+    },
+    "2080-04-07": {
+      "tithi": {
+        "np": "पञ्चमी",
+        "en": "Panchami"
+      }
+    },
+    "2080-04-08": {
+      "tithi": {
+        "np": "षष्ठी",
+        "en": "Shashthi"
+      }
+    },
+    "2080-04-09": {
+      "tithi": {
+        "np": "सप्तमी",
+        "en": "Saptami"
+      }
+    },
+    "2080-04-10": {
+      "tithi": {
+        "np": "अष्टमी",
+        "en": "Ashtami"
+      },
+      "events": [
+        {
+          "np": "बुधाष्टमी व्रत",
+          "en": "Budhashtami Brata"
+        }
+      ]
+    },
+    "2080-04-11": {
+      "tithi": {
+        "np": "नवमी",
+        "en": "Navami"
+      }
+    },
+    "2080-04-12": {
+      "tithi": {
+        "np": "दशमी",
+        "en": "Dashami"
+      },
+      "events": [
+        {
+          "np": "विश्व हेपाटाइटिस दिवस",
+          "en": "World Hepatitis Day"
+        }
+      ]
+    },
+    "2080-04-13": {
+      "tithi": {
+        "np": "एकादशी",
+        "en": "Ekadashi"
+      },
+      "events": [
+        {
+          "np": "पद्मिनी एकादशी व्रत",
+          "en": "Padmini Ekadashi Brata"
+        },
+        {
+          "np": "विश्व बाघ दिवस",
+          "en": "World Tiger Day"
+        }
+      ]
+    },
+    "2080-04-14": {
+      "tithi": {
+        "np": "द्वादशी",
+        "en": "Dwadashi"
+      },
+      "events": [
+        {
+          "np": "प्रदोष व्रत",
+          "en": "Pradosh Brata"
+        },
+        {
+          "np": "अन्तराष्ट्रिय मानव बेचबिखन विरुद्ध दिवस",
+          "en": "World Day Against Human Trafficking"
+        }
+      ]
+    },
+    "2080-04-15": {
+      "tithi": {
+        "np": "चतुर्दशी*",
+        "en": "Chaturdashi (K)"
+      },
+      "events": [
+        {
+          "np": "खीर खाने दिन",
+          "en": "Kheer Khane Din"
+        }
+      ]
+    },
+    "2080-04-16": {
+      "tithi": {
+        "np": "पूर्णिमा",
+        "en": "Purnima"
+      },
+      "events": [
+        {
+          "np": "पूर्णिमा व्रत",
+          "en": "Purnima Brata"
+        },
+        {
+          "np": "विश्व स्तनपान सप्ताह प्रारम्भ",
+          "en": "World Breastfeeding Week Start"
+        }
+      ]
+    },
+    "2080-04-17": {
+      "tithi": {
+        "np": "प्रतिपदा",
+        "en": "Pratipadha"
+      }
+    },
+    "2080-04-18": {
+      "tithi": {
+        "np": "द्वितीया",
+        "en": "Dwitiya"
+      }
+    },
+    "2080-04-19": {
+      "tithi": {
+        "np": "तृतिया",
+        "en": "Tritiya"
+      }
+    },
+    "2080-04-20": {
+      "tithi": {
+        "np": "चतुर्थी",
+        "en": "Chaturthi"
+      }
+    },
+    "2080-04-21": {
+      "tithi": {
+        "np": "पञ्चमी",
+        "en": "Panchami"
+      },
+      "events": [
+        {
+          "np": "अन्तर्राष्ट्रिय मित्रता दिवस",
+          "en": "International Friendship Day"
+        }
+      ]
+    },
+    "2080-04-22": {
+      "tithi": {
+        "np": "षष्ठी",
+        "en": "Shashthi"
+      }
+    },
+    "2080-04-23": {
+      "tithi": {
+        "np": "अष्टमी",
+        "en": "Ashtami"
+      }
+    },
+    "2080-04-24": {
+      "tithi": {
+        "np": "नवमी",
+        "en": "Navami"
+      },
+      "events": [
+        {
+          "np": "अन्तर्राष्ट्रिय आदिवासी दिवस",
+          "en": "International Day of Indigenous Peoples"
+        },
+        {
+          "np": "राष्ट्रिय भू संरक्षण दिवस",
+          "en": "National Land Conservation Day"
+        }
+      ]
+    },
+    "2080-04-25": {
+      "tithi": {
+        "np": "दशमी",
+        "en": "Dashami"
+      }
+    },
+    "2080-04-26": {
+      "tithi": {
+        "np": "एकादशी",
+        "en": "Ekadashi"
+      }
+    },
+    "2080-04-27": {
+      "tithi": {
+        "np": "एकादशी",
+        "en": "Ekadashi"
+      },
+      "events": [
+        {
+          "np": "परमा एकादशी व्रत",
+          "en": "Parama Ekadashi Brata"
+        },
+        {
+          "np": "अन्तर्राष्ट्रिय युवा दिवस",
+          "en": "International Youth Day"
+        }
+      ]
+    },
+    "2080-04-28": {
+      "tithi": {
+        "np": "द्वादशी",
+        "en": "Dwadashi"
+      },
+      "events": [
+        {
+          "np": "प्रदोष व्रत",
+          "en": "Pradosh Brata"
+        }
+      ]
+    },
+    "2080-04-29": {
+      "tithi": {
+        "np": "त्रयोदशी",
+        "en": "Trayodashi"
+      }
+    },
+    "2080-04-30": {
+      "tithi": {
+        "np": "चतुर्दशी",
+        "en": "Chaturdashi"
+      }
+    },
+    "2080-04-31": {
+      "tithi": {
+        "np": "औंसी",
+        "en": "Aunsi"
+      },
+      "events": [
+        {
+          "np": "मलमास समाप्ति",
+          "en": "Malamas End"
+        },
+        {
+          "np": "मत्स्यनारायण मेला समाप्ति",
+          "en": "Matsyanarayana Mela End"
+        },
+        {
+          "np": "विश्व सुलेखन दिवस",
+          "en": "World Calligraphy Day"
+        }
+      ]
+    },
+    "2080-04-32": {
+      "tithi": {
+        "np": "प्रतिपदा",
+        "en": "Pratipadha"
+      },
+      "events": [
+        {
+          "np": "गुंलापर्व आरम्भ",
+          "en": "Gunla Festival Start"
+        }
+      ]
+    },
+    "2080-05-01": {
+      "tithi": {
+        "np": "द्वितीया",
+        "en": "Dwitiya"
+      },
+      "events": [
+        {
+          "np": "सिंह संक्रान्ति",
+          "en": "Simha Sankranti"
+        }
+      ]
+    },
+    "2080-05-02": {
+      "tithi": {
+        "np": "तृतिया",
+        "en": "Tritiya"
+      },
+      "events": [
+        {
+          "np": "वराह जयन्ती",
+          "en": "Varaha Jayanti"
+        }
+      ]
+    },
+    "2080-05-03": {
+      "tithi": {
+        "np": "चतुर्थी",
+        "en": "Chaturthi"
+      }
+    },
+    "2080-05-04": {
+      "tithi": {
+        "np": "पञ्चमी",
+        "en": "Panchami"
+      },
+      "events": [
+        {
+          "np": "नाग पञ्चमी व्रत",
+          "en": "Nag Panchami Brata"
+        }
+      ]
+    },
+    "2080-05-05": {
+      "tithi": {
+        "np": "षष्ठी",
+        "en": "Shashthi"
+      },
+      "events": [
+        {
+          "np": "कल्कि जयन्ती",
+          "en": "Kalki Jayanti"
+        }
+      ]
+    },
+    "2080-05-06": {
+      "tithi": {
+        "np": "सप्तमी",
+        "en": "Saptami"
+      },
+      "events": [
+        {
+          "np": "तुलसीदास जयन्ती",
+          "en": "Tulashidas Jayanti"
+        }
+      ]
+    },
+    "2080-05-07": {
+      "tithi": {
+        "np": "अष्टमी",
+        "en": "Ashtami"
+      },
+      "holiday": true,
+      "events": [
+        {
+          "np": "गौरा पर्व (सम्बन्धित क्षेत्रमा बिदा)",
+          "en": "Gaura Festival (Local Holiday)"
+        }
+      ]
+    },
+    "2080-05-08": {
+      "tithi": {
+        "np": "नवमी",
+        "en": "Navami"
+      }
+    },
+    "2080-05-09": {
+      "tithi": {
+        "np": "दशमी",
+        "en": "Dashami"
+      }
+    },
+    "2080-05-10": {
+      "tithi": {
+        "np": "एकादशी",
+        "en": "Ekadashi"
+      },
+      "events": [
+        {
+          "np": "पुत्रदा एकादशी व्रत",
+          "en": "Putrada Ekadashi Brata"
+        }
+      ]
+    },
+    "2080-05-11": {
+      "tithi": {
+        "np": "द्वादशी",
+        "en": "Dwadashi"
+      },
+      "events": [
+        {
+          "np": "सोम प्रदोष व्रत",
+          "en": "Soma Pradosh Brata"
+        }
+      ]
+    },
+    "2080-05-12": {
+      "tithi": {
+        "np": "त्रयोदशी",
+        "en": "Trayodashi"
+      },
+      "events": [
+        {
+          "np": "विश्व आणविक परिक्षण विरुद्धको दिवस",
+          "en": "International Day Against Nuclear Tests"
+        }
+      ]
+    },
+    "2080-05-13": {
+      "tithi": {
+        "np": "चतुर्दशी",
+        "en": "Chaturdashi"
+      },
+      "events": [
+        {
+          "np": "पूर्णिमा व्रत",
+          "en": "Purnima Brata"
+        },
+        {
+          "np": "विश्व बेपत्ता विरुद्धको दिवस",
+          "en": "World Day of the Disappeared"
+        }
+      ]
+    },
+    "2080-05-14": {
+      "tithi": {
+        "np": "पूर्णिमा",
+        "en": "Purnima"
+      },
+      "holiday": true,
+      "events": [
+        {
+          "np": "जनै पूर्णिमा",
+          "en": "Janai Purnima"
+        },
+        {
+          "np": "रक्षा बन्धन",
+          "en": "Raksha Bandhan"
+        },
+        {
+          "np": "गाईजात्रा",
+          "en": "Gaijatra"
+        }
+      ]
+    },
+    "2080-05-15": {
+      "tithi": {
+        "np": "द्वितीया",
+        "en": "Dwitiya"
+      },
+      "holiday": true,
+      "events": [
+        {
+          "np": "सापारु (गाईजात्रा) (काठमाडौँ बिदा)",
+          "en": "Saparu (Gaijatra) (Kathmandu Holiday)"
+        },
+        {
+          "np": "रोपाईं जात्रा",
+          "en": "Ropain Jatra"
+        }
+      ]
+    },
+    "2080-05-16": {
+      "tithi": {
+        "np": "तृतिया",
+        "en": "Tritiya"
+      }
+    },
+    "2080-05-17": {
+      "tithi": {
+        "np": "चतुर्थी",
+        "en": "Chaturthi"
+      }
+    },
+    "2080-05-18": {
+      "tithi": {
+        "np": "पञ्चमी",
+        "en": "Panchami"
+      }
+    },
+    "2080-05-19": {
+      "tithi": {
+        "np": "षष्ठी",
+        "en": "Shashthi"
+      }
+    },
+    "2080-05-20": {
+      "tithi": {
+        "np": "सप्तमी",
+        "en": "Saptami"
+      },
+      "holiday": true,
+      "events": [
+        {
+          "np": "श्रीकृष्ण जन्माष्टमी",
+          "en": "Shree Krishna Janmashtami"
+        },
+        {
+          "np": "मानव बेचबिखन विरुद्धको राष्ट्रिय दिवस",
+          "en": "National Day Against Human Trafficking"
+        }
+      ]
+    },
+    "2080-05-21": {
+      "tithi": {
+        "np": "अष्टमी",
+        "en": "Ashtami"
+      }
+    },
+    "2080-05-22": {
+      "tithi": {
+        "np": "नवमी",
+        "en": "Navami"
+      },
+      "events": [
+        {
+          "np": "निजामती सेवा दिवस",
+          "en": "Civil Service Day"
+        },
+        {
+          "np": "अन्तर्राष्ट्रिय साक्षरता दिवस",
+          "en": "International Literacy Day"
+        },
+        {
+          "np": "विश्व फिजियोथेरापी दिवस",
+          "en": "World Physiotherapy Day"
+        }
+      ]
+    },
+    "2080-05-23": {
+      "tithi": {
+        "np": "दशमी",
+        "en": "Dashami"
+      }
+    },
+    "2080-05-24": {
+      "tithi": {
+        "np": "एकादशी",
+        "en": "Ekadashi"
+      },
+      "events": [
+        {
+          "np": "अजा एकादशी व्रत",
+          "en": "Aja Ekadashi Brata"
+        },
+        {
+          "np": "विश्व आत्महत्या रोकथाम दिवस",
+          "en": "World Suicide Prevention Day"
+        }
+      ]
+    },
+    "2080-05-25": {
+      "tithi": {
+        "np": "द्वादशी",
+        "en": "Dwadashi"
+      }
+    },
+    "2080-05-26": {
+      "tithi": {
+        "np": "त्रयोदशी",
+        "en": "Trayodashi"
+      }
+    },
+    "2080-05-27": {
+      "tithi": {
+        "np": "चतुर्दशी",
+        "en": "Chaturdashi"
+      },
+      "events": [
+        {
+          "np": "विश्व सेप्सिस दिवस",
+          "en": "World Sepsis Day"
+        }
+      ]
+    },
+    "2080-05-28": {
+      "tithi": {
+        "np": "औंसी",
+        "en": "Aunsi"
+      },
+      "events": [
+        {
+          "np": "बुबाको मुख हेर्ने दिन",
+          "en": "Father's Day (Kushe Aunsi)"
+        },
+        {
+          "np": "कुशे औंसी",
+          "en": "Kushe Aunsi"
+        },
+        {
+          "np": "मोतीराम भट्ट जन्मजयन्ती",
+          "en": "Motiram Bhatta Jayanti"
+        }
+      ]
+    },
+    "2080-05-29": {
+      "tithi": {
+        "np": "औंसी",
+        "en": "Aunsi"
+      },
+      "events": [
+        {
+          "np": "राष्ट्रिय बाल दिवस",
+          "en": "National Children's Day"
+        }
+      ]
+    },
+    "2080-05-30": {
+      "tithi": {
+        "np": "प्रतिपदा",
+        "en": "Pratipadha"
+      },
+      "events": [
+        {
+          "np": "गुंला पर्व समाप्ति",
+          "en": "Gunla Festival End"
+        },
+        {
+          "np": "विश्व ओजोन तह बचाउ दिवस",
+          "en": "World Ozone Day"
+        }
+      ]
+    },
+    "2080-05-31": {
+      "tithi": {
+        "np": "द्वितीया",
+        "en": "Dwitiya"
+      },
+      "events": [
+        {
+          "np": "दर खाने दिन",
+          "en": "Daar Khane Din"
+        }
+      ]
+    },
+    "2080-06-01": {
+      "tithi": {
+        "np": "तृतिया",
+        "en": "Tritiya"
+      },
+      "holiday": true,
+      "events": [
+        {
+          "np": "हरितालिका तीज व्रत (महिला विदा)",
+          "en": "Haritalika Teej Brata (Women's Holiday)"
+        },
+        {
+          "np": "विश्वकर्मा पूजा",
+          "en": "Vishwakarma Puja"
+        },
+        {
+          "np": "कन्या संक्रान्ति",
+          "en": "Kanya Sankranti"
+        },
+        {
+          "np": "राष्ट्रिय चलचित्र दिवस",
+          "en": "National Film Day"
+        },
+        {
+          "np": "गणेश चतुर्थी व्रत",
+          "en": "Ganesh Chaturthi Brata"
+        },
+        {
+          "np": "राष्ट्रिय धर्मसभा दिवस",
+          "en": "National Religious Assembly Day"
+        },
+        {
+          "np": "वास्तु दिवस",
+          "en": "Vastu Day"
+        }
+      ]
+    },
+    "2080-06-02": {
+      "tithi": {
+        "np": "चतुर्थी",
+        "en": "Chaturthi"
+      },
+      "events": [
+        {
+          "np": "ऋषि पञ्चमी",
+          "en": "Rishi Panchami"
+        },
+        {
+          "np": "मङ्गल चौथी व्रत",
+          "en": "Mangala Chauthi Brata"
+        }
+      ]
+    },
+    "2080-06-03": {
+      "tithi": {
+        "np": "पञ्चमी",
+        "en": "Panchami"
+      },
+      "holiday": true,
+      "events": [
+        {
+          "np": "संविधान दिवस",
+          "en": "Constitution Day"
+        }
+      ]
+    },
+    "2080-06-04": {
+      "tithi": {
+        "np": "षष्ठी",
+        "en": "Shashthi"
+      },
+      "events": [
+        {
+          "np": "सूर्य षष्ठी",
+          "en": "Surya Shashthi"
+        },
+        {
+          "np": "विश्व शान्ति दिवस",
+          "en": "World Peace Day"
+        },
+        {
+          "np": "विश्व अल्जाइमर्स दिवस",
+          "en": "World Alzheimer's Day"
+        }
+      ]
+    },
+    "2080-06-05": {
+      "tithi": {
+        "np": "सप्तमी",
+        "en": "Saptami"
+      },
+      "events": [
+        {
+          "np": "महालक्ष्मी व्रतआरम्भ",
+          "en": "Mahalaxmi Brata Start"
+        }
+      ]
+    },
+    "2080-06-06": {
+      "tithi": {
+        "np": "नवमी*",
+        "en": "Navami (K)"
+      },
+      "events": [
+        {
+          "np": "राधा जन्मोत्सव",
+          "en": "Radha Janmotsav"
+        }
+      ]
+    },
+    "2080-06-07": {
+      "tithi": {
+        "np": "दशमी*",
+        "en": "Dashami (K)"
+      }
+    },
+    "2080-06-08": {
+      "tithi": {
+        "np": "एकादशी*",
+        "en": "Ekadashi (K)"
+      },
+      "events": [
+        {
+          "np": "हरिपरिवर्तिनी एकादशी व्रत",
+          "en": "Hariparivarttini Ekadashi Brata"
+        }
+      ]
+    },
+    "2080-06-09": {
+      "tithi": {
+        "np": "द्वादशी",
+        "en": "Dwadashi"
+      },
+      "events": [
+        {
+          "np": "वामन द्वादशी व्रत",
+          "en": "Vamana Dwadashi Brata"
+        },
+        {
+          "np": "अन्तराष्ट्रिय परमाणु हतियार निर्मुल दिवस",
+          "en": "International Day for the Elimination of Nuclear Weapons"
+        }
+      ]
+    },
+    "2080-06-10": {
+      "tithi": {
+        "np": "त्रयोदशी",
+        "en": "Trayodashi"
+      },
+      "events": [
+        {
+          "np": "प्रदोष व्रत",
+          "en": "Pradosh Brata"
+        },
+        {
+          "np": "विश्व पर्यटन दिवस",
+          "en": "World Tourism Day"
+        }
+      ]
+    },
+    "2080-06-11": {
+      "tithi": {
+        "np": "चतुर्दशी",
+        "en": "Chaturdashi"
+      },
+      "holiday": true,
+      "events": [
+        {
+          "np": "इन्द्रजात्रा (काठमाडौँ उपत्यका बिदा)",
+          "en": "Indra Jatra (Kathmandu Valley Holiday)"
+        },
+        {
+          "np": "अनन्त चतुर्दशी व्रत",
+          "en": "Ananta Chaturdashi Brata"
+        },
+        {
+          "np": "विश्व रेबिज विरुद्ध दिवस",
+          "en": "World Rabies Day"
+        },
+        {
+          "np": "अन्तर्राष्ट्रिय सूचनामा विश्वव्यापी पहुँचको दिवस",
+          "en": "International Day for Universal Access to Information"
+        }
+      ]
+    },
+    "2080-06-12": {
+      "tithi": {
+        "np": "पूर्णिमा",
+        "en": "Purnima"
+      },
+      "events": [
+        {
+          "np": "पूर्णिमा व्रत",
+          "en": "Purnima Brata"
+        },
+        {
+          "np": "चेपाङ चोनाम पर्व",
+          "en": "Chepang Chonam Festival"
+        },
+        {
+          "np": "विश्व मुटु दिवस",
+          "en": "World Heart Day"
+        }
+      ]
+    },
+    "2080-06-13": {
+      "tithi": {
+        "np": "प्रतिपदा",
+        "en": "Pratipadha"
+      },
+      "events": [
+        {
+          "np": "सोह्रश्राद्ध प्रारम्भ (प्रतिपदा श्राद्ध)",
+          "en": "Sohra Shraddha Start (Pratipadha Shraddha)"
+        },
+        {
+          "np": "द्वितीया श्राद्ध",
+          "en": "Dwitiya Shraddha"
+        }
+      ]
+    },
+    "2080-06-14": {
+      "tithi": {
+        "np": "द्वितीया",
+        "en": "Dwitiya"
+      },
+      "events": [
+        {
+          "np": "तृतीया श्राद्ध",
+          "en": "Tritiya Shraddha"
+        },
+        {
+          "np": "अन्तर्राष्ट्रिय ज्येष्ठ नागरिक दिवस",
+          "en": "International Day of Older Persons"
+        }
+      ]
+    },
+    "2080-06-15": {
+      "tithi": {
+        "np": "तृतिया",
+        "en": "Tritiya"
+      },
+      "events": [
+        {
+          "np": "चतुर्थी श्राद्ध",
+          "en": "Chaturthi Shraddha"
+        },
+        {
+          "np": "विश्व अहिंसा दिवस",
+          "en": "World Non-Violence Day"
+        }
+      ]
+    },
+    "2080-06-16": {
+      "tithi": {
+        "np": "चतुर्थी",
+        "en": "Chaturthi"
+      },
+      "events": [
+        {
+          "np": "मङ्गल चौथी व्रत",
+          "en": "Mangala Chauthi Brata"
+        },
+        {
+          "np": "पञ्चमी श्राद्ध",
+          "en": "Panchami Shraddha"
+        }
+      ]
+    },
+    "2080-06-17": {
+      "tithi": {
+        "np": "पञ्चमी*",
+        "en": "Panchami (K)"
+      },
+      "events": [
+        {
+          "np": "षष्ठी श्राद्ध",
+          "en": "Shashthi Shraddha"
+        },
+        {
+          "np": "विश्व पशु दिवस",
+          "en": "World Animal Day"
+        }
+      ]
+    },
+    "2080-06-18": {
+      "tithi": {
+        "np": "षष्ठी",
+        "en": "Shashthi"
+      },
+      "events": [
+        {
+          "np": "सप्तमी श्राद्ध",
+          "en": "Saptami Shraddha"
+        },
+        {
+          "np": "विश्व शिक्षक दिवस",
+          "en": "World Teachers Day"
+        }
+      ]
+    },
+    "2080-06-19": {
+      "tithi": {
+        "np": "सप्तमी",
+        "en": "Saptami"
+      },
+      "events": [
+        {
+          "np": "महालक्ष्मी व्रत समाप्ति",
+          "en": "Mahalaxmi Brata End"
+        },
+        {
+          "np": "अष्टमी श्राद्ध",
+          "en": "Ashtami Shraddha"
+        },
+        {
+          "np": "विश्व मुस्कान दिवस",
+          "en": "World Smile Day"
+        }
+      ]
+    },
+    "2080-06-20": {
+      "tithi": {
+        "np": "अष्टमी",
+        "en": "Ashtami"
+      },
+      "holiday": true,
+      "events": [
+        {
+          "np": "जितिया पर्व (पर्व मनाउने महिला कर्मचारीलाई मात्र बिदा)",
+          "en": "Jitiya Festival (Women Employees Only)"
+        },
+        {
+          "np": "नवमी श्राद्ध",
+          "en": "Navami Shraddha"
+        }
+      ]
+    },
+    "2080-06-21": {
+      "tithi": {
+        "np": "नवमी",
+        "en": "Navami"
+      },
+      "events": [
+        {
+          "np": "दशमी श्राद्ध",
+          "en": "Dashami Shraddha"
+        }
+      ]
+    },
+    "2080-06-22": {
+      "tithi": {
+        "np": "दशमी",
+        "en": "Dashami"
+      },
+      "events": [
+        {
+          "np": "विश्व हुलाक दिवस",
+          "en": "World Post Day"
+        }
+      ]
+    },
+    "2080-06-23": {
+      "tithi": {
+        "np": "एकादशी",
+        "en": "Ekadashi"
+      },
+      "events": [
+        {
+          "np": "इन्दिरा एकादशी व्रत",
+          "en": "Indira Ekadashi Brata"
+        },
+        {
+          "np": "एकादशी श्राद्ध",
+          "en": "Ekadashi Shraddha"
+        },
+        {
+          "np": "मघा श्राद्ध",
+          "en": "Magha Shraddha"
+        },
+        {
+          "np": "विश्व मानसिक स्वास्थ्य दिवस",
+          "en": "World Mental Health Day"
+        }
+      ]
+    },
+    "2080-06-24": {
+      "tithi": {
+        "np": "द्वादशी",
+        "en": "Dwadashi"
+      },
+      "events": [
+        {
+          "np": "द्वादशी श्राद्ध",
+          "en": "Dwadashi Shraddha"
+        }
+      ]
+    },
+    "2080-06-25": {
+      "tithi": {
+        "np": "त्रयोदशी",
+        "en": "Trayodashi"
+      },
+      "events": [
+        {
+          "np": "प्रदोष व्रत",
+          "en": "Pradosh Brata"
+        },
+        {
+          "np": "त्रयोदशी श्राद्ध",
+          "en": "Trayodashi Shraddha"
+        },
+        {
+          "np": "गैर आवासीय नेपाली दिवस",
+          "en": "Non-Resident Nepali Day"
+        },
+        {
+          "np": "विश्व दृष्टि दिवस",
+          "en": "World Sight Day"
+        }
+      ]
+    },
+    "2080-06-26": {
+      "tithi": {
+        "np": "चतुर्दशी",
+        "en": "Chaturdashi"
+      },
+      "events": [
+        {
+          "np": "चतुर्दशी श्राद्ध",
+          "en": "Chaturdashi Shraddha"
+        },
+        {
+          "np": "विश्व प्राकृतिक प्रकोप नियन्त्रण दिवस",
+          "en": "International Day for Natural Disaster Reduction"
+        }
+      ]
+    },
+    "2080-06-27": {
+      "tithi": {
+        "np": "औंसी",
+        "en": "Aunsi"
+      },
+      "events": [
+        {
+          "np": "औंसी श्राद्ध",
+          "en": "Aunsi Shraddha"
+        },
+        {
+          "np": "पितृ विसर्जन",
+          "en": "Pitru Visarjan"
+        }
+      ]
+    },
+    "2080-06-28": {
+      "tithi": {
+        "np": "प्रतिपदा",
+        "en": "Pratipadha"
+      },
+      "holiday": true,
+      "events": [
+        {
+          "np": "घटस्थापना",
+          "en": "Ghatasthapana"
+        },
+        {
+          "np": "नवरात्र आरम्भ",
+          "en": "Navaratri Start"
+        },
+        {
+          "np": "अन्तर्राष्ट्रिय ग्रामीण महिला दिवस",
+          "en": "International Day of Rural Women"
+        },
+        {
+          "np": "विश्व हातधुने दिवस",
+          "en": "World Handwashing Day"
+        }
+      ]
+    },
+    "2080-06-29": {
+      "tithi": {
+        "np": "द्वितीया",
+        "en": "Dwitiya"
+      },
+      "events": [
+        {
+          "np": "विश्व खाद्य दिवस",
+          "en": "World Food Day"
+        }
+      ]
+    },
+    "2080-06-30": {
+      "tithi": {
+        "np": "तृतिया",
+        "en": "Tritiya"
+      },
+      "events": [
+        {
+          "np": "अन्तर्राष्ट्रिय गरिबी निवारण दिवस",
+          "en": "International Day for the Eradication of Poverty"
+        }
+      ]
+    },
+    "2080-07-01": {
+      "tithi": {
+        "np": "चतुर्थी",
+        "en": "Chaturthi"
+      },
+      "events": [
+        {
+          "np": "तुला संक्रान्ति",
+          "en": "Tula Sankranti"
+        }
+      ]
+    },
+    "2080-07-02": {
+      "tithi": {
+        "np": "पञ्चमी",
+        "en": "Panchami"
+      }
+    },
+    "2080-07-03": {
+      "tithi": {
+        "np": "षष्ठी",
+        "en": "Shashthi"
+      }
+    },
+    "2080-07-04": {
+      "tithi": {
+        "np": "सप्तमी",
+        "en": "Saptami"
+      },
+      "holiday": true,
+      "events": [
+        {
+          "np": "फूलपाती",
+          "en": "Fulpati"
+        }
+      ]
+    },
+    "2080-07-05": {
+      "tithi": {
+        "np": "अष्टमी",
+        "en": "Ashtami"
+      },
+      "holiday": true,
+      "events": [
+        {
+          "np": "महाअष्टमी",
+          "en": "Maha Ashtami"
+        },
+        {
+          "np": "कालरात्रि",
+          "en": "Kalaratri"
+        }
+      ]
+    },
+    "2080-07-06": {
+      "tithi": {
+        "np": "नवमी",
+        "en": "Navami"
+      },
+      "holiday": true,
+      "events": [
+        {
+          "np": "महानवमी",
+          "en": "Maha Navami"
+        }
+      ]
+    },
+    "2080-07-07": {
+      "tithi": {
+        "np": "दशमी",
+        "en": "Dashami"
+      },
+      "holiday": true,
+      "events": [
+        {
+          "np": "विजया दशमी",
+          "en": "Vijaya Dashami"
+        },
+        {
+          "np": "देवी विसर्जन",
+          "en": "Devi Visarjan"
+        },
+        {
+          "np": "संयुक्त राष्ट्रसंघ दिवस",
+          "en": "United Nations Day"
+        },
+        {
+          "np": "विश्व विकास सूचना दिवस",
+          "en": "World Development Information Day"
+        }
+      ]
+    },
+    "2080-07-08": {
+      "tithi": {
+        "np": "एकादशी",
+        "en": "Ekadashi"
+      },
+      "holiday": true,
+      "events": [
+        {
+          "np": "पापांकुशा एकादशी व्रत",
+          "en": "Papankusha Ekadashi Brata"
+        }
+      ]
+    },
+    "2080-07-09": {
+      "tithi": {
+        "np": "त्रयोदशी*",
+        "en": "Trayodashi (K)"
+      },
+      "holiday": true,
+      "events": [
+        {
+          "np": "दशैं बिदा",
+          "en": "Dashain Holiday"
+        },
+        {
+          "np": "प्रदोष व्रत",
+          "en": "Pradosh Brata"
+        }
+      ]
+    },
+    "2080-07-10": {
+      "tithi": {
+        "np": "चतुर्दशी*",
+        "en": "Chaturdashi (K)"
+      }
+    },
+    "2080-07-11": {
+      "tithi": {
+        "np": "पूर्णिमा",
+        "en": "Purnima"
+      },
+      "events": [
+        {
+          "np": "कोजाग्रत पूर्णिमा व्रत",
+          "en": "Kojagrat Purnima Brata"
+        },
+        {
+          "np": "खण्डग्रास चन्द्र ग्रहण",
+          "en": "Partial Lunar Eclipse"
+        },
+        {
+          "np": "पूर्णिमा व्रत",
+          "en": "Purnima Brata"
+        }
+      ]
+    },
+    "2080-07-12": {
+      "tithi": {
+        "np": "प्रतिपदा",
+        "en": "Pratipadha"
+      }
+    },
+    "2080-07-13": {
+      "tithi": {
+        "np": "द्वितीया",
+        "en": "Dwitiya"
+      }
+    },
+    "2080-07-14": {
+      "tithi": {
+        "np": "तृतिया",
+        "en": "Tritiya"
+      },
+      "events": [
+        {
+          "np": "विश्व शहरीकरण दिवस",
+          "en": "World Urbanization Day"
+        }
+      ]
+    },
+    "2080-07-15": {
+      "tithi": {
+        "np": "चतुर्थी",
+        "en": "Chaturthi"
+      }
+    },
+    "2080-07-16": {
+      "tithi": {
+        "np": "पञ्चमी",
+        "en": "Panchami"
+      }
+    },
+    "2080-07-17": {
+      "tithi": {
+        "np": "षष्ठी",
+        "en": "Shashthi"
+      }
+    },
+    "2080-07-18": {
+      "tithi": {
+        "np": "सप्तमी",
+        "en": "Saptami"
+      }
+    },
+    "2080-07-19": {
+      "tithi": {
+        "np": "अष्टमी",
+        "en": "Ashtami"
+      }
+    },
+    "2080-07-20": {
+      "tithi": {
+        "np": "नवमी",
+        "en": "Navami"
+      }
+    },
+    "2080-07-21": {
+      "tithi": {
+        "np": "दशमी",
+        "en": "Dashami"
+      }
+    },
+    "2080-07-22": {
+      "tithi": {
+        "np": "दशमी",
+        "en": "Dashami"
+      },
+      "events": [
+        {
+          "np": "विश्व रेडियोग्राफी दिवस",
+          "en": "World Radiography Day"
+        }
+      ]
+    },
+    "2080-07-23": {
+      "tithi": {
+        "np": "एकादशी",
+        "en": "Ekadashi"
+      },
+      "events": [
+        {
+          "np": "रमा एकादशी व्रत",
+          "en": "Rama Ekadashi Brata"
+        },
+        {
+          "np": "विश्व स्वतन्त्रता दिवस",
+          "en": "World Freedom Day"
+        }
+      ]
+    },
+    "2080-07-24": {
+      "tithi": {
+        "np": "द्वादशी",
+        "en": "Dwadashi"
+      },
+      "events": [
+        {
+          "np": "धन त्रयोदशी व्रत (धन्तेरस)",
+          "en": "Dhanteras"
+        },
+        {
+          "np": "प्रदोष व्रत",
+          "en": "Pradosh Brata"
+        },
+        {
+          "np": "शान्ति र विकाशका लागी विश्व विज्ञान दिवस",
+          "en": "World Science Day for Peace and Development"
+        }
+      ]
+    },
+    "2080-07-25": {
+      "tithi": {
+        "np": "त्रयोदशी",
+        "en": "Trayodashi"
+      },
+      "holiday": true,
+      "events": [
+        {
+          "np": "काग तिहार",
+          "en": "Kag Tihar"
+        },
+        {
+          "np": "धनवन्तरी जयन्ती",
+          "en": "Dhanvantari Jayanti"
+        },
+        {
+          "np": "महागुरु फाल्गुनन्द जयन्ती (किराँत धर्मावलम्बीहरूलाई बिदा)",
+          "en": "Mahaguru Phalgunanda Jayanti (Kirats Holiday)"
+        }
+      ]
+    },
+    "2080-07-26": {
+      "tithi": {
+        "np": "चतुर्दशी",
+        "en": "Chaturdashi"
+      },
+      "holiday": true,
+      "events": [
+        {
+          "np": "लक्ष्मी पुजा",
+          "en": "Laxmi Puja"
+        },
+        {
+          "np": "महाकवी लक्ष्मीप्रसाद देवकोटाको जन्म जयन्ती",
+          "en": "Laxmiprasad Devkota Jayanti"
+        },
+        {
+          "np": "नरक चतुर्दशी",
+          "en": "Narak Chaturdashi"
+        },
+        {
+          "np": "सुखरात्री",
+          "en": "Sukharatri"
+        },
+        {
+          "np": "कुकुर तिहार",
+          "en": "Kukur Tihar"
+        }
+      ]
+    },
+    "2080-07-27": {
+      "tithi": {
+        "np": "औंसी",
+        "en": "Aunsi"
+      },
+      "holiday": true,
+      "events": [
+        {
+          "np": "गाई तिहार",
+          "en": "Gai Tihar"
+        },
+        {
+          "np": "सोमबारे औंसी",
+          "en": "Sombare Aunsi"
+        }
+      ]
+    },
+    "2080-07-28": {
+      "tithi": {
+        "np": "प्रतिपदा",
+        "en": "Pratipadha"
+      },
+      "holiday": true,
+      "events": [
+        {
+          "np": "गोवर्धन पूजा",
+          "en": "Govardhan Puja"
+        },
+        {
+          "np": "म्ह: पूजा",
+          "en": "Mha Puja"
+        },
+        {
+          "np": "नेपाल सम्वत ११४४ प्रारम्भ",
+          "en": "Nepal Sambat 1144"
+        },
+        {
+          "np": "विश्व मधुमेह दिवस",
+          "en": "World Diabetes Day"
+        }
+      ]
+    },
+    "2080-07-29": {
+      "tithi": {
+        "np": "द्वितीया",
+        "en": "Dwitiya"
+      },
+      "holiday": true,
+      "events": [
+        {
+          "np": "भाई टिका",
+          "en": "Bhai Tika"
+        },
+        {
+          "np": "किजा पूजा",
+          "en": "Kija Puja"
+        }
+      ]
+    },
+    "2080-07-30": {
+      "tithi": {
+        "np": "तृतिया",
+        "en": "Tritiya"
+      },
+      "holiday": true,
+      "events": [
+        {
+          "np": "तिहार बिदा",
+          "en": "Tihar Holiday"
+        },
+        {
+          "np": "अन्तर्राष्ट्रिय सहनशीलता दिवस",
+          "en": "International Day for Tolerance"
+        }
+      ]
+    },
+    "2080-08-01": {
+      "tithi": {
+        "np": "चतुर्थी",
+        "en": "Chaturthi"
+      },
+      "events": [
+        {
+          "np": "वृश्चिक संक्रान्ति",
+          "en": "Vrischik Sankranti"
+        },
+        {
+          "np": "अन्तर्राष्ट्रिय विद्यार्थी दिवस",
+          "en": "International Students Day"
+        }
+      ]
+    },
+    "2080-08-02": {
+      "tithi": {
+        "np": "पञ्चमी",
+        "en": "Panchami"
+      }
+    },
+    "2080-08-03": {
+      "tithi": {
+        "np": "सप्तमी*",
+        "en": "Saptami (K)"
+      },
+      "holiday": true,
+      "events": [
+        {
+          "np": "छठपर्व व्रत",
+          "en": "Chhath Brata"
+        },
+        {
+          "np": "विश्व शौचालय दिवस",
+          "en": "World Toilet Day"
+        }
+      ]
+    },
+    "2080-08-04": {
+      "tithi": {
+        "np": "अष्टमी",
+        "en": "Ashtami"
+      },
+      "events": [
+        {
+          "np": "गोपाष्टमी",
+          "en": "Gopashtami"
+        }
+      ]
+    },
+    "2080-08-05": {
+      "tithi": {
+        "np": "नवमी",
+        "en": "Navami"
+      },
+      "events": [
+        {
+          "np": "कुष्मान्ड नवमी व्रत",
+          "en": "Kushmanda Navami Brata"
+        }
+      ]
+    },
+    "2080-08-06": {
+      "tithi": {
+        "np": "दशमी",
+        "en": "Dashami"
+      }
+    },
+    "2080-08-07": {
+      "tithi": {
+        "np": "एकादशी",
+        "en": "Ekadashi"
+      },
+      "events": [
+        {
+          "np": "हरिबोधिनी एकादशी व्रत (तुलसी विवाह)",
+          "en": "Haribodini Ekadashi Brata (Tulashi Vivah)"
+        }
+      ]
+    },
+    "2080-08-08": {
+      "tithi": {
+        "np": "द्वादशी",
+        "en": "Dwadashi"
+      },
+      "events": [
+        {
+          "np": "प्रदोष व्रत",
+          "en": "Pradosh Brata"
+        }
+      ]
+    },
+    "2080-08-09": {
+      "tithi": {
+        "np": "त्रयोदशी",
+        "en": "Trayodashi"
+      },
+      "events": [
+        {
+          "np": "अन्तर्राष्ट्रिय महिला हिंसा अन्त्य दिवस",
+          "en": "International Day for the Elimination of Violence Against Women"
+        }
+      ]
+    },
+    "2080-08-10": {
+      "tithi": {
+        "np": "चतुर्दशी",
+        "en": "Chaturdashi"
+      },
+      "events": [
+        {
+          "np": "पूर्णिमा व्रत",
+          "en": "Purnima Brata"
+        }
+      ]
+    },
+    "2080-08-11": {
+      "tithi": {
+        "np": "पूर्णिमा",
+        "en": "Purnima"
+      },
+      "holiday": true,
+      "events": [
+        {
+          "np": "गुरु नानक जयन्ती (सिख धर्मावलम्बीहरुलाई मात्र बिदा)",
+          "en": "Guru Nanak Jayanti (Sikhs Only)"
+        },
+        {
+          "np": "निम्बार्काचार्य जयन्ती",
+          "en": "Nimbarkacharya Jayanti"
+        },
+        {
+          "np": "चतुर्मास व्रत समाप्ति",
+          "en": "Chaturmas Brata End"
+        },
+        {
+          "np": "कार्तिक स्नान समाप्ति",
+          "en": "Kartik Snan End"
+        }
+      ]
+    },
+    "2080-08-12": {
+      "tithi": {
+        "np": "प्रतिपदा",
+        "en": "Pratipadha"
+      }
+    },
+    "2080-08-13": {
+      "tithi": {
+        "np": "द्वितीया",
+        "en": "Dwitiya"
+      }
+    },
+    "2080-08-14": {
+      "tithi": {
+        "np": "तृतिया",
+        "en": "Tritiya"
+      }
+    },
+    "2080-08-15": {
+      "tithi": {
+        "np": "चतुर्थी",
+        "en": "Chaturthi"
+      },
+      "events": [
+        {
+          "np": "विश्व एड्स दिवस",
+          "en": "World AIDS Day"
+        }
+      ]
+    },
+    "2080-08-16": {
+      "tithi": {
+        "np": "पञ्चमी",
+        "en": "Panchami"
+      },
+      "events": [
+        {
+          "np": "अन्तर्राष्ट्रिय दासता उन्मूलन दिवस",
+          "en": "International Day for the Abolition of Slavery"
+        }
+      ]
+    },
+    "2080-08-17": {
+      "tithi": {
+        "np": "षष्ठी",
+        "en": "Shashthi"
+      },
+      "holiday": true,
+      "events": [
+        {
+          "np": "अन्तर्राष्ट्रिय अपाङ्ग दिवस (अपाङ्गता भएका कर्मचारी मात्र बिदा)",
+          "en": "International Day of Persons with Disabilities (Staff with Disabilities Only)"
+        }
+      ]
+    },
+    "2080-08-18": {
+      "tithi": {
+        "np": "सप्तमी",
+        "en": "Saptami"
+      }
+    },
+    "2080-08-19": {
+      "tithi": {
+        "np": "अष्टमी",
+        "en": "Ashtami"
+      },
+      "events": [
+        {
+          "np": "भौमाष्टमी व्रत",
+          "en": "Bhaumashtami Brata"
+        },
+        {
+          "np": "अन्तर्राष्ट्रिय स्वयंसेवक दिवस",
+          "en": "International Volunteer Day"
+        },
+        {
+          "np": "विश्व माटो दिवस",
+          "en": "World Soil Day"
+        }
+      ]
+    },
+    "2080-08-20": {
+      "tithi": {
+        "np": "नवमी",
+        "en": "Navami"
+      }
+    },
+    "2080-08-21": {
+      "tithi": {
+        "np": "दशमी",
+        "en": "Dashami"
+      },
+      "events": [
+        {
+          "np": "अन्तर्राष्ट्रिय नागरिक उड्डयन दिवस",
+          "en": "International Civil Aviation Day"
+        }
+      ]
+    },
+    "2080-08-22": {
+      "tithi": {
+        "np": "एकादशी",
+        "en": "Ekadashi"
+      },
+      "events": [
+        {
+          "np": "उत्पतिका एकादशी व्रत",
+          "en": "Utpattika Ekadashi Brata"
+        },
+        {
+          "np": "अन्तर्राष्ट्रिय मर्यादित महिनावारी दिवस",
+          "en": "Menstrual Hygiene Day"
+        }
+      ]
+    },
+    "2080-08-23": {
+      "tithi": {
+        "np": "द्वादशी*",
+        "en": "Dwadashi (K)"
+      },
+      "events": [
+        {
+          "np": "अन्तर्राष्ट्रिय भ्रष्टाचार विरुद्ध दिवस",
+          "en": "International Anti-Corruption Day"
+        }
+      ]
+    },
+    "2080-08-24": {
+      "tithi": {
+        "np": "त्रयोदशी*",
+        "en": "Trayodashi (K)"
+      },
+      "events": [
+        {
+          "np": "प्रदोष व्रत",
+          "en": "Pradosh Brata"
+        },
+        {
+          "np": "अन्तर्राष्ट्रिय मानव अधिकार दिवस",
+          "en": "International Human Rights Day"
+        }
+      ]
+    },
+    "2080-08-25": {
+      "tithi": {
+        "np": "चतुर्दशी*",
+        "en": "Chaturdashi (K)"
+      },
+      "events": [
+        {
+          "np": "बाला चतुर्दशी व्रत",
+          "en": "Bala Chaturdashi Brata"
+        },
+        {
+          "np": "शतबीज छर्ने",
+          "en": "Shatbij Chharne"
+        },
+        {
+          "np": "अन्तर्राष्ट्रिय पर्वत दिवस",
+          "en": "International Mountain Day"
+        }
+      ]
+    },
+    "2080-08-26": {
+      "tithi": {
+        "np": "औंसी",
+        "en": "Aunsi"
+      },
+      "events": [
+        {
+          "np": "अन्तर्राष्ट्रिय तटस्थ दिवस",
+          "en": "International Day of Neutrality"
+        }
+      ]
+    },
+    "2080-08-27": {
+      "tithi": {
+        "np": "प्रतिपदा",
+        "en": "Pratipadha"
+      }
+    },
+    "2080-08-28": {
+      "tithi": {
+        "np": "द्वितीया",
+        "en": "Dwitiya"
+      }
+    },
+    "2080-08-29": {
+      "tithi": {
+        "np": "तृतिया",
+        "en": "Tritiya"
+      }
+    },
+    "2080-08-30": {
+      "tithi": {
+        "np": "चतुर्थी",
+        "en": "Chaturthi"
+      }
+    },
+    "2080-09-01": {
+      "tithi": {
+        "np": "पञ्चमी",
+        "en": "Panchami"
+      },
+      "events": [
+        {
+          "np": "विवाह पञ्चमी",
+          "en": "Vivaha Panchami"
+        },
+        {
+          "np": "षडानन्द जयन्ती",
+          "en": "Shadananda Jayanti"
+        },
+        {
+          "np": "धनु संक्रान्ति",
+          "en": "Dhanu Sankranti"
+        },
+        {
+          "np": "राष्ट्रिय झण्डा दिवस",
+          "en": "National Flag Day"
+        }
+      ]
+    },
+    "2080-09-02": {
+      "tithi": {
+        "np": "षष्ठी",
+        "en": "Shashthi"
+      },
+      "events": [
+        {
+          "np": "अन्तर्राष्ट्रिय आप्रवासी दिवस",
+          "en": "International Migrants Day"
+        }
+      ]
+    },
+    "2080-09-03": {
+      "tithi": {
+        "np": "सप्तमी",
+        "en": "Saptami"
+      }
+    },
+    "2080-09-04": {
+      "tithi": {
+        "np": "अष्टमी",
+        "en": "Ashtami"
+      },
+      "events": [
+        {
+          "np": "बुधाष्टमी व्रत",
+          "en": "Budhashtami Brata"
+        }
+      ]
+    },
+    "2080-09-05": {
+      "tithi": {
+        "np": "नवमी",
+        "en": "Navami"
+      }
+    },
+    "2080-09-06": {
+      "tithi": {
+        "np": "दशमी",
+        "en": "Dashami"
+      }
+    },
+    "2080-09-07": {
+      "tithi": {
+        "np": "द्वादशी*",
+        "en": "Dwadashi (K)"
+      },
+      "events": [
+        {
+          "np": "मोक्षदा एकादशी",
+          "en": "Mokshada Ekadashi"
+        },
+        {
+          "np": "गीता जयन्ती",
+          "en": "Gita Jayanti"
+        }
+      ]
+    },
+    "2080-09-08": {
+      "tithi": {
+        "np": "त्रयोदशी",
+        "en": "Trayodashi"
+      },
+      "events": [
+        {
+          "np": "प्रदोष व्रत",
+          "en": "Pradosh Brata"
+        }
+      ]
+    },
+    "2080-09-09": {
+      "tithi": {
+        "np": "चतुर्दशी",
+        "en": "Chaturdashi"
+      },
+      "holiday": true,
+      "events": [
+        {
+          "np": "क्रिसमस-डे",
+          "en": "Christmas Day"
+        }
+      ]
+    },
+    "2080-09-10": {
+      "tithi": {
+        "np": "पूर्णिमा",
+        "en": "Purnima"
+      },
+      "holiday": true,
+      "events": [
+        {
+          "np": "उधौली पर्व",
+          "en": "Udhauli Festival"
+        },
+        {
+          "np": "धान्यपुर्णिमा",
+          "en": "Dhanya Purnima"
+        },
+        {
+          "np": "य:मरि पुन्हि",
+          "en": "Yomari Punhi"
+        },
+        {
+          "np": "ज्यापु दिवस",
+          "en": "Jyapu Day"
+        },
+        {
+          "np": "पूर्णिमा व्रत",
+          "en": "Purnima Brata"
+        },
+        {
+          "np": "दत्तात्रेय जयन्ती",
+          "en": "Dattatreya Jayanti"
+        }
+      ]
+    },
+    "2080-09-11": {
+      "tithi": {
+        "np": "प्रतिपदा",
+        "en": "Pratipadha"
+      }
+    },
+    "2080-09-12": {
+      "tithi": {
+        "np": "द्वितीया*",
+        "en": "Dwitiya (K)"
+      }
+    },
+    "2080-09-13": {
+      "tithi": {
+        "np": "द्वितीया",
+        "en": "Dwitiya"
+      }
+    },
+    "2080-09-14": {
+      "tithi": {
+        "np": "तृतिया",
+        "en": "Tritiya"
+      }
+    },
+    "2080-09-15": {
+      "tithi": {
+        "np": "चतुर्थी",
+        "en": "Chaturthi"
+      },
+      "holiday": true,
+      "events": [
+        {
+          "np": "तमु ल्होसार",
+          "en": "Tamu Losar"
+        }
+      ]
+    },
+    "2080-09-16": {
+      "tithi": {
+        "np": "पञ्चमी",
+        "en": "Panchami"
+      },
+      "events": [
+        {
+          "np": "सन् २०२४ आरम्भ",
+          "en": "New Year 2024"
+        },
+        {
+          "np": "टोपी दिवस",
+          "en": "Topi Day"
+        },
+        {
+          "np": "पोशाक दिवस",
+          "en": "Dress Day"
+        }
+      ]
+    },
+    "2080-09-17": {
+      "tithi": {
+        "np": "षष्ठी",
+        "en": "Shashthi"
+      }
+    },
+    "2080-09-18": {
+      "tithi": {
+        "np": "सप्तमी",
+        "en": "Saptami"
+      }
+    },
+    "2080-09-19": {
+      "tithi": {
+        "np": "अष्टमी",
+        "en": "Ashtami"
+      },
+      "events": [
+        {
+          "np": "गोरखकाली पूजा",
+          "en": "Gorkhakali Puja"
+        }
+      ]
+    },
+    "2080-09-20": {
+      "tithi": {
+        "np": "नवमी",
+        "en": "Navami"
+      },
+      "events": [
+        {
+          "np": "गुरु गोबिन्द सिंह जयन्ती",
+          "en": "Guru Gobind Singh Jayanti"
+        }
+      ]
+    },
+    "2080-09-21": {
+      "tithi": {
+        "np": "दशमी",
+        "en": "Dashami"
+      }
+    },
+    "2080-09-22": {
+      "tithi": {
+        "np": "एकादशी",
+        "en": "Ekadashi"
+      },
+      "events": [
+        {
+          "np": "सफला एकादशी",
+          "en": "Saphala Ekadashi"
+        }
+      ]
+    },
+    "2080-09-23": {
+      "tithi": {
+        "np": "द्वादशी",
+        "en": "Dwadashi"
+      },
+      "events": [
+        {
+          "np": "अरनिको स्मृति दिवस",
+          "en": "Arniko Memorial Day"
+        }
+      ]
+    },
+    "2080-09-24": {
+      "tithi": {
+        "np": "त्रयोदशी",
+        "en": "Trayodashi"
+      },
+      "events": [
+        {
+          "np": "प्रदोष व्रत",
+          "en": "Pradosh Brata"
+        },
+        {
+          "np": "नेपाल ज्योतिष परिषद स्थापना दिवस",
+          "en": "Nepal Astrology Council Founding Day"
+        }
+      ]
+    },
+    "2080-09-25": {
+      "tithi": {
+        "np": "चतुर्दशी",
+        "en": "Chaturdashi"
+      }
+    },
+    "2080-09-26": {
+      "tithi": {
+        "np": "औंसी",
+        "en": "Aunsi"
+      }
+    },
+    "2080-09-27": {
+      "tithi": {
+        "np": "प्रतिपदा",
+        "en": "Pratipadha"
+      },
+      "holiday": true,
+      "events": [
+        {
+          "np": "पृथ्वी जयन्ती",
+          "en": "Prithvi Jayanti"
+        },
+        {
+          "np": "राष्ट्रिय एकता दिवस",
+          "en": "National Unity Day"
+        },
+        {
+          "np": "तोल ल्होसार",
+          "en": "Tol Losar"
+        }
+      ]
+    },
+    "2080-09-28": {
+      "tithi": {
+        "np": "द्वितीया",
+        "en": "Dwitiya"
+      }
+    },
+    "2080-09-29": {
+      "tithi": {
+        "np": "तृतिया",
+        "en": "Tritiya"
+      },
+      "events": [
+        {
+          "np": "राष्ट्रिय भाक्का दिवस",
+          "en": "National Bhakka Day"
+        }
+      ]
+    },
+    "2080-10-01": {
+      "tithi": {
+        "np": "चतुर्थी*",
+        "en": "Chaturthi (K)"
+      },
+      "holiday": true,
+      "events": [
+        {
+          "np": "माघे संक्रान्ति",
+          "en": "Maghe Sankranti"
+        },
+        {
+          "np": "मकर संक्रान्ति",
+          "en": "Makar Sankranti"
+        },
+        {
+          "np": "घ्यु चाकु खाने दिन",
+          "en": "Ghiu Chaku Khane Din"
+        },
+        {
+          "np": "मकर स्नान आरम्भ",
+          "en": "Makar Snan Start"
+        },
+        {
+          "np": "उत्तरायण आरम्भ",
+          "en": "Uttarayan Start"
+        }
+      ]
+    },
+    "2080-10-02": {
+      "tithi": {
+        "np": "पञ्चमी*",
+        "en": "Panchami (K)"
+      },
+      "events": [
+        {
+          "np": "राष्ट्रिय भुकम्प सुरक्षा दिवस",
+          "en": "National Earthquake Safety Day"
+        }
+      ]
+    },
+    "2080-10-03": {
+      "tithi": {
+        "np": "सप्तमी",
+        "en": "Saptami"
+      }
+    },
+    "2080-10-04": {
+      "tithi": {
+        "np": "अष्टमी",
+        "en": "Ashtami"
+      }
+    },
+    "2080-10-05": {
+      "tithi": {
+        "np": "नवमी",
+        "en": "Navami"
+      }
+    },
+    "2080-10-06": {
+      "tithi": {
+        "np": "दशमी",
+        "en": "Dashami"
+      }
+    },
+    "2080-10-07": {
+      "tithi": {
+        "np": "एकादशी",
+        "en": "Ekadashi"
+      },
+      "events": [
+        {
+          "np": "पुत्रदा एकादशी व्रत",
+          "en": "Putrada Ekadashi Brata"
+        }
+      ]
+    },
+    "2080-10-08": {
+      "tithi": {
+        "np": "द्वादशी",
+        "en": "Dwadashi"
+      }
+    },
+    "2080-10-09": {
+      "tithi": {
+        "np": "त्रयोदशी",
+        "en": "Trayodashi"
+      },
+      "events": [
+        {
+          "np": "प्रदोष व्रत",
+          "en": "Pradosh Brata"
+        }
+      ]
+    },
+    "2080-10-10": {
+      "tithi": {
+        "np": "चतुर्दशी",
+        "en": "Chaturdashi"
+      }
+    },
+    "2080-10-11": {
+      "tithi": {
+        "np": "पूर्णिमा",
+        "en": "Purnima"
+      },
+      "events": [
+        {
+          "np": "श्री स्वस्थानी व्रत कथा प्रारम्भ",
+          "en": "Swasthani Brata Katha Begins"
+        },
+        {
+          "np": "माघ स्नान",
+          "en": "Magh Snan"
+        },
+        {
+          "np": "पूर्णिमा व्रत",
+          "en": "Purnima Brata"
+        }
+      ]
+    },
+    "2080-10-12": {
+      "tithi": {
+        "np": "प्रतिपदा",
+        "en": "Pratipadha"
+      },
+      "events": [
+        {
+          "np": "अन्तर्राष्ट्रिय भन्सार दिवस",
+          "en": "International Customs Day"
+        }
+      ]
+    },
+    "2080-10-13": {
+      "tithi": {
+        "np": "द्वितीया",
+        "en": "Dwitiya"
+      }
+    },
+    "2080-10-14": {
+      "tithi": {
+        "np": "तृतिया",
+        "en": "Tritiya"
+      },
+      "events": [
+        {
+          "np": "विश्व कुष्ठरोग दिवस",
+          "en": "World Leprosy Day"
+        }
+      ]
+    },
+    "2080-10-15": {
+      "tithi": {
+        "np": "चतुर्थी",
+        "en": "Chaturthi"
+      },
+      "events": [
+        {
+          "np": "नेपाल नर्सिङ दिवस",
+          "en": "Nepal Nursing Day"
+        }
+      ]
+    },
+    "2080-10-16": {
+      "tithi": {
+        "np": "पञ्चमी*",
+        "en": "Panchami (K)"
+      },
+      "events": [
+        {
+          "np": "शहीद दिवस",
+          "en": "Martyrs Day"
+        }
+      ]
+    },
+    "2080-10-17": {
+      "tithi": {
+        "np": "पञ्चमी",
+        "en": "Panchami"
+      }
+    },
+    "2080-10-18": {
+      "tithi": {
+        "np": "षष्ठी",
+        "en": "Shashthi"
+      }
+    },
+    "2080-10-19": {
+      "tithi": {
+        "np": "सप्तमी",
+        "en": "Saptami"
+      },
+      "events": [
+        {
+          "np": "विश्व सिमसार दिवस",
+          "en": "World Wetlands Day"
+        }
+      ]
+    },
+    "2080-10-20": {
+      "tithi": {
+        "np": "अष्टमी",
+        "en": "Ashtami"
+      }
+    },
+    "2080-10-21": {
+      "tithi": {
+        "np": "नवमी",
+        "en": "Navami"
+      },
+      "events": [
+        {
+          "np": "विश्व क्यान्सर दिवस",
+          "en": "World Cancer Day"
+        }
+      ]
+    },
+    "2080-10-22": {
+      "tithi": {
+        "np": "दशमी",
+        "en": "Dashami"
+      }
+    },
+    "2080-10-23": {
+      "tithi": {
+        "np": "एकादशी",
+        "en": "Ekadashi"
+      },
+      "events": [
+        {
+          "np": "षट्तिला एकादशी व्रत",
+          "en": "Shattila Ekadashi Brata"
+        },
+        {
+          "np": "सुरक्षित इन्टरनेट दिवस",
+          "en": "Safer Internet Day"
+        }
+      ]
+    },
+    "2080-10-24": {
+      "tithi": {
+        "np": "द्वादशी",
+        "en": "Dwadashi"
+      },
+      "events": [
+        {
+          "np": "प्रदोष व्रत",
+          "en": "Pradosh Brata"
+        }
+      ]
+    },
+    "2080-10-25": {
+      "tithi": {
+        "np": "त्रयोदशी",
+        "en": "Trayodashi"
+      }
+    },
+    "2080-10-26": {
+      "tithi": {
+        "np": "औंसी*",
+        "en": "Aunsi (K)"
+      }
+    },
+    "2080-10-27": {
+      "tithi": {
+        "np": "प्रतिपदा",
+        "en": "Pratipadha"
+      },
+      "holiday": true,
+      "events": [
+        {
+          "np": "सोनाम ल्होछार",
+          "en": "Sonam Lhochar"
+        },
+        {
+          "np": "श्रीबल्लभ जयन्ती",
+          "en": "Shreeballabha Jayanti"
+        }
+      ]
+    },
+    "2080-10-28": {
+      "tithi": {
+        "np": "द्वितीया",
+        "en": "Dwitiya"
+      },
+      "events": [
+        {
+          "np": "विज्ञानमा महिला पहुँचको अन्तर्राष्ट्रिय दिवस",
+          "en": "International Day of Women and Girls in Science"
+        }
+      ]
+    },
+    "2080-10-29": {
+      "tithi": {
+        "np": "तृतिया",
+        "en": "Tritiya"
+      }
+    },
+    "2080-11-01": {
+      "tithi": {
+        "np": "चतुर्थी",
+        "en": "Chaturthi"
+      },
+      "events": [
+        {
+          "np": "मङ्गल चौथी व्रत",
+          "en": "Mangala Chauthi Brata"
+        },
+        {
+          "np": "जनयुद्ध दिवस",
+          "en": "People's War Day"
+        },
+        {
+          "np": "तिलकुन्द चौथी",
+          "en": "Tilakund Chauthi"
+        },
+        {
+          "np": "कुम्भ संक्रान्ति",
+          "en": "Kumbha Sankranti"
+        },
+        {
+          "np": "विश्व रेडियो दिवस",
+          "en": "World Radio Day"
+        }
+      ]
+    },
+    "2080-11-02": {
+      "tithi": {
+        "np": "पञ्चमी",
+        "en": "Panchami"
+      },
+      "holiday": true,
+      "events": [
+        {
+          "np": "वसन्तपञ्चमी व्रत",
+          "en": "Vasanta Panchami Brata"
+        },
+        {
+          "np": "सरस्वती पूजा (शिक्षण संस्था बिदा)",
+          "en": "Saraswati Puja (Educational Institution Holiday)"
+        },
+        {
+          "np": "प्रणय दिवस",
+          "en": "Valentine's Day"
+        },
+        {
+          "np": "राष्ट्रिय पुस्तक दिवस",
+          "en": "National Book Day"
+        }
+      ]
+    },
+    "2080-11-03": {
+      "tithi": {
+        "np": "षष्ठी",
+        "en": "Shashthi"
+      },
+      "events": [
+        {
+          "np": "स्कन्द षष्ठी",
+          "en": "Skanda Shashthi"
+        }
+      ]
+    },
+    "2080-11-04": {
+      "tithi": {
+        "np": "सप्तमी",
+        "en": "Saptami"
+      },
+      "events": [
+        {
+          "np": "अचला सप्तमी",
+          "en": "Achala Saptami"
+        }
+      ]
+    },
+    "2080-11-05": {
+      "tithi": {
+        "np": "अष्टमी",
+        "en": "Ashtami"
+      }
+    },
+    "2080-11-06": {
+      "tithi": {
+        "np": "नवमी",
+        "en": "Navami"
+      },
+      "events": [
+        {
+          "np": "द्रोण नवमी",
+          "en": "Drona Navami"
+        }
+      ]
+    },
+    "2080-11-07": {
+      "tithi": {
+        "np": "दशमी",
+        "en": "Dashami"
+      },
+      "holiday": true,
+      "events": [
+        {
+          "np": "प्रजातन्त्र दिवस",
+          "en": "Democracy Day"
+        },
+        {
+          "np": "निर्वाचन दिवस",
+          "en": "Election Day"
+        }
+      ]
+    },
+    "2080-11-08": {
+      "tithi": {
+        "np": "एकादशी",
+        "en": "Ekadashi"
+      },
+      "events": [
+        {
+          "np": "भीमा एकादशी व्रत",
+          "en": "Bhima Ekadashi Brata"
+        }
+      ]
+    },
+    "2080-11-09": {
+      "tithi": {
+        "np": "द्वादशी",
+        "en": "Dwadashi"
+      },
+      "events": [
+        {
+          "np": "अन्तर्राष्ट्रिय मातृभाषा दिवस",
+          "en": "International Mother Language Day"
+        },
+        {
+          "np": "प्रदोष व्रत",
+          "en": "Pradosh Brata"
+        }
+      ]
+    },
+    "2080-11-10": {
+      "tithi": {
+        "np": "त्रयोदशी",
+        "en": "Trayodashi"
+      }
+    },
+    "2080-11-11": {
+      "tithi": {
+        "np": "चतुर्दशी",
+        "en": "Chaturdashi"
+      },
+      "events": [
+        {
+          "np": "पूर्णिमा व्रत",
+          "en": "Purnima Brata"
+        },
+        {
+          "np": "पशुपतिनाथको छाया दर्शन",
+          "en": "Pashupatinath Shadow Darshan"
+        }
+      ]
+    },
+    "2080-11-12": {
+      "tithi": {
+        "np": "पूर्णिमा",
+        "en": "Purnima"
+      },
+      "events": [
+        {
+          "np": "श्री स्वस्थानी व्रत समाप्ती",
+          "en": "Shree Swasthani Brata End"
+        },
+        {
+          "np": "माघ स्नान समाप्ती",
+          "en": "Magh Snan End"
+        }
+      ]
+    },
+    "2080-11-13": {
+      "tithi": {
+        "np": "प्रतिपदा",
+        "en": "Pratipadha"
+      }
+    },
+    "2080-11-14": {
+      "tithi": {
+        "np": "द्वितीया",
+        "en": "Dwitiya"
+      }
+    },
+    "2080-11-15": {
+      "tithi": {
+        "np": "तृतिया",
+        "en": "Tritiya"
+      },
+      "events": [
+        {
+          "np": "विश्व गैरसरकारी संस्था दिवस",
+          "en": "World NGO Day"
+        }
+      ]
+    },
+    "2080-11-16": {
+      "tithi": {
+        "np": "चतुर्थी",
+        "en": "Chaturthi"
+      }
+    },
+    "2080-11-17": {
+      "tithi": {
+        "np": "पञ्चमी",
+        "en": "Panchami"
+      }
+    },
+    "2080-11-18": {
+      "tithi": {
+        "np": "षष्ठी*",
+        "en": "Shashthi (K)"
+      },
+      "events": [
+        {
+          "np": "शून्य भेदभाव दिवस",
+          "en": "Zero Discrimination Day"
+        }
+      ]
+    },
+    "2080-11-19": {
+      "tithi": {
+        "np": "सप्तमी*",
+        "en": "Saptami (K)"
+      }
+    },
+    "2080-11-20": {
+      "tithi": {
+        "np": "अष्टमी*",
+        "en": "Ashtami (K)"
+      },
+      "events": [
+        {
+          "np": "विश्व वन्यजन्तु दिवस",
+          "en": "World Wildlife Day"
+        }
+      ]
+    },
+    "2080-11-21": {
+      "tithi": {
+        "np": "नवमी*",
+        "en": "Navami (K)"
+      }
+    },
+    "2080-11-22": {
+      "tithi": {
+        "np": "दशमी*",
+        "en": "Dashami (K)"
+      }
+    },
+    "2080-11-23": {
+      "tithi": {
+        "np": "एकादशी*",
+        "en": "Ekadashi (K)"
+      },
+      "events": [
+        {
+          "np": "विजया एकादशी व्रत",
+          "en": "Vijaya Ekadashi Brata"
+        }
+      ]
+    },
+    "2080-11-24": {
+      "tithi": {
+        "np": "द्वादशी",
+        "en": "Dwadashi"
+      }
+    },
+    "2080-11-25": {
+      "tithi": {
+        "np": "त्रयोदशी",
+        "en": "Trayodashi"
+      },
+      "holiday": true,
+      "events": [
+        {
+          "np": "महाशिवरात्रि व्रत",
+          "en": "Maha Shivaratri Brata"
+        },
+        {
+          "np": "नेपाली सेना दिवस",
+          "en": "Nepal Army Day"
+        },
+        {
+          "np": "सिलाचःह्रे पूजा",
+          "en": "Sila Chahre Puja"
+        },
+        {
+          "np": "नारी दिवस",
+          "en": "Women's Day"
+        },
+        {
+          "np": "प्रदोष व्रत",
+          "en": "Pradosh Brata"
+        }
+      ]
+    },
+    "2080-11-26": {
+      "tithi": {
+        "np": "चतुर्दशी",
+        "en": "Chaturdashi"
+      }
+    },
+    "2080-11-27": {
+      "tithi": {
+        "np": "औंसी",
+        "en": "Aunsi"
+      }
+    },
+    "2080-11-28": {
+      "tithi": {
+        "np": "प्रतिपदा",
+        "en": "Pratipadha"
+      },
+      "holiday": true,
+      "events": [
+        {
+          "np": "ग्याल्पो ल्होछार",
+          "en": "Gyalpo Lhochar"
+        }
+      ]
+    },
+    "2080-11-29": {
+      "tithi": {
+        "np": "द्वितीया",
+        "en": "Dwitiya"
+      },
+      "events": [
+        {
+          "np": "रमदान महिना शुरू",
+          "en": "Ramadan Start"
+        }
+      ]
+    },
+    "2080-11-30": {
+      "tithi": {
+        "np": "तृतिया*",
+        "en": "Tritiya (K)"
+      }
+    },
+    "2080-12-01": {
+      "tithi": {
+        "np": "चतुर्थी*",
+        "en": "Chaturthi (K)"
+      },
+      "events": [
+        {
+          "np": "मीन संक्रान्ति",
+          "en": "Meena Sankranti"
+        }
+      ]
+    },
+    "2080-12-02": {
+      "tithi": {
+        "np": "षष्ठी",
+        "en": "Shashthi"
+      },
+      "events": [
+        {
+          "np": "विश्व उपभोक्ता अधिकार दिवस",
+          "en": "World Consumer Rights Day"
+        }
+      ]
+    },
+    "2080-12-03": {
+      "tithi": {
+        "np": "सप्तमी",
+        "en": "Saptami"
+      }
+    },
+    "2080-12-04": {
+      "tithi": {
+        "np": "अष्टमी",
+        "en": "Ashtami"
+      }
+    },
+    "2080-12-05": {
+      "tithi": {
+        "np": "नवमी",
+        "en": "Navami"
+      }
+    },
+    "2080-12-06": {
+      "tithi": {
+        "np": "दशमी",
+        "en": "Dashami"
+      },
+      "events": [
+        {
+          "np": "सामाजिक कार्य दिवस",
+          "en": "Social Work Day"
+        }
+      ]
+    },
+    "2080-12-07": {
+      "tithi": {
+        "np": "एकादशी",
+        "en": "Ekadashi"
+      },
+      "events": [
+        {
+          "np": "आमलकी एकादशी",
+          "en": "Amalaki Ekadashi"
+        },
+        {
+          "np": "विश्व मुख स्वास्थ्य दिवस",
+          "en": "World Oral Health Day"
+        },
+        {
+          "np": "अन्तर्राष्ट्रिय खुशी दिवस",
+          "en": "International Day of Happiness"
+        }
+      ]
+    },
+    "2080-12-08": {
+      "tithi": {
+        "np": "द्वादशी",
+        "en": "Dwadashi"
+      }
+    },
+    "2080-12-09": {
+      "tithi": {
+        "np": "त्रयोदशी",
+        "en": "Trayodashi"
+      },
+      "events": [
+        {
+          "np": "प्रदोष व्रत",
+          "en": "Pradosh Brata"
+        },
+        {
+          "np": "विश्व पानी दिवस",
+          "en": "World Water Day"
+        }
+      ]
+    },
+    "2080-12-10": {
+      "tithi": {
+        "np": "त्रयोदशी",
+        "en": "Trayodashi"
+      },
+      "events": [
+        {
+          "np": "विश्व मौसम विज्ञान दिवस",
+          "en": "World Meteorological Day"
+        }
+      ]
+    },
+    "2080-12-11": {
+      "tithi": {
+        "np": "चतुर्दशी",
+        "en": "Chaturdashi"
+      },
+      "holiday": true,
+      "events": [
+        {
+          "np": "फागु पुर्णिमा (पहाडी जिल्ला)",
+          "en": "Fagu Purnima Holi (Hill Districts)"
+        },
+        {
+          "np": "पूर्णिमा व्रत",
+          "en": "Purnima Brata"
+        },
+        {
+          "np": "विश्व क्षयरोग दिवस",
+          "en": "World Tuberculosis Day"
+        }
+      ]
+    },
+    "2080-12-12": {
+      "tithi": {
+        "np": "पूर्णिमा",
+        "en": "Purnima"
+      },
+      "holiday": true,
+      "events": [
+        {
+          "np": "फागु पुर्णिमा (तराइ बिदा)",
+          "en": "Fagu Purnima Holi (Terai Holiday)"
+        }
+      ]
+    },
+    "2080-12-13": {
+      "tithi": {
+        "np": "प्रतिपदा",
+        "en": "Pratipadha"
+      },
+      "events": [
+        {
+          "np": "तेल लगाउने र आँपको मुजुरा खाने दिन",
+          "en": "Aampko mujura Khane Din (Traditional Ritual Day)"
+        },
+        {
+          "np": "गणगौर पूजा प्रारम्भ",
+          "en": "Gangaur Puja Start"
+        }
+      ]
+    },
+    "2080-12-14": {
+      "tithi": {
+        "np": "द्वितीया",
+        "en": "Dwitiya"
+      },
+      "events": [
+        {
+          "np": "विश्व रङ्गमञ्च दिवस",
+          "en": "World Theatre Day"
+        }
+      ]
+    },
+    "2080-12-15": {
+      "tithi": {
+        "np": "तृतिया",
+        "en": "Tritiya"
+      },
+      "events": [
+        {
+          "np": "SEE २०८० प्रारम्भ-अनिवार्य अङ्ग्रेजी",
+          "en": "SEE 2080 Start - Compulsory English"
+        }
+      ]
+    },
+    "2080-12-16": {
+      "tithi": {
+        "np": "चतुर्थी",
+        "en": "Chaturthi"
+      },
+      "events": [
+        {
+          "np": "SEE २०८०-अनिवार्य नेपाली",
+          "en": "SEE 2080 - Compulsory Nepali"
+        }
+      ]
+    },
+    "2080-12-17": {
+      "tithi": {
+        "np": "पञ्चमी",
+        "en": "Panchami"
+      },
+      "events": [
+        {
+          "np": "विश्व नेवाः दिवस",
+          "en": "World Newar Day"
+        }
+      ]
+    },
+    "2080-12-18": {
+      "tithi": {
+        "np": "षष्ठी",
+        "en": "Shashthi"
+      },
+      "events": [
+        {
+          "np": "SEE २०८०-अनिवार्य गणित",
+          "en": "SEE 2080 - Compulsory Mathematics"
+        }
+      ]
+    },
+    "2080-12-19": {
+      "tithi": {
+        "np": "सप्तमी",
+        "en": "Saptami"
+      },
+      "events": [
+        {
+          "np": "विश्व मूर्ख दिवस",
+          "en": "April Fool's Day"
+        }
+      ]
+    },
+    "2080-12-20": {
+      "tithi": {
+        "np": "अष्टमी",
+        "en": "Ashtami"
+      },
+      "events": [
+        {
+          "np": "भौमाष्टमी व्रत",
+          "en": "Bhaumashtami Brata"
+        },
+        {
+          "np": "शीतलाष्टमी व्रत",
+          "en": "Sheetalashtami Brata"
+        },
+        {
+          "np": "विश्व अटिजम जागरुकता दिवस",
+          "en": "World Autism Awareness Day"
+        },
+        {
+          "np": "SEE २०८०-अनिवार्य विज्ञान तथा प्रविधि",
+          "en": "SEE 2080 - Compulsory Science & Technology"
+        }
+      ]
+    },
+    "2080-12-21": {
+      "tithi": {
+        "np": "नवमी",
+        "en": "Navami"
+      },
+      "events": [
+        {
+          "np": "SEE २०८०-अनिवार्य सामाजिक अध्ययन",
+          "en": "SEE 2080 - Compulsory Social Studies"
+        }
+      ]
+    },
+    "2080-12-22": {
+      "tithi": {
+        "np": "दशमी",
+        "en": "Dashami"
+      },
+      "events": [
+        {
+          "np": "SEE २०८०-ऐच्छिक प्रथम",
+          "en": "SEE 2080 - Optional First"
+        }
+      ]
+    },
+    "2080-12-23": {
+      "tithi": {
+        "np": "एकादशी",
+        "en": "Ekadashi"
+      },
+      "events": [
+        {
+          "np": "पापमोचनी एकादशी व्रत",
+          "en": "Papmochani Ekadashi Brata"
+        },
+        {
+          "np": "SEE २०८०- ऐच्छिक द्वितिय",
+          "en": "SEE 2080 - Optional Second"
+        }
+      ]
+    },
+    "2080-12-24": {
+      "tithi": {
+        "np": "त्रयोदशी*",
+        "en": "Trayodashi (K)"
+      },
+      "events": [
+        {
+          "np": "शनि प्रदोष व्रत",
+          "en": "Shani Pradosh Brata"
+        },
+        {
+          "np": "अन्तर्राष्ट्रिय विकास र शान्तिको लागि खेलकुद दिवस",
+          "en": "International Day of Sport for Development and Peace"
+        }
+      ]
+    },
+    "2080-12-25": {
+      "tithi": {
+        "np": "चतुर्दशी*",
+        "en": "Chaturdashi (K)"
+      },
+      "events": [
+        {
+          "np": "विश्व स्वास्थ्य दिवस",
+          "en": "World Health Day"
+        },
+        {
+          "np": "पाहाँचःह्रे",
+          "en": "Pahanchahre"
+        }
+      ]
+    },
+    "2080-12-26": {
+      "tithi": {
+        "np": "औंसी",
+        "en": "Aunsi"
+      },
+      "holiday": true,
+      "events": [
+        {
+          "np": "घोडेजात्रा (काठमाडौँ उपत्यकालाई बिदा)",
+          "en": "Ghode Jatra (Kathmandu Valley Holiday)"
+        },
+        {
+          "np": "सोमबारे औंसी",
+          "en": "Sombare Aunsi"
+        }
+      ]
+    },
+    "2080-12-27": {
+      "tithi": {
+        "np": "प्रतिपदा",
+        "en": "Pratipadha"
+      },
+      "events": [
+        {
+          "np": "तेल लगाउने र नीमको पात खाने दिन",
+          "en": "Neem Leaf Ritual Day"
+        }
+      ]
+    },
+    "2080-12-28": {
+      "tithi": {
+        "np": "द्वितीया",
+        "en": "Dwitiya"
+      }
+    },
+    "2080-12-29": {
+      "tithi": {
+        "np": "तृतिया",
+        "en": "Tritiya"
+      },
+      "holiday": true,
+      "events": [
+        {
+          "np": "ईद उल फितर",
+          "en": "Eid ul-Fitr"
+        },
+        {
+          "np": "मत्स्य जयन्ती व्रत",
+          "en": "Matsya Jayanti Brata"
+        },
+        {
+          "np": "मत्स्यनारायण मेला",
+          "en": "Matsyanarayana Mela"
+        },
+        {
+          "np": "गौरी व्रत",
+          "en": "Gauri Brata"
+        }
+      ]
+    },
+    "2080-12-30": {
+      "tithi": {
+        "np": "चतुर्थी",
+        "en": "Chaturthi"
+      },
+      "events": [
+        {
+          "np": "अन्तर्राष्ट्रिय मानव अन्तरिक्ष विमान दिवस",
+          "en": "International Day of Human Space Flight"
+        }
+      ]
+    }
+  }
+}

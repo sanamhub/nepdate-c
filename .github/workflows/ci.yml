@@ -1,0 +1,228 @@
+# The jobs of ADR-0004. Each job runs its gates through tools/ci.cmake with NEPDATE_C_CI=1, so a
+# missing tool fails the job instead of skipping a gate.
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_call:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  NEPDATE_C_CI: "1"
+
+jobs:
+  msvc:
+    strategy:
+      fail-fast: false
+      matrix:
+        runner: [windows-2022, windows-2025-vs2026]
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 30
+    env:
+      CC: cl
+      CXX: cl
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: ilammy/msvc-dev-cmd@0b201ec74fa43914dc39ae48a89fd1d8cb592756 # v1.13.0
+        with:
+          arch: x64
+      - name: Gates 3, 4, 5, 9, 13 and 14
+        run: cmake "-DONLY=codegen,build-and-test,cxx-headers,sanitizers,no-libc,api-surface" -P tools/ci.cmake
+
+  gcc:
+    strategy:
+      fail-fast: false
+      matrix:
+        version: [13, 14]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      CC: gcc-${{ matrix.version }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - run: sudo apt-get update && sudo apt-get install -y ninja-build pkg-config gcc-${{ matrix.version }}
+      - name: Gates 4, 13 and 14
+        run: cmake -DONLY=build-and-test,no-libc,api-surface -P tools/ci.cmake
+
+  clang:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      CC: clang-18
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - run: sudo apt-get update && sudo apt-get install -y ninja-build pkg-config clang-18
+      - name: Gates 4, 13 and 14
+        run: cmake -DONLY=build-and-test,no-libc,api-surface -P tools/ci.cmake
+
+  zig:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: mlugg/setup-zig@d1434d08867e3ee9daa34448df10607b98908d29 # v2.2.1
+        with:
+          version: 0.17.0
+      - name: Install Ninja and a zig cc wrapper
+        run: |
+          sudo apt-get update && sudo apt-get install -y ninja-build pkg-config
+          # CMake wants one program as the compiler, so `zig cc` gets a one-word name.
+          printf '#!/bin/sh\nexec zig cc "$@"\n' | sudo tee /usr/local/bin/zig-cc
+          sudo chmod +x /usr/local/bin/zig-cc
+      - name: Gate 4
+        env:
+          CC: zig-cc
+        run: cmake -DONLY=build-and-test -P tools/ci.cmake
+
+  apple:
+    runs-on: macos-15
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - run: brew install ninja pkgconf
+      - name: Gates 4, 9 and 14
+        run: cmake -DONLY=build-and-test,sanitizers,api-surface -P tools/ci.cmake
+
+  lint:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      # GCC for -fanalyzer; clang-tidy reads the same compile commands.
+      CC: gcc-14
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Install clang-format, clang-tidy, cppcheck and GCC 14
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ninja-build gcc-14 clang-format-18 clang-tidy-18 cppcheck
+          # The tidy preset calls plain clang-tidy.
+          sudo ln -sf /usr/bin/clang-tidy-18 /usr/local/bin/clang-tidy
+      - name: Gates 1, 2, 3, 6, 7 and 8
+        run: cmake -DONLY=format,ascii,codegen,tidy,cppcheck,analyzer -P tools/ci.cmake
+
+  sanitizers:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      CC: clang-18
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Install Clang 18
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ninja-build clang-18
+          # Ubuntu 24.04 kernels use 32 random mmap bits, which the sanitizers in Clang 18 can't map.
+          sudo sysctl vm.mmap_rnd_bits=28
+      - name: Gates 9 and 10
+        run: cmake -DONLY=sanitizers,msan -P tools/ci.cmake
+
+  valgrind:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      CC: gcc-14
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - run: sudo apt-get update && sudo apt-get install -y ninja-build gcc-14 valgrind
+      - name: Gate 11
+        run: cmake -DONLY=valgrind -P tools/ci.cmake
+
+  coverage:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      CC: gcc-14
+      GCOV: gcov-14
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Install GCC 14 and gcovr
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ninja-build gcc-14
+          pipx install gcovr==8.6
+      - name: Gate 12
+        run: cmake -DONLY=coverage -P tools/ci.cmake
+
+  i686:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      CC: gcc-14
+      CFLAGS: -m32
+      LDFLAGS: -m32
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - run: sudo apt-get update && sudo apt-get install -y ninja-build gcc-14 gcc-14-multilib
+      - name: Gate 4, 32-bit
+        run: cmake -DONLY=build-and-test -P tools/ci.cmake
+      - name: Show that the tests are 32-bit programs
+        run: file build/dev/bin/version_test
+
+  s390x:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - run: sudo apt-get update && sudo apt-get install -y ninja-build gcc-s390x-linux-gnu qemu-user
+      - name: Configure for s390x (big-endian), tests run under QEMU
+        run: >-
+          cmake --preset release -B build/s390x
+          -DCMAKE_SYSTEM_NAME=Linux
+          -DCMAKE_SYSTEM_PROCESSOR=s390x
+          -DCMAKE_C_COMPILER=s390x-linux-gnu-gcc
+          "-DCMAKE_CROSSCOMPILING_EMULATOR=qemu-s390x;-L;/usr/s390x-linux-gnu"
+      - name: Build
+        run: cmake --build build/s390x
+      - name: Show that the tests are big-endian programs
+        run: file build/s390x/bin/version_test
+      - name: Test
+        run: ctest --test-dir build/s390x --output-on-failure
+
+  cxx-headers:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      CC: gcc-14
+      CXX: g++-14
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - run: sudo apt-get update && sudo apt-get install -y ninja-build g++-14
+      - name: Gate 5
+        run: cmake -DONLY=cxx-headers -P tools/ci.cmake
+
+  shared-check:
+    permissions:
+      contents: read
+    uses: sanamhub/nepdate/.github/workflows/shared-check.yml@94946acd87bf4775c481811c0cdd63a7aaef2c84 # main 2026-10-09
