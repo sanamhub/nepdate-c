@@ -2,6 +2,12 @@ cmake_minimum_required(VERSION 3.25...4.1)
 
 project(nepdate-c VERSION 0.0.0 LANGUAGES C)
 
+# The regenerate command is `cmake --build <dir> --target codegen` (ADR-0001). CMake 3.31 and later
+# reserve that target name for their own CODEGEN commands unless this policy is OLD.
+if(POLICY CMP0171)
+    cmake_policy(SET CMP0171 OLD)
+endif()
+
 set(CMAKE_C_STANDARD 11)
 set(CMAKE_C_STANDARD_REQUIRED ON)
 set(CMAKE_C_EXTENSIONS OFF)
@@ -23,6 +29,7 @@ include(GNUInstallDirs)
 include(CMakePackageConfigHelpers)
 include(cmake/warnings.cmake)
 include(cmake/instrumentation.cmake)
+include(cmake/testing.cmake)
 
 # Programs go next to the DLL, so a shared build on Windows runs its tests without a PATH change.
 if(PROJECT_IS_TOP_LEVEL AND NOT DEFINED CMAKE_RUNTIME_OUTPUT_DIRECTORY)
@@ -102,4 +109,8 @@ endif()
 
 if(NEPDATE_C_BUILD_TESTS)
     add_subdirectory(tests)
+endif()
+
+if(NEPDATE_C_BUILD_TOOLS)
+    add_subdirectory(tools/codegen)
 endif()
