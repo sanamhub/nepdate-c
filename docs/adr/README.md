@@ -11,3 +11,4 @@ Immutable once Accepted; supersede with a new ADR.
 | [0003](0003-names.md) | Names that never collide with nepdate-cpp | Accepted |
 | [0004](0004-gates.md) | Quality gates and CI | Accepted |
 | [0005](0005-packaging.md) | Packaging | Accepted |
+| [0006](0006-date-layout.md) | The date holds a day number | Accepted |
