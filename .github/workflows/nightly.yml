@@ -1,0 +1,37 @@
+# The full 2^32 date bit-pattern sweep is too slow for every push, so it runs nightly under UBSan.
+name: nightly
+
+on:
+  schedule:
+    - cron: "17 3 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: nightly-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  NEPDATE_C_CI: "1"
+
+jobs:
+  full-sweep:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - run: sudo apt-get update && sudo apt-get install -y ninja-build
+      - name: Configure with UBSan and the full sweep
+        run: >
+          cmake -S . -B build/full-sweep -G Ninja
+          -DCMAKE_BUILD_TYPE=Release
+          -DNEPDATE_C_SANITIZE=undefined
+          -DNEPDATE_C_FULL_SWEEP=ON
+          -DNEPDATE_C_BUILD_TESTS=ON
+      - run: cmake --build build/full-sweep
+      - name: All 2^32 date bit patterns under UBSan
+        run: ctest --test-dir build/full-sweep -R bit_patterns_test --output-on-failure
