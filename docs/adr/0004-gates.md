@@ -32,7 +32,7 @@ environment sets `NEPDATE_C_CI=1`, as CI does.
 | 10 | `msan` | MemorySanitizer (Clang, Linux) |
 | 11 | `valgrind` | every test under Valgrind memcheck, leaks are errors (Linux) |
 | 12 | `coverage` | GCC `--coverage` and gcovr: 100 % line and branch coverage of `src/` |
-| 13 | `no-libc` | the core object file's only undefined symbols are `memcpy`, `memset` and MSVC's `__ImageBase`, which compilers and linkers provide |
+| 13 | `no-libc` | the core object file's only undefined symbols are `memcpy` and `memset`, which compilers emit for struct copies |
 | 14 | `api-surface` | the shared library's exported symbols equal the functions in `docs/API.md` |
 
 The patro library adds an isolation gate: the built core library must not contain the bytes

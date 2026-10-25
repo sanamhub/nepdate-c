@@ -15,8 +15,10 @@ enum {
     MONTHS = YEARS * 12,
     /* nepdate_date.value of the last supported day; the first is 1. */
     LAST_VALUE = NEPDATE_CAL_DAYS,
-    /* The last AD year with a supported day: the AD table ends at 2143-04. */
-    AD_LAST_YEAR = NEPDATE_CAL_AD_FIRST_YEAR + (NEPDATE_CAL_AD_MONTHS - 1) / 12,
+    /* The last AD month with a supported day: the AD table ends at 2143-04. */
+    AD_LAST_YEAR = NEPDATE_CAL_AD_FIRST_YEAR +
+                   (NEPDATE_CAL_AD_FIRST_MONTH - 1 + NEPDATE_CAL_AD_MONTHS - 1) / 12,
+    AD_LAST_MONTH = (NEPDATE_CAL_AD_FIRST_MONTH - 1 + NEPDATE_CAL_AD_MONTHS - 1) % 12 + 1,
     /* Neri and Schneider shift and constants (ADR-0006): the shift moves every supported year to
      * a positive count of 400-year eras, so the arithmetic stays unsigned 32-bit. */
     CIVIL_SHIFT = 82,
@@ -165,7 +167,7 @@ nepdate_status nepdate_from_ad(int year, int month, int day, nepdate_date *out) 
     if (year == NEPDATE_CAL_AD_FIRST_YEAR && month < NEPDATE_CAL_AD_FIRST_MONTH) {
         return NEPDATE_E_OUT_OF_RANGE;
     }
-    if (year == AD_LAST_YEAR && month > NEPDATE_CAL_AD_FIRST_MONTH) {
+    if (year == AD_LAST_YEAR && month > AD_LAST_MONTH) {
         return NEPDATE_E_OUT_OF_RANGE;
     }
     const unsigned j = (unsigned)(year - NEPDATE_CAL_AD_FIRST_YEAR) * 12U +

@@ -26,9 +26,8 @@ Reference machine (`shared/spec/BENCHMARK.md` section 1: Intel Core i5-12500H, W
 10.0.26300, Ultimate Performance), pinned to logical CPU 2 with `start /affinity 4`, CPU load 1 to
 4 % before the runs. The 64 dates of BENCHMARK section 2; each sample runs 20,000 passes over
 them; the figure is the median of 101 samples after 20 warm-up samples, and the median of three
-runs. The
-functions sit in their own translation unit, so they are called, not inlined, as a user of the
-library calls them. Nanoseconds per operation:
+runs. The functions sit in their own translation unit, so they are called, not inlined, as a
+user of the library calls them. Nanoseconds per operation:
 
 | Operation | `{y, m, d}` MSVC | day count MSVC | `{y, m, d}` Clang | day count Clang |
 |---|---:|---:|---:|---:|

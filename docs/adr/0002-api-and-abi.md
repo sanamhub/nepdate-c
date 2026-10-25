@@ -18,8 +18,9 @@ were never a valid date.
   is free of undefined behaviour for every bit pattern: it validates the value and returns
   `NEPDATE_E_INVALID_DATE` (or the fallback its documentation names) instead of indexing a table with
   it. A fuzz target proves it.
-- **Layout:** ADR-0006 records the measured choice: the struct holds a day number. This ADR left the
-  layout open until B1, B2 and adding days were measured (`shared/spec/BENCHMARK.md`).
+- **Layout is open.** Whether the struct holds `{year, month, day}` or a day serial is decided by
+  measuring B1, B2 and B5 (`shared/spec/BENCHMARK.md`) both ways before the first conversion code
+  merges. A later ADR records the choice and the numbers.
 - **Errors:** a `nepdate_status` enum, 0 for success; results go through out-pointers. No `errno`,
   no locale, no `abort`, no `printf`.
 - **Text output** goes to a caller's buffer with `snprintf` semantics: the return value is the length

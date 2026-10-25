@@ -449,7 +449,7 @@ if("no-libc" IN_LIST gates)
             break()
         endif()
         # Compilers may emit calls to memcpy and memset for struct copies and zeroing, and MSVC
-        # refers to the linker-provided __ImageBase (ADR-0004).
+        # refers to the linker-provided __ImageBase (ADR-0007).
         list(REMOVE_ITEM ci_symbols memcpy memset __ImageBase)
         if(ci_symbols)
             file(RELATIVE_PATH relative "${root}" "${object}")

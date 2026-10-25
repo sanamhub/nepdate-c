@@ -10,8 +10,9 @@
 #define NEPDATE_C_BIT_PATTERN_BITS 24
 #endif
 
-_Static_assert(NEPDATE_C_BIT_PATTERN_BITS >= 1 && NEPDATE_C_BIT_PATTERN_BITS <= 32,
-               "NEPDATE_C_BIT_PATTERN_BITS must be 1..32");
+/* 32 would shift by 32 below; NEPDATE_C_FULL_SWEEP checks all 2^32 values. */
+_Static_assert(NEPDATE_C_BIT_PATTERN_BITS >= 1 && NEPDATE_C_BIT_PATTERN_BITS <= 31,
+               "NEPDATE_C_BIT_PATTERN_BITS must be 1..31");
 
 /* A value the library made, for the comparison calls. */
 static nepdate_date anchor_date;
