@@ -198,6 +198,7 @@ static void check_month_lengths(const uint32_t packed[299]) {
     }
 }
 
+/* cppcheck-suppress constParameter ; C11 can't pass int[299][12] as const int[299][12] */
 static void check_day_of_year(int len[299][12], const uint32_t year_start[300]) {
     for (int i = 0; i < 299; i++) {
         for (int m = 0; m < 12; m++) {
