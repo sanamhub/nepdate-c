@@ -1,7 +1,7 @@
 /* The phase-1 rows of C# NepDate's own tests (shared/spec/vectors/csharp-tests/catalog.tsv).
- * Each row is a test named after its id, or a cs-deviation / cs-n/a / cs-pending line. Rows that
- * need the parser or today() are skipped with a comment naming the later phase. The CTest test
- * catalog_coverage (tools/check_catalog.cmake) checks that every phase-1 row is here. */
+ * Each row is a test named after its id, or a cs-deviation / cs-n/a / cs-pending line. A row that
+ * needs today() is skipped with a comment naming the later phase. The CTest test catalog_coverage
+ * (tools/check_catalog.cmake) checks that every phase-1 row is here. */
 #include "harness.h"
 #include "hinnant_reference.h"
 
