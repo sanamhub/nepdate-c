@@ -150,9 +150,13 @@ function(ci_build_dir name out)
     set(${out} "${root}/build/${PRESET_PREFIX}${name}" PARENT_SCOPE)
 endfunction()
 
-# Every C source clang-format checks: outside shared/, build trees and generated files.
-file(GLOB_RECURSE sources RELATIVE "${root}" "${root}/*.c" "${root}/*.h" "${root}/*.cpp")
-list(FILTER sources EXCLUDE REGEX "^(shared|build[^/]*|out|\\.git)/")
+# Every C source clang-format checks: the source directories, never the build trees or shared/.
+set(sources "")
+foreach(directory IN ITEMS include src tests tools)
+    file(GLOB_RECURSE found RELATIVE "${root}" "${root}/${directory}/*.c" "${root}/${directory}/*.h"
+        "${root}/${directory}/*.cpp")
+    list(APPEND sources ${found})
+endforeach()
 list(FILTER sources EXCLUDE REGEX "^src/generated/")
 list(SORT sources)
 
