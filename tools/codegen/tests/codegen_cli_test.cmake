@@ -42,9 +42,9 @@ endif()
 
 # One byte changed: 2199 becomes 2198.
 file(READ "${WORK}/a/${relative}" text)
-string(REPLACE "NEPDATE_MAX_YEAR 2199" "NEPDATE_MAX_YEAR 2198" changed "${text}")
+string(REPLACE "NEPDATE_CAL_MAX_YEAR 2199" "NEPDATE_CAL_MAX_YEAR 2198" changed "${text}")
 if(changed STREQUAL text)
-    message(FATAL_ERROR "the header has no NEPDATE_MAX_YEAR 2199 to change")
+    message(FATAL_ERROR "the header has no NEPDATE_CAL_MAX_YEAR 2199 to change")
 endif()
 file(WRITE "${WORK}/a/${relative}" "${changed}")
 execute_process(COMMAND "${CODEGEN}" --shared "${SHARED}" --out "${WORK}/a" --check
