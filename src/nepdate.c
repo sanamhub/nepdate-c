@@ -568,10 +568,7 @@ size_t nepdate_fiscal_year_label(int fiscal_year, nepdate_lang lang, char *buffe
     const uint64_t next_magnitude = next < 0 ? (uint64_t)(-next) : (uint64_t)next;
     length = put_number(buffer, size, length, (uint32_t)(next_magnitude % 100U), 2, lang);
 
-    if (buffer == NULL) {
-        return size == 0 ? length : 0;
-    }
-    if (size == 0) {
+    if (buffer == NULL || size == 0) {
         return length;
     }
     buffer[length < size ? length : size - 1] = '\0';

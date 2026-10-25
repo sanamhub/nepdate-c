@@ -45,7 +45,7 @@ The Rust benchmark compiles the call and the conversion in one image and the com
 `NepaliDate::new` and `to_gregorian` into the loop. The C calls stay out of line because ADR-0006
 measures them as a user calls the library. The same C code with LTO inlines them too: B1 is 2.65 ns,
 13% faster than Rust, and B2 is 1.97 ns. Without LTO the remaining B1 gap is the cost of two calls
-across a shared-library boundary, not the calendar arithmetic.
+the compiler cannot inline, not the calendar arithmetic.
 
 ## Consequences
 

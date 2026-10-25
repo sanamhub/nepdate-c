@@ -215,7 +215,7 @@ TEST(fiscal_label_truncation) {
     char buffer[32];
     memset(buffer, 'x', sizeof buffer);
     CHECK_EQ_INT(nepdate_fiscal_year_label(2082, NEPDATE_ENGLISH, NULL, 0), length);
-    CHECK_EQ_INT(nepdate_fiscal_year_label(2082, NEPDATE_ENGLISH, NULL, sizeof buffer), 0);
+    CHECK_EQ_INT(nepdate_fiscal_year_label(2082, NEPDATE_ENGLISH, NULL, sizeof buffer), length);
     CHECK(buffer[0] == 'x');
 
     /* An unknown language is English, not undefined behaviour. */

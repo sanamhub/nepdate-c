@@ -98,7 +98,7 @@ typedef struct nepdate_range_iterator {
 
 | Status | Meaning |
 |---|---|
-| `NEPDATE_E_OUT_OF_RANGE` | a BS year outside 1901 to 2199, an AD date outside 1844-04-11 to 2143-04-15, an arithmetic result outside the supported range, or an overflow mode or quarter outside its values |
+| `NEPDATE_E_OUT_OF_RANGE` | a BS year outside 1901 to 2199, an AD date outside 1844-04-11 to 2143-04-15, an arithmetic result outside the supported range, an overflow mode or quarter outside its values, or a range whose end is before its start |
 | `NEPDATE_E_INVALID_MONTH` | a BS month outside 1 to 12 |
 | `NEPDATE_E_INVALID_DAY` | a BS day outside 1 to the length of its month |
 | `NEPDATE_E_INVALID_GREGORIAN` | an AD year, month and day that is not a proleptic Gregorian date |
@@ -274,7 +274,7 @@ the supported range.
 
 `nepdate_fiscal_year_label` writes the label with `snprintf` semantics: it returns the length the
 full label needs, truncates and NUL-terminates when `size` is too small, and writes nothing when
-`size` is 0. `NEPDATE_NEPALI` uses Devanagari digits; any other language uses ASCII. A negative year
+`size` is 0 or `buffer` is `NULL`. `NEPDATE_NEPALI` uses Devanagari digits; any other language uses ASCII. A negative year
 gets a leading `-`, and a 39-byte buffer always fits.
 
 ```c

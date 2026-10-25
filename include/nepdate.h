@@ -44,7 +44,8 @@ extern "C" {
 typedef enum nepdate_status {
     NEPDATE_OK = 0,
     /* A BS year outside NEPDATE_MIN_YEAR..NEPDATE_MAX_YEAR, an AD date outside 1844-04-11 to
-     * 2143-04-15, or a result outside the supported range. */
+     * 2143-04-15, a result outside the supported range, an overflow mode or quarter outside its
+     * values, or a range whose end is before its start. */
     NEPDATE_E_OUT_OF_RANGE = 1,
     /* A month outside 1..12. */
     NEPDATE_E_INVALID_MONTH = 2,
@@ -275,7 +276,8 @@ NEPDATE_API nepdate_status nepdate_quarter_end(int fiscal_year, nepdate_quarter 
 
 /* Writes the label of fiscal_year, such as "2082/83" or the same in Devanagari digits, to buffer
  * with snprintf semantics: the return value is the length the full label needs, the text is
- * truncated and NUL-terminated when size is too small, and size 0 writes nothing. A negative
+ * truncated and NUL-terminated when size is too small, and size 0 or a NULL buffer writes
+ * nothing. A negative
  * fiscal_year gets a leading '-'. lang NEPDATE_NEPALI selects Devanagari digits and any other value
  * English. A buffer of 39 bytes always fits the label and its terminator. */
 NEPDATE_API size_t nepdate_fiscal_year_label(int fiscal_year, nepdate_lang lang, char *buffer,
