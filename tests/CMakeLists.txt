@@ -20,7 +20,13 @@ set_tests_properties(harness_failure_output PROPERTIES PASS_REGULAR_EXPRESSION
 # it. An instrumented tree can't be linked by a plain consumer, and a tree whose programs need an
 # emulator can't run one, so those builds skip it.
 if(NOT NEPDATE_C_INSTRUMENTED AND NOT CMAKE_CROSSCOMPILING_EMULATOR)
-    find_program(NEPDATE_C_PKG_CONFIG NAMES pkg-config pkgconf)
+    if(WIN32)
+        # Windows images put Strawberry Perl's pkg-config, a Perl script CMake can't run, on PATH;
+        # only a real pkgconf executable is worth testing there.
+        find_program(NEPDATE_C_PKG_CONFIG NAMES pkgconf)
+    else()
+        find_program(NEPDATE_C_PKG_CONFIG NAMES pkg-config pkgconf)
+    endif()
     add_test(NAME install_consumer
         COMMAND "${CMAKE_COMMAND}"
             -DBUILD_DIR=${PROJECT_BINARY_DIR}
