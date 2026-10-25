@@ -8,6 +8,7 @@ function(nepdate_c_add_test_program name)
 endfunction()
 
 nepdate_c_add_test_program(version_test version_test.c)
+nepdate_c_add_test_program(validation_test validation_test.c)
 
 # The harness must turn a failed check into a failed test and say where and why.
 nepdate_c_add_test_program(harness_failure harness_failure.c)
