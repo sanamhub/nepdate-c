@@ -9,7 +9,10 @@
  *
  * A failed check prints "file:line: check: details" to stderr and the test goes on, so one run
  * reports every failure. harness_finish() prints a summary and returns 1 if any check failed.
- * Each test program is one translation unit, so the counters below are per program. */
+ * Each test program is one translation unit, so the counters below are per program.
+ *
+ * RUN_TEST_NAMED runs a test under an id that is not a C identifier, such as a C# test name.
+ * SKIP ends a test that waits for an API a later phase brings; it counts as skipped, not failed. */
 #ifndef NEPDATE_TESTS_HARNESS_H
 #define NEPDATE_TESTS_HARNESS_H
 
@@ -18,10 +21,17 @@
 
 static int harness_tests_run;
 static int harness_tests_failed;
+static int harness_tests_skipped;
 static int harness_checks_failed;
 
 #define TEST(name) static void test_##name(void)
 #define RUN_TEST(name) harness_run(#name, test_##name)
+#define RUN_TEST_NAMED(id, name) harness_run(id, test_##name)
+#define SKIP(reason)                                                                               \
+    do {                                                                                           \
+        harness_skip(__FILE__, __LINE__, (reason));                                                \
+        return;                                                                                    \
+    } while (0)
 
 #define CHECK(expr) harness_check((expr) ? 1 : 0, __FILE__, __LINE__, #expr)
 
@@ -68,10 +78,19 @@ static inline void harness_check_str(const char *actual, const char *expected, c
     }
 }
 
+static inline void harness_skip(const char *file, int line, const char *reason) {
+    (void)fprintf(stderr, "%s:%d: SKIP: %s\n", file, line, reason);
+    harness_tests_skipped++;
+}
+
 static inline void harness_run(const char *name, void (*test)(void)) {
     const int failed_before = harness_checks_failed;
+    const int skipped_before = harness_tests_skipped;
     test();
     harness_tests_run++;
+    if (harness_tests_skipped != skipped_before) {
+        return;
+    }
     /* cppcheck-suppress knownConditionTrueFalse ; test() changes the counter through CHECK */
     if (harness_checks_failed != failed_before) {
         harness_tests_failed++;
@@ -80,8 +99,8 @@ static inline void harness_run(const char *name, void (*test)(void)) {
 }
 
 static inline int harness_finish(void) {
-    (void)printf("%d tests, %d failed, %d failed checks\n", harness_tests_run, harness_tests_failed,
-                 harness_checks_failed);
+    (void)printf("%d tests, %d failed, %d skipped, %d failed checks\n", harness_tests_run,
+                 harness_tests_failed, harness_tests_skipped, harness_checks_failed);
     return harness_tests_failed == 0 ? 0 : 1;
 }
 

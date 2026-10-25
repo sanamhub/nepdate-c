@@ -13,6 +13,8 @@ nepdate_c_add_test_program(conversion_test conversion_test.c)
 nepdate_c_add_test_program(vectors_test vectors_test.c vectors.c)
 target_compile_definitions(vectors_test PRIVATE
     NEPDATE_C_SHARED_DIR="${PROJECT_SOURCE_DIR}/shared")
+nepdate_c_add_test_program(cs_phase1 cs_phase1.c)
+
 # The sample of the 2^32 date values the property test checks on a normal CI job. Valgrind is far
 # slower than native code, so its preset checks a smaller sample; the full 2^32 sweep is an option.
 set(NEPDATE_C_BIT_PATTERN_BITS 24 CACHE STRING
@@ -29,6 +31,15 @@ if(NEPDATE_C_FULL_SWEEP)
     target_compile_definitions(bit_patterns_test PRIVATE NEPDATE_C_FULL_SWEEP)
     set_tests_properties(bit_patterns_test PROPERTIES TIMEOUT 3600)
 endif()
+
+# Every phase-1 row of the C# catalogue, or a comment naming the deviation or the later phase.
+add_test(NAME catalog_coverage
+    COMMAND "${CMAKE_COMMAND}"
+        -DPHASE=1
+        -DCATALOG=${PROJECT_SOURCE_DIR}/shared/spec/vectors/csharp-tests/catalog.tsv
+        -DSOURCE=${CMAKE_CURRENT_SOURCE_DIR}/cs_phase1.c
+        -P "${PROJECT_SOURCE_DIR}/tools/check_catalog.cmake"
+)
 
 # The harness must turn a failed check into a failed test and say where and why.
 nepdate_c_add_test_program(harness_failure harness_failure.c)
