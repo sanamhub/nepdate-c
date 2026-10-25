@@ -107,6 +107,38 @@ long codegen_days_from_civil(long year, long month, long day) {
     return era * 146097 + doe - 719468;
 }
 
+/* True when estimate is never a later month than day s is in, and at most one month earlier. */
+static bool ad_estimate_ok(const codegen_calendar *calendar, long start, unsigned long estimate) {
+    int ad_month = 0;
+    for (long s = 0; s < start; s++) {
+        while (ad_month + 1 < CODEGEN_AD_MONTHS && calendar->ad_month_start[ad_month + 1] <= s) {
+            ad_month++;
+        }
+        const uint64_t product = (uint64_t)s * estimate;
+        const long month = (long)(product >> CODEGEN_ESTIMATE_SHIFT);
+        if (month < ad_month - 1 || month > ad_month || month >= CODEGEN_AD_MONTHS) {
+            return false;
+        }
+    }
+    return true;
+}
+
+/* Finds the largest estimate that is never a later month than the day's month. */
+static bool derive_ad_estimate(codegen_calendar *calendar, long start, char *error,
+                               size_t error_size) {
+    unsigned long estimate =
+        (unsigned long)(((uint64_t)CODEGEN_AD_MONTHS << CODEGEN_ESTIMATE_SHIFT) / (uint64_t)start);
+    while (!ad_estimate_ok(calendar, start, estimate)) {
+        if (estimate == 0) {
+            return fail(error, error_size,
+                        "no AD month estimate is at most one month early for every day");
+        }
+        estimate--;
+    }
+    calendar->ad_estimate_mul = estimate;
+    return true;
+}
+
 bool codegen_derive_tables(codegen_calendar *calendar, char *error, size_t error_size) {
     long start = 0;
     for (int i = 0; i < CODEGEN_ALL_MONTHS; i++) {
@@ -154,7 +186,8 @@ bool codegen_derive_tables(codegen_calendar *calendar, char *error, size_t error
                         estimate - month);
         }
     }
-    return true;
+
+    return derive_ad_estimate(calendar, start, error, error_size);
 }
 
 /* A growing string. A failed allocation leaves text NULL, and every later append does nothing. */
@@ -269,8 +302,12 @@ char *codegen_render_calendar_tables(const codegen_calendar *calendar) {
            " * the generator checks every day. */\n"
            "#define NEPDATE_CAL_ESTIMATE_MUL %luU\n"
            "#define NEPDATE_CAL_ESTIMATE_SHIFT %d\n"
+           "/* The same for the AD month table. */\n"
+           "#define NEPDATE_CAL_AD_ESTIMATE_MUL %luU\n"
+           "#define NEPDATE_CAL_AD_ESTIMATE_SHIFT %d\n"
            "\n",
-           calendar->estimate_mul, CODEGEN_ESTIMATE_SHIFT);
+           calendar->estimate_mul, CODEGEN_ESTIMATE_SHIFT, calendar->ad_estimate_mul,
+           CODEGEN_ESTIMATE_SHIFT);
 
     long lengths[CODEGEN_ALL_MONTHS];
     for (int i = 0; i < CODEGEN_ALL_MONTHS; i++) {

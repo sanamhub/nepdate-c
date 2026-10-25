@@ -88,6 +88,7 @@ static inline void harness_run(const char *name, void (*test)(void)) {
     const int skipped_before = harness_tests_skipped;
     test();
     harness_tests_run++;
+    /* cppcheck-suppress knownConditionTrueFalse ; test() changes the counter through SKIP */
     if (harness_tests_skipped != skipped_before) {
         return;
     }

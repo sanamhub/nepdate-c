@@ -22,6 +22,9 @@
  * the generator checks every day. */
 #define NEPDATE_CAL_ESTIMATE_MUL 137797U
 #define NEPDATE_CAL_ESTIMATE_SHIFT 22
+/* The same for the AD month table. */
+#define NEPDATE_CAL_AD_ESTIMATE_MUL 137815U
+#define NEPDATE_CAL_AD_ESTIMATE_SHIFT 22
 
 /* Days in month index (year - 1901) * 12 + month - 1. */
 static const uint8_t nepdate_cal_month_length[3588] = {

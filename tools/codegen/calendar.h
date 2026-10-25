@@ -36,6 +36,9 @@ typedef struct {
     /* Unix day of the epoch, AD 1844-04-11. */
     long epoch_unix_days;
     unsigned long estimate_mul;
+    /* The AD month index of day count s is (s * ad_estimate_mul) >> CODEGEN_ESTIMATE_SHIFT, or
+     * one more or one less. */
+    unsigned long ad_estimate_mul;
     /* FNV-1a 64 of the 3588 month lengths, one byte each. The same value the C++ port builds from
      * the same file, so a data change that only one port sees is caught. */
     uint64_t fingerprint;

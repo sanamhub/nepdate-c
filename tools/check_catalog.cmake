@@ -1,6 +1,7 @@
 # Fails unless every row of shared/spec/vectors/csharp-tests/catalog.tsv whose phase is PHASE has a
 # RUN_TEST_NAMED("<id>", ...) line, or a cs-deviation / cs-n/a / cs-pending comment naming its id.
-# Prints the counts and each missing id.
+# Only rows of that phase are checked; each phase has its own test source. Prints the counts and
+# each missing id.
 #
 #   cmake -DPHASE=1 -DCATALOG=<catalog.tsv> -DSOURCE=<test source>
 #         -P tools/check_catalog.cmake
@@ -22,6 +23,11 @@ file(READ "${SOURCE}" source)
 string(REPLACE "\r" "" source "${source}")
 string(REPLACE ";" "<semicolon>" source "${source}")
 string(REPLACE "\n" " " source "${source}")
+# clang-format may split a long string literal in a RUN_TEST_NAMED into adjacent literals; join
+# them back so the id regex sees one string.
+while(source MATCHES "\" +\"")
+    string(REGEX REPLACE "\" +\"" "" source "${source}")
+endwhile()
 
 # The test ids of RUN_TEST_NAMED("<id>", ...).
 set(test_ids "")
@@ -65,7 +71,10 @@ foreach(row IN LISTS rows)
     string(REPLACE "\t" ";" fields "${row}")
     list(GET fields 0 id)
     list(GET fields -1 phase)
-    if(NOT phase MATCHES "^[0-9]+$" OR phase GREATER PHASE)
+    if(NOT phase MATCHES "^[0-9]+$")
+        continue()
+    endif()
+    if(NOT phase EQUAL PHASE)
         continue()
     endif()
     math(EXPR checked "${checked} + 1")
@@ -85,7 +94,7 @@ endforeach()
 if(missing)
     list(LENGTH missing count)
     list(JOIN missing "\n  " text)
-    message(FATAL_ERROR "check_catalog: ${count} of ${checked} rows up to phase ${PHASE} have no "
+    message(FATAL_ERROR "check_catalog: ${count} of ${checked} rows of phase ${PHASE} have no "
         "test and no cs-deviation, cs-n/a or cs-pending line:\n  ${text}")
 endif()
 message(STATUS "check_catalog: phase ${PHASE}: all ${checked} rows covered "

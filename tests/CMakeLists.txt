@@ -13,7 +13,15 @@ nepdate_c_add_test_program(conversion_test conversion_test.c)
 nepdate_c_add_test_program(vectors_test vectors_test.c vectors.c)
 target_compile_definitions(vectors_test PRIVATE
     NEPDATE_C_SHARED_DIR="${PROJECT_SOURCE_DIR}/shared")
+nepdate_c_add_test_program(arithmetic_test arithmetic_test.c vectors.c)
+target_compile_definitions(arithmetic_test PRIVATE
+    NEPDATE_C_SHARED_DIR="${PROJECT_SOURCE_DIR}/shared")
+nepdate_c_add_test_program(fiscal_test fiscal_test.c vectors.c)
+target_compile_definitions(fiscal_test PRIVATE
+    NEPDATE_C_SHARED_DIR="${PROJECT_SOURCE_DIR}/shared")
+nepdate_c_add_test_program(range_test range_test.c)
 nepdate_c_add_test_program(cs_phase1 cs_phase1.c)
+nepdate_c_add_test_program(cs_phase2 cs_phase2.c)
 
 # The sample of the 2^32 date values the property test checks on a normal CI job. Valgrind is far
 # slower than native code, so its preset checks a smaller sample; the full 2^32 sweep is an option.
@@ -32,14 +40,17 @@ if(NEPDATE_C_FULL_SWEEP)
     set_tests_properties(bit_patterns_test PROPERTIES TIMEOUT 3600)
 endif()
 
-# Every phase-1 row of the C# catalogue, or a comment naming the deviation or the later phase.
-add_test(NAME catalog_coverage
-    COMMAND "${CMAKE_COMMAND}"
-        -DPHASE=1
-        -DCATALOG=${PROJECT_SOURCE_DIR}/shared/spec/vectors/csharp-tests/catalog.tsv
-        -DSOURCE=${CMAKE_CURRENT_SOURCE_DIR}/cs_phase1.c
-        -P "${PROJECT_SOURCE_DIR}/tools/check_catalog.cmake"
-)
+# Every phase-1 and phase-2 row of the C# catalogue, or a comment naming the deviation or the later
+# phase. Each phase has its own test source, so each test checks its own rows.
+foreach(phase IN ITEMS 1 2)
+    add_test(NAME catalog_coverage_${phase}
+        COMMAND "${CMAKE_COMMAND}"
+            -DPHASE=${phase}
+            -DCATALOG=${PROJECT_SOURCE_DIR}/shared/spec/vectors/csharp-tests/catalog.tsv
+            -DSOURCE=${CMAKE_CURRENT_SOURCE_DIR}/cs_phase${phase}.c
+            -P "${PROJECT_SOURCE_DIR}/tools/check_catalog.cmake"
+    )
+endforeach()
 
 # The harness must turn a failed check into a failed test and say where and why.
 nepdate_c_add_test_program(harness_failure harness_failure.c)

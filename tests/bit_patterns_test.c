@@ -16,6 +16,7 @@ _Static_assert(NEPDATE_C_BIT_PATTERN_BITS >= 1 && NEPDATE_C_BIT_PATTERN_BITS <= 
 
 /* A value the library made, for the comparison calls. */
 static nepdate_date anchor_date;
+static nepdate_range anchor_range;
 
 static void check_invalid(uint32_t value) {
     const nepdate_date date = {(int32_t)value};
@@ -25,6 +26,11 @@ static void check_invalid(uint32_t value) {
     nepdate_date out = {-7};
     int number = -7;
     int comparison = -7;
+    int32_t days = -7;
+    bool contains = true;
+    nepdate_quarter quarter = NEPDATE_Q4;
+    nepdate_date_diff diff = {-1, -2, -3, -4};
+    nepdate_range range = {{-1}, {-1}};
     const nepdate_date valid = anchor_date;
 
     CHECK_EQ_INT(nepdate_to_bs(date, &ymd), NEPDATE_E_INVALID_DATE);
@@ -38,6 +44,18 @@ static void check_invalid(uint32_t value) {
     CHECK_EQ_INT(nepdate_compare(date, valid, &comparison), NEPDATE_E_INVALID_DATE);
     CHECK_EQ_INT(nepdate_compare(valid, date, &comparison), NEPDATE_E_INVALID_DATE);
     CHECK_EQ_INT(nepdate_compare(date, date, &comparison), NEPDATE_E_INVALID_DATE);
+    CHECK_EQ_INT(nepdate_add_days(date, 1, &out), NEPDATE_E_INVALID_DATE);
+    CHECK_EQ_INT(nepdate_add_months(date, 1, NEPDATE_CLAMP, &out), NEPDATE_E_INVALID_DATE);
+    CHECK_EQ_INT(nepdate_add_years(date, 1, NEPDATE_CLAMP, &out), NEPDATE_E_INVALID_DATE);
+    CHECK_EQ_INT(nepdate_diff_days(date, valid, &days), NEPDATE_E_INVALID_DATE);
+    CHECK_EQ_INT(nepdate_diff_days(valid, date, &days), NEPDATE_E_INVALID_DATE);
+    CHECK_EQ_INT(nepdate_diff(date, valid, &diff), NEPDATE_E_INVALID_DATE);
+    CHECK_EQ_INT(nepdate_diff(valid, date, &diff), NEPDATE_E_INVALID_DATE);
+    CHECK_EQ_INT(nepdate_fiscal_year_of(date, &number), NEPDATE_E_INVALID_DATE);
+    CHECK_EQ_INT(nepdate_quarter_of(date, &quarter), NEPDATE_E_INVALID_DATE);
+    CHECK_EQ_INT(nepdate_range_make(date, valid, &range), NEPDATE_E_INVALID_DATE);
+    CHECK_EQ_INT(nepdate_range_make(valid, date, &range), NEPDATE_E_INVALID_DATE);
+    CHECK_EQ_INT(nepdate_range_contains(anchor_range, date, &contains), NEPDATE_E_INVALID_DATE);
 
     CHECK(ymd.year == -1 && ymd.month == -2 && ymd.day == -3);
     CHECK_EQ_INT(weekday, NEPDATE_SATURDAY);
@@ -45,6 +63,46 @@ static void check_invalid(uint32_t value) {
     CHECK_EQ_INT(out.value, -7);
     CHECK_EQ_INT(number, -7);
     CHECK_EQ_INT(comparison, -7);
+    CHECK_EQ_INT(days, -7);
+    CHECK_EQ_INT(contains, true);
+    CHECK_EQ_INT(quarter, NEPDATE_Q4);
+    CHECK_EQ_INT(diff.sign, -1);
+    CHECK_EQ_INT(diff.years, -2);
+    CHECK_EQ_INT(diff.months, -3);
+    CHECK_EQ_INT(diff.days, -4);
+    CHECK_EQ_INT(range.start.value, -1);
+    CHECK_EQ_INT(range.end.value, -1);
+}
+
+static void check_valid_arithmetic(nepdate_date date) {
+    nepdate_date added = {0};
+    nepdate_range range = {{0}, {0}};
+    nepdate_date_diff date_diff = {0, 0, 0, 0};
+    int fiscal_year = 0;
+    int32_t days = 0;
+    bool contains = false;
+    nepdate_quarter quarter = NEPDATE_Q1;
+
+    CHECK_EQ_INT(nepdate_add_days(date, 0, &added), NEPDATE_OK);
+    CHECK_EQ_INT(added.value, date.value);
+    CHECK_EQ_INT(nepdate_add_months(date, 0, NEPDATE_CLAMP, &added), NEPDATE_OK);
+    CHECK_EQ_INT(added.value, date.value);
+    CHECK_EQ_INT(nepdate_add_years(date, 0, NEPDATE_OVERFLOW, &added), NEPDATE_OK);
+    CHECK_EQ_INT(added.value, date.value);
+    CHECK_EQ_INT(nepdate_diff_days(date, date, &days), NEPDATE_OK);
+    CHECK_EQ_INT(days, 0);
+    CHECK_EQ_INT(nepdate_diff(date, date, &date_diff), NEPDATE_OK);
+    CHECK_EQ_INT(date_diff.sign, 1);
+    CHECK_EQ_INT(date_diff.years, 0);
+    CHECK_EQ_INT(date_diff.months, 0);
+    CHECK_EQ_INT(date_diff.days, 0);
+    CHECK_EQ_INT(nepdate_fiscal_year_of(date, &fiscal_year), NEPDATE_OK);
+    CHECK(fiscal_year >= NEPDATE_MIN_YEAR - 1 && fiscal_year <= NEPDATE_MAX_YEAR);
+    CHECK_EQ_INT(nepdate_quarter_of(date, &quarter), NEPDATE_OK);
+    CHECK(quarter >= NEPDATE_Q1 && quarter <= NEPDATE_Q4);
+    CHECK_EQ_INT(nepdate_range_make(date, date, &range), NEPDATE_OK);
+    CHECK_EQ_INT(nepdate_range_contains(range, date, &contains), NEPDATE_OK);
+    CHECK(contains);
 }
 
 static void check_valid(uint32_t value) {
@@ -105,6 +163,8 @@ static void check_valid(uint32_t value) {
     CHECK(comparison >= -1 && comparison <= 1);
     CHECK_EQ_INT(nepdate_compare(valid, date, &comparison), NEPDATE_OK);
     CHECK(comparison >= -1 && comparison <= 1);
+
+    check_valid_arithmetic(date);
 }
 
 static void check_pattern(uint32_t value) {
@@ -133,6 +193,7 @@ TEST(all_patterns) {
 
 int main(void) {
     CHECK_EQ_INT(nepdate_from_bs(2081, 4, 15, &anchor_date), NEPDATE_OK);
+    CHECK_EQ_INT(nepdate_range_make(anchor_date, anchor_date, &anchor_range), NEPDATE_OK);
     RUN_TEST(all_patterns);
     return harness_finish();
 }

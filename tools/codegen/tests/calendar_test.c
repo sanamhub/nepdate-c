@@ -228,6 +228,7 @@ TEST(derived_tables_match_the_spec) {
     CHECK(hash == UINT64_C(0xc2cdd10a9b668dc3));
     CHECK(calendar->fingerprint == UINT64_C(0xc2cdd10a9b668dc3));
     CHECK_EQ_INT(calendar->estimate_mul, 137797);
+    CHECK_EQ_INT(calendar->ad_estimate_mul, 137815);
     free(calendar);
 }
 
@@ -271,6 +272,7 @@ TEST(rendered_header_is_lf_only_with_the_tables) {
     CHECK(strstr(text, "#define NEPDATE_CAL_DAYS 109212\n") != NULL);
     CHECK(strstr(text, "#define NEPDATE_CAL_EPOCH_UNIX_DAYS (-45920)\n") != NULL);
     CHECK(strstr(text, "#define NEPDATE_CAL_FINGERPRINT 0xc2cdd10a9b668dc3ULL\n") != NULL);
+    CHECK(strstr(text, "#define NEPDATE_CAL_AD_ESTIMATE_MUL 137815U\n") != NULL);
     CHECK(strstr(text, "static const uint8_t nepdate_cal_month_length[3588] = {\n"
                        "    31, 31, 32, 31, 31, 31, 30, 29, 30, 29, 30, 30, /* 1901 */\n") != NULL);
     CHECK(strstr(text, "    109212, /* 2200 */\n};\n") != NULL);
