@@ -1,6 +1,9 @@
 # Runs the generator as a user would and checks the command-line behaviour (ADR-0001).
 # Inputs: -DCODEGEN=<exe> -DSHARED=<shared dir> -DCOMMITTED=<committed header> -DWORK=<scratch dir>
 
+# Script mode starts with old policies; IN_LIST below needs CMP0057.
+cmake_minimum_required(VERSION 3.25...4.1)
+
 set(relative "src/generated/calendar_tables.h")
 file(REMOVE_RECURSE "${WORK}")
 
