@@ -1,10 +1,11 @@
-# Build modes for the presets asan-ubsan, msan, fuzz and coverage (ADR-0004). They apply to the
+# Build modes for the presets asan-ubsan, msan, fuzz, coverage and analyzer (ADR-0004). They apply to the
 # library, tests and tools of this build tree only: the link options are BUILD_INTERFACE, so an
 # installed package never carries them.
 
 set(NEPDATE_C_SANITIZE "" CACHE STRING
     "Comma-separated -fsanitize= list, for example address,undefined")
 option(NEPDATE_C_COVERAGE "Build with --coverage for gcovr" OFF)
+option(NEPDATE_C_ANALYZER "Build with GCC -fanalyzer" OFF)
 
 set(_nepdate_c_sanitize_compile "")
 set(_nepdate_c_sanitize_link "")
@@ -58,6 +59,10 @@ if(NEPDATE_C_COVERAGE AND NOT CMAKE_C_COMPILER_ID STREQUAL "GNU")
     message(FATAL_ERROR "NEPDATE_C_COVERAGE is not supported by this compiler (gcovr needs GCC)")
 endif()
 
+if(NEPDATE_C_ANALYZER AND NOT CMAKE_C_COMPILER_ID STREQUAL "GNU")
+    message(FATAL_ERROR "NEPDATE_C_ANALYZER is not supported by this compiler (-fanalyzer is GCC's)")
+endif()
+
 # True when this build tree is instrumented, so its libraries can't be linked by an ordinary
 # consumer project.
 if(NEPDATE_C_SANITIZE OR NEPDATE_C_COVERAGE)
@@ -85,5 +90,9 @@ function(nepdate_c_set_instrumentation target)
     if(NEPDATE_C_COVERAGE)
         target_compile_options(${target} PRIVATE --coverage)
         target_link_options(${target} ${link_scope} "$<BUILD_INTERFACE:--coverage>")
+    endif()
+    if(NEPDATE_C_ANALYZER)
+        # C sources only: the C++ header check has no use for it.
+        target_compile_options(${target} PRIVATE $<$<COMPILE_LANGUAGE:C>:-fanalyzer>)
     endif()
 endfunction()

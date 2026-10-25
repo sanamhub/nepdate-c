@@ -114,8 +114,8 @@ TEST(wrong_bounds_are_rejected) {
 
 TEST(invalid_json_is_rejected) {
     static const char *const inputs[] = {
-        "",         "{",          "[1,]",     "{\"a\" 1}",    "01",      "1.",
-        "\"\\x\"",  "\"\\ud800\"", "tru",      "{} x",        "[1e]",    "\"a",
+        "",        "{",           "[1,]", "{\"a\" 1}", "01",   "1.",
+        "\"\\x\"", "\"\\ud800\"", "tru",  "{} x",      "[1e]", "\"a",
     };
     for (size_t i = 0; i < sizeof inputs / sizeof inputs[0]; i++) {
         char error[128] = "";

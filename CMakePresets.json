@@ -46,9 +46,10 @@
     {
       "name": "asan-ubsan",
       "inherits": "base",
-      "description": "AddressSanitizer and UBSan, or /fsanitize=address on MSVC",
+      "description": "AddressSanitizer and UBSan, or /fsanitize=address on MSVC, tools/codegen included",
       "cacheVariables": {
-        "NEPDATE_C_SANITIZE": "address,undefined"
+        "NEPDATE_C_SANITIZE": "address,undefined",
+        "NEPDATE_C_BUILD_TOOLS": "ON"
       }
     },
     {
@@ -91,6 +92,24 @@
       "cacheVariables": {
         "NEPDATE_C_CXX_HEADERS": "ON"
       }
+    },
+    {
+      "name": "analyzer",
+      "inherits": "base",
+      "description": "GCC -fanalyzer on the library, tests and tools",
+      "cacheVariables": {
+        "NEPDATE_C_BUILD_TOOLS": "ON",
+        "NEPDATE_C_ANALYZER": "ON"
+      }
+    },
+    {
+      "name": "valgrind",
+      "inherits": "base",
+      "description": "Every test program under Valgrind memcheck, leaks are errors, tools/codegen included",
+      "cacheVariables": {
+        "NEPDATE_C_TEST_LAUNCHER": "valgrind;--error-exitcode=99;--leak-check=full;--errors-for-leak-kinds=all;--track-origins=yes",
+        "NEPDATE_C_BUILD_TOOLS": "ON"
+      }
     }
   ],
   "buildPresets": [
@@ -129,6 +148,14 @@
     {
       "name": "cxx-headers",
       "configurePreset": "cxx-headers"
+    },
+    {
+      "name": "analyzer",
+      "configurePreset": "analyzer"
+    },
+    {
+      "name": "valgrind",
+      "configurePreset": "valgrind"
     }
   ],
   "testPresets": [
@@ -215,6 +242,26 @@
     {
       "name": "cxx-headers",
       "configurePreset": "cxx-headers",
+      "output": {
+        "outputOnFailure": true
+      },
+      "execution": {
+        "timeout": 300
+      }
+    },
+    {
+      "name": "analyzer",
+      "configurePreset": "analyzer",
+      "output": {
+        "outputOnFailure": true
+      },
+      "execution": {
+        "timeout": 300
+      }
+    },
+    {
+      "name": "valgrind",
+      "configurePreset": "valgrind",
       "output": {
         "outputOnFailure": true
       },

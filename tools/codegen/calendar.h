@@ -1,5 +1,5 @@
-/* Reads and checks shared/data/calendar/bs-calendar.json and renders src/generated/calendar_tables.h
- * (ADR-0001). */
+/* Reads and checks shared/data/calendar/bs-calendar.json and renders
+ * src/generated/calendar_tables.h (ADR-0001). */
 #ifndef NEPDATE_CODEGEN_CALENDAR_H
 #define NEPDATE_CODEGEN_CALENDAR_H
 
@@ -24,7 +24,7 @@ typedef struct {
 bool codegen_parse_calendar(const char *json_text, size_t length, codegen_calendar *out,
                             char *error, size_t error_size);
 
-/* Renders the header text. Returns a malloc'd, NUL-terminated string, or NULL when out of memory. */
+/* Renders the header text. Returns a malloc'd string, or NULL when out of memory. */
 char *codegen_render_calendar_tables(const codegen_calendar *calendar);
 
 #endif /* NEPDATE_CODEGEN_CALENDAR_H */

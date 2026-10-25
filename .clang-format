@@ -1,0 +1,4 @@
+# clang-format 18, the format gate (ADR-0004).
+BasedOnStyle: LLVM
+ColumnLimit: 100
+IndentWidth: 4

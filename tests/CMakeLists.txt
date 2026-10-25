@@ -50,3 +50,9 @@ if(NEPDATE_C_CXX_HEADERS)
         nepdate_c_add_test(cxx_headers_${standard} cxx_headers_${standard})
     endforeach()
 endif()
+
+# The release check must refuse a version the files don't carry.
+add_test(NAME release_check_rejects_other_version
+    COMMAND "${CMAKE_COMMAND}" -DVERSION=9.9.9 -P "${PROJECT_SOURCE_DIR}/tools/release_check.cmake")
+set_tests_properties(release_check_rejects_other_version PROPERTIES PASS_REGULAR_EXPRESSION
+    "release_check: 9\.9\.9 doesn't match:.*CMakeLists\.txt: project version 0\.0\.0, want 9\.9\.9")

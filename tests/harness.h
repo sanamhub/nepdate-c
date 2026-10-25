@@ -27,7 +27,7 @@ static int harness_checks_failed;
 
 /* Both sides are converted to long long, so compare values that fit in it. */
 #define CHECK_EQ_INT(actual, expected)                                                             \
-    harness_check_int((long long)(actual), (long long)(expected), __FILE__, __LINE__, #actual,    \
+    harness_check_int((long long)(actual), (long long)(expected), __FILE__, __LINE__, #actual,     \
                       #expected)
 
 /* NULL on either side is a failure unless both are NULL. */
@@ -47,8 +47,7 @@ static inline void harness_check(int ok, const char *file, int line, const char 
 }
 
 static inline void harness_check_int(long long actual, long long expected, const char *file,
-                                     int line, const char *actual_expr,
-                                     const char *expected_expr) {
+                                     int line, const char *actual_expr, const char *expected_expr) {
     if (actual != expected) {
         harness_fail_location(file, line);
         (void)fprintf(stderr, "CHECK_EQ_INT(%s, %s) failed: %lld != %lld\n", actual_expr,
@@ -57,8 +56,7 @@ static inline void harness_check_int(long long actual, long long expected, const
 }
 
 static inline void harness_check_str(const char *actual, const char *expected, const char *file,
-                                     int line, const char *actual_expr,
-                                     const char *expected_expr) {
+                                     int line, const char *actual_expr, const char *expected_expr) {
     if (actual == NULL && expected == NULL) {
         return;
     }
@@ -81,8 +79,8 @@ static inline void harness_run(const char *name, void (*test)(void)) {
 }
 
 static inline int harness_finish(void) {
-    (void)printf("%d tests, %d failed, %d failed checks\n", harness_tests_run,
-                 harness_tests_failed, harness_checks_failed);
+    (void)printf("%d tests, %d failed, %d failed checks\n", harness_tests_run, harness_tests_failed,
+                 harness_checks_failed);
     return harness_tests_failed == 0 ? 0 : 1;
 }
 

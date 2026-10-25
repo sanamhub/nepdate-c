@@ -2,6 +2,7 @@
 
 #include <nepdate.h>
 
+#include <stddef.h>
 #include <stdio.h>
 
 TEST(library_version_matches_header) { CHECK_EQ_STR(nepdate_version(), NEPDATE_VERSION_STRING); }

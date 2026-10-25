@@ -26,7 +26,12 @@ static void fail(parser *p, const char *message) {
 
 static bool at_end(const parser *p) { return p->pos >= p->length; }
 
-static char peek(const parser *p) { return at_end(p) ? '\0' : p->text[p->pos]; }
+static char peek(const parser *p) {
+    if (at_end(p)) {
+        return 0;
+    }
+    return p->text[p->pos];
+}
 
 static void skip_space(parser *p) {
     while (!at_end(p)) {
@@ -197,8 +202,38 @@ static char *read_string(parser *p) {
 
 static bool is_digit(char c) { return c >= '0' && c <= '9'; }
 
+/* Skips an optional fraction and exponent. Returns false on a malformed one, true otherwise, and
+ * sets *integral to false when either was present. */
+static bool skip_fraction_and_exponent(parser *p, bool *integral) {
+    if (peek(p) == '.') {
+        *integral = false;
+        p->pos++;
+        if (!is_digit(peek(p))) {
+            fail(p, "bad fraction");
+            return false;
+        }
+        while (is_digit(peek(p))) {
+            p->pos++;
+        }
+    }
+    if (peek(p) == 'e' || peek(p) == 'E') {
+        *integral = false;
+        p->pos++;
+        if (peek(p) == '+' || peek(p) == '-') {
+            p->pos++;
+        }
+        if (!is_digit(peek(p))) {
+            fail(p, "bad exponent");
+            return false;
+        }
+        while (is_digit(peek(p))) {
+            p->pos++;
+        }
+    }
+    return true;
+}
+
 static void read_number(parser *p, json_value *out) {
-    const size_t start = p->pos;
     bool negative = false;
     if (peek(p) == '-') {
         negative = true;
@@ -208,10 +243,13 @@ static void read_number(parser *p, json_value *out) {
         fail(p, "bad number");
         return;
     }
+    if (peek(p) == '0' && p->pos + 1 < p->length && is_digit(p->text[p->pos + 1])) {
+        fail(p, "leading zero in number");
+        return;
+    }
     /* Accumulate as a negative number, so LLONG_MIN fits too. */
     long long value = 0;
     bool fits = true;
-    const bool leading_zero = peek(p) == '0';
     while (is_digit(peek(p))) {
         const int digit = p->text[p->pos] - '0';
         if (value < (LLONG_MIN + digit) / 10) {
@@ -221,35 +259,9 @@ static void read_number(parser *p, json_value *out) {
         }
         p->pos++;
     }
-    if (leading_zero && p->pos - start - (negative ? 1U : 0U) > 1U) {
-        fail(p, "leading zero in number");
-        return;
-    }
     bool integral = true;
-    if (peek(p) == '.') {
-        integral = false;
-        p->pos++;
-        if (!is_digit(peek(p))) {
-            fail(p, "bad fraction");
-            return;
-        }
-        while (is_digit(peek(p))) {
-            p->pos++;
-        }
-    }
-    if (peek(p) == 'e' || peek(p) == 'E') {
-        integral = false;
-        p->pos++;
-        if (peek(p) == '+' || peek(p) == '-') {
-            p->pos++;
-        }
-        if (!is_digit(peek(p))) {
-            fail(p, "bad exponent");
-            return;
-        }
-        while (is_digit(peek(p))) {
-            p->pos++;
-        }
+    if (!skip_fraction_and_exponent(p, &integral)) {
+        return;
     }
     out->type = JSON_NUMBER;
     if (integral && fits && (negative || value != LLONG_MIN)) {
@@ -272,7 +284,7 @@ static bool grow_items(parser *p, json_value *out, size_t *capacity, bool with_k
     }
     out->items = items;
     if (with_keys) {
-        char **keys = realloc(out->keys, next * sizeof *keys);
+        char **keys = (char **)realloc((void *)out->keys, next * sizeof *keys);
         if (keys == NULL) {
             fail(p, "out of memory");
             return false;

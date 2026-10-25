@@ -6,14 +6,7 @@
 #include <stdbool.h>
 #include <stddef.h>
 
-typedef enum {
-    JSON_NULL,
-    JSON_BOOL,
-    JSON_NUMBER,
-    JSON_STRING,
-    JSON_ARRAY,
-    JSON_OBJECT
-} json_type;
+typedef enum { JSON_NULL, JSON_BOOL, JSON_NUMBER, JSON_STRING, JSON_ARRAY, JSON_OBJECT } json_type;
 
 typedef struct json_value json_value;
 
