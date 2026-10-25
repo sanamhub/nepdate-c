@@ -11,5 +11,6 @@ Immutable once Accepted; supersede with a new ADR.
 | [0003](0003-names.md) | Names that never collide with nepdate-cpp | Accepted |
 | [0004](0004-gates.md) | Quality gates and CI | Accepted, gate 13 amended by 0007 |
 | [0005](0005-packaging.md) | Packaging | Accepted |
-| [0006](0006-date-layout.md) | The date holds a day number | Accepted |
+| [0006](0006-date-layout.md) | The date holds a day number | Accepted, BS to AD amended by 0008 |
 | [0007](0007-no-libc-linker-symbols.md) | The no-libc gate allows linker symbols | Accepted |
+| [0008](0008-bs-to-ad-by-ad-month-table.md) | BS to AD reads the AD month table | Accepted |
