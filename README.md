@@ -1,12 +1,25 @@
-# nepdate-c
+<p align="center">
+  <img src="https://raw.githubusercontent.com/sanamhub/nepdate-c/main/docs/assets/nepdate-c-128.png" width="128" alt="NepDate for C logo">
+</p>
 
-Bikram Sambat (Nepali calendar) dates for C: conversion to and from the Gregorian calendar,
-arithmetic, formatting and parsing, with no allocation and no dependencies. It is plain ISO C11,
-so Zig and language extensions can also compile it directly.
+<h1 align="center">nepdate-c</h1>
 
-**Status: in development. Nothing is released yet.** The repository holds the build, the quality
-gates and a version function; the calendar code is not written yet. The C++, Rust, Go, TypeScript,
-Python, Swift and Kotlin ports are released; see [nepdate.com](https://nepdate.com).
+<p align="center">
+  <a href="https://github.com/sanamhub/nepdate-c/actions/workflows/ci.yml"><img src="https://github.com/sanamhub/nepdate-c/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
+  <img src="https://img.shields.io/badge/C-11-283593?logo=c" alt="C11">
+  <a href="https://github.com/sanamhub/nepdate-c/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue" alt="License: MIT"></a>
+</p>
+
+Bikram Sambat (Nepali calendar) for C. Part of the NepDate family: shared data and spec live in the
+hub [`sanamhub/nepdate`](https://github.com/sanamhub/nepdate); the C# original is
+[NepDate](https://github.com/RajuPrasai/NepDate).
+
+Plain ISO C11 with no allocation, no global state and no dependencies, so it also builds into Zig
+projects and into extensions for languages that call C.
+
+> **Status:** in development, nothing is released. The build, the checks and CI are in place; the
+> calendar code is being written. Until the first release, use one of the
+> [released languages](https://github.com/sanamhub/nepdate#packages).
 
 ## Build
 
@@ -33,12 +46,22 @@ int main(void) {
 }
 ```
 
-## Documentation
+## More
 
-- [docs/API.md](docs/API.md): the public surface.
-- [docs/adr/](docs/adr/README.md): design decisions.
-- [CONTRIBUTING.md](CONTRIBUTING.md): setup and the quality gates.
+| Topic | Where |
+|---|---|
+| Every public name, with signatures | [docs/API.md](https://github.com/sanamhub/nepdate-c/blob/main/docs/API.md) |
+| Architecture decision records | [docs/adr](https://github.com/sanamhub/nepdate-c/blob/main/docs/adr/README.md) |
+| What changed in each version | [CHANGELOG.md](https://github.com/sanamhub/nepdate-c/blob/main/CHANGELOG.md) |
+| Building, gates and pull requests | [CONTRIBUTING.md](https://github.com/sanamhub/nepdate-c/blob/main/CONTRIBUTING.md) |
+| Reporting a vulnerability | [SECURITY.md](https://github.com/sanamhub/nepdate-c/blob/main/SECURITY.md) |
+| Guides and examples | [nepdate.com/docs/c](https://nepdate.com/docs/c/) |
+| A wrong date, holiday or tithi | the hub's [data error form](https://github.com/sanamhub/nepdate/issues/new/choose) |
+| The other languages | [sanamhub/nepdate](https://github.com/sanamhub/nepdate#packages) |
 
 ## License
 
-MIT. See [LICENSE](LICENSE).
+MIT, see [LICENSE](https://github.com/sanamhub/nepdate-c/blob/main/LICENSE). Calendar and patro
+data from NepDate by Raju Prasai and contributors, MIT, see
+[shared/data/NOTICE](https://github.com/sanamhub/nepdate-c/blob/main/shared/data/NOTICE). Not
+affiliated with the Government of Nepal.
