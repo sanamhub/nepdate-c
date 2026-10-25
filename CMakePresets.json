@@ -74,7 +74,9 @@
       "inherits": "base",
       "description": "Clang with libFuzzer instrumentation, ASan and UBSan",
       "cacheVariables": {
-        "NEPDATE_C_SANITIZE": "address,undefined,fuzzer-no-link"
+        "NEPDATE_C_SANITIZE": "address,undefined,fuzzer-no-link",
+        "NEPDATE_C_BUILD_FUZZERS": "ON",
+        "NEPDATE_C_BUILD_TESTS": "OFF"
       }
     },
     {
