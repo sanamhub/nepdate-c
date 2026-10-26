@@ -61,7 +61,7 @@ typedef enum nepdate_status {
     NEPDATE_E_UNRECOGNIZED = 9,
     /* A nepdate_date no function of this library made, such as a zero-initialised one. */
     NEPDATE_E_INVALID_DATE = 10,
-    /* A required pointer argument is NULL. */
+    /* A required pointer argument is NULL, including the text of a parsing function. */
     NEPDATE_E_NULL = 11
 } nepdate_status;
 
@@ -123,6 +123,37 @@ typedef enum nepdate_overflow { NEPDATE_CLAMP = 0, NEPDATE_OVERFLOW = 1 } nepdat
 
 /* A language for text output: English or Nepali. */
 typedef enum nepdate_lang { NEPDATE_ENGLISH = 0, NEPDATE_NEPALI = 1 } nepdate_lang;
+
+/* The field order of a short format (FORMATTING section 3). A value outside the enumerators is
+ * treated as NEPDATE_YMD. */
+typedef enum nepdate_order {
+    NEPDATE_YMD = 0,
+    NEPDATE_YDM = 1,
+    NEPDATE_MYD = 2,
+    NEPDATE_MDY = 3,
+    NEPDATE_DYM = 4,
+    NEPDATE_DMY = 5
+} nepdate_order;
+
+/* The separator of a short format. A value outside the enumerators is treated as
+ * NEPDATE_SEP_SLASH. */
+typedef enum nepdate_separator {
+    NEPDATE_SEP_SLASH = '/',
+    NEPDATE_SEP_BACKSLASH = '\\',
+    NEPDATE_SEP_DOT = '.',
+    NEPDATE_SEP_UNDERSCORE = '_',
+    NEPDATE_SEP_DASH = '-',
+    NEPDATE_SEP_SPACE = ' '
+} nepdate_separator;
+
+/* Options of nepdate_format_long, matching the C# long format: a weekday and its comma when
+ * `weekday` is true, the 2-digit day when `pad` is true, and the year and its comma when `year` is
+ * true. C# defaults to no weekday, the year and the padded day. */
+typedef struct nepdate_long_options {
+    bool weekday;
+    bool year;
+    bool pad;
+} nepdate_long_options;
 
 /* The calendar distance from one date to another (ALGORITHM section 8a): `sign` is -1 when the
  * second date is earlier and 1 otherwise, and `years`, `months` and `days` are magnitudes. */
@@ -282,6 +313,40 @@ NEPDATE_API nepdate_status nepdate_quarter_end(int fiscal_year, nepdate_quarter 
  * English. A buffer of 39 bytes always fits the label and its terminator. */
 NEPDATE_API size_t nepdate_fiscal_year_label(int fiscal_year, nepdate_lang lang, char *buffer,
                                              size_t size);
+
+/* Writes date in the format described by pattern (FORMATTING section 5) and returns the length the
+ * full text needs. A NULL pattern means the default display, "YYYY/MM/DD". The text is truncated
+ * and NUL-terminated when size is too small, size 0 or a NULL buffer writes nothing, and the
+ * returned length is still the full one. NEPDATE_NEPALI selects Devanagari digits and the Nepali
+ * month names; any other language is English. A date no function made returns 0 and writes nothing.
+ */
+NEPDATE_API size_t nepdate_format(nepdate_date date, const char *pattern, nepdate_lang lang,
+                                  char *buffer, size_t size);
+
+/* Writes the short format of date (FORMATTING section 3): the three fields in order, separated by
+ * separator, with a 4-digit year and 2-digit month and day when pad is true. The truncation,
+ * NUL-termination and invalid-date rules are those of nepdate_format. */
+NEPDATE_API size_t nepdate_format_short(nepdate_date date, nepdate_order order,
+                                        nepdate_separator separator, bool pad, nepdate_lang lang,
+                                        char *buffer, size_t size);
+
+/* Writes the long format of date (FORMATTING section 4), for example "Tuesday, Shrawan 15, 2081".
+ * The truncation, NUL-termination and invalid-date rules are those of nepdate_format. */
+NEPDATE_API size_t nepdate_format_long(nepdate_date date, nepdate_long_options options,
+                                       nepdate_lang lang, char *buffer, size_t size);
+
+/* Parses exactly year, month and day from text, in that order (PARSING section 1). Reads at most
+ * len bytes and never needs a terminator. Returns NEPDATE_OK and stores the date in *out, or one of
+ * NEPDATE_E_NULL for a NULL argument, NEPDATE_E_INVALID_CHARACTER, NEPDATE_E_WRONG_GROUP_COUNT,
+ * NEPDATE_E_NUMBER_TOO_LONG, NEPDATE_E_OUT_OF_RANGE, NEPDATE_E_INVALID_MONTH or
+ * NEPDATE_E_INVALID_DAY. *out is unchanged on error. */
+NEPDATE_API nepdate_status nepdate_parse(const char *text, size_t len, nepdate_date *out);
+
+/* Parses human input from text (PARSING section 2): strict parsing first, then month names, era
+ * markers, the dropped words and the numeric fallback. Reads at most len bytes and never needs a
+ * terminator. Besides the strict errors it returns NEPDATE_E_AMBIGUOUS or NEPDATE_E_UNRECOGNIZED,
+ * and NEPDATE_E_NULL for a NULL argument. *out is unchanged on error. */
+NEPDATE_API nepdate_status nepdate_parse_lenient(const char *text, size_t len, nepdate_date *out);
 
 /* Stores in *out the range from start to end, both included. Returns NEPDATE_E_NULL when out is
  * NULL, NEPDATE_E_INVALID_DATE when either date is not one this library made, and

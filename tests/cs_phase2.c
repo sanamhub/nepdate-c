@@ -6,11 +6,17 @@
 #include <nepdate.h>
 
 #include <stdint.h>
+#include <string.h>
 
 static nepdate_date bs(int year, int month, int day) {
     nepdate_date date = {0};
     CHECK_EQ_INT(nepdate_from_bs(year, month, day, &date), NEPDATE_OK);
     return date;
+}
+
+static nepdate_status parse_lenient_status(const char *text) {
+    nepdate_date date = {0};
+    return nepdate_parse_lenient(text, strlen(text), &date);
 }
 
 static void expect(nepdate_date date, int year, int month, int day) {
@@ -372,11 +378,19 @@ TEST(constructor_same_english_date) {
     CHECK_EQ_INT(morning.value, evening.value);
 }
 
-/* cs-pending: NepaliDateArithmeticEdgeCaseTests.TryParse_AutoAdjust_DayYearMonthFormat_ReturnsCorrectDate phase 3: needs parse */
-/* cs-pending: NepaliDateArithmeticEdgeCaseTests.TryParse_AutoAdjust_MonthDayYearInvertedOrder_ReturnsCorrectDate phase 3: needs parse */
-/* cs-pending: NepaliDateArithmeticEdgeCaseTests.TryParse_AutoAdjust_TwoDigitYear_ExpandsToCurrentMillennium phase 3: needs parse */
-/* cs-pending: NepaliDateArithmeticEdgeCaseTests.TryParse_AutoAdjust_InvalidDateAfterAdjustment_ReturnsFalse phase 3: needs parse */
-/* cs-pending: NepaliDateArithmeticEdgeCaseTests.TryParse_AutoAdjust_ValidStandardFormat_ReturnsCorrectDate phase 3: needs parse */
+/* cs-deviation: NepaliDateArithmeticEdgeCaseTests.TryParse_AutoAdjust_DayYearMonthFormat_ReturnsCorrectDate D-06
+ * (lenient parsing accepts year-month-day and day-month-year, not a day-year-month guess) */
+/* cs-deviation: NepaliDateArithmeticEdgeCaseTests.TryParse_AutoAdjust_MonthDayYearInvertedOrder_ReturnsCorrectDate D-06
+ * (lenient parsing does not guess a month-day-year order) */
+/* cs-pending: NepaliDateArithmeticEdgeCaseTests.TryParse_AutoAdjust_TwoDigitYear_ExpandsToCurrentMillennium phase 4: needs today; this port returns Ambiguous (D-06) */
+TEST(try_parse_auto_adjust_invalid_date) {
+    CHECK(parse_lenient_status("2080/13/40") != NEPDATE_OK);
+}
+TEST(try_parse_auto_adjust_valid_standard) {
+    nepdate_date date = {0};
+    CHECK_EQ_INT(nepdate_parse_lenient("2080/05/15", 10, &date), NEPDATE_OK);
+    expect(date, 2080, 5, 15);
+}
 
 /* ---------- Core/NepaliDateManipulationTests.cs ---------- */
 
@@ -738,6 +752,12 @@ TEST(subtraction_cross_year) {
 }
 
 int main(void) {
+    RUN_TEST_NAMED("NepaliDateArithmeticEdgeCaseTests."
+                   "TryParse_AutoAdjust_InvalidDateAfterAdjustment_ReturnsFalse",
+                   try_parse_auto_adjust_invalid_date);
+    RUN_TEST_NAMED("NepaliDateArithmeticEdgeCaseTests."
+                   "TryParse_AutoAdjust_ValidStandardFormat_ReturnsCorrectDate",
+                   try_parse_auto_adjust_valid_standard);
     RUN_TEST_NAMED(
         "FiscalYearInstanceMethodTests.FiscalYearStartDate_DateInShrawan_ReturnsSameyearShrawan1",
         fiscal_start_shrawan);

@@ -27,8 +27,9 @@ fail.
 
 Functions return a `nepdate_status` and write their result through the last argument, a pointer
 the caller owns. The pointer is checked first (`NEPDATE_E_NULL`), and on any error the object it
-points to is left unchanged. No function allocates, keeps state or reads the clock, so every
-function is thread-safe.
+points to is left unchanged. The formatting functions are the exception to the status return: they
+return the length of the text and use `snprintf` semantics, described in Formatting below. No
+function allocates, keeps state or reads the clock, so every function is thread-safe.
 
 The supported range is BS 1901-01-01 to 2199-12-30, which is AD 1844-04-11 to 2143-04-15
 (`shared/spec/ALGORITHM.md`).
@@ -78,6 +79,22 @@ typedef enum nepdate_overflow {
 
 typedef enum nepdate_lang { NEPDATE_ENGLISH = 0, NEPDATE_NEPALI = 1 } nepdate_lang;
 
+typedef enum nepdate_order {
+    NEPDATE_YMD = 0, NEPDATE_YDM = 1, NEPDATE_MYD = 2,
+    NEPDATE_MDY = 3, NEPDATE_DYM = 4, NEPDATE_DMY = 5
+} nepdate_order;
+
+typedef enum nepdate_separator {
+    NEPDATE_SEP_SLASH = '/', NEPDATE_SEP_BACKSLASH = '\\', NEPDATE_SEP_DOT = '.',
+    NEPDATE_SEP_UNDERSCORE = '_', NEPDATE_SEP_DASH = '-', NEPDATE_SEP_SPACE = ' '
+} nepdate_separator;
+
+typedef struct nepdate_long_options {
+    bool weekday;
+    bool year;
+    bool pad;
+} nepdate_long_options;
+
 typedef struct nepdate_date_diff {
     int sign;
     int years;
@@ -102,9 +119,13 @@ typedef struct nepdate_range_iterator {
 | `NEPDATE_E_INVALID_MONTH` | a BS month outside 1 to 12 |
 | `NEPDATE_E_INVALID_DAY` | a BS day outside 1 to the length of its month |
 | `NEPDATE_E_INVALID_GREGORIAN` | an AD year, month and day that is not a proleptic Gregorian date |
-| `NEPDATE_E_INVALID_CHARACTER` to `NEPDATE_E_UNRECOGNIZED` | parse errors (`shared/spec/PARSING.md` section 4), used by the parsing functions |
+| `NEPDATE_E_INVALID_CHARACTER` | parsing met a byte that is neither a digit nor a separator |
+| `NEPDATE_E_WRONG_GROUP_COUNT` | strict parsing found fewer than three groups (empty input included) or a fourth |
+| `NEPDATE_E_NUMBER_TOO_LONG` | a parsed number has more than four digits |
+| `NEPDATE_E_AMBIGUOUS` | lenient parsing cannot tell the year, month and day apart |
+| `NEPDATE_E_UNRECOGNIZED` | lenient parsing found no form it accepts |
 | `NEPDATE_E_INVALID_DATE` | a `nepdate_date` or `nepdate_range` that no function of this library made |
-| `NEPDATE_E_NULL` | a required pointer is `NULL` |
+| `NEPDATE_E_NULL` | a required pointer is `NULL`, including the text of a parsing function |
 
 `nepdate_date` is a 4-byte value passed by value. Its `value` is private: 1 plus the number of days
 since BS 1901-01-01 (ADR-0006), so a zero-initialised `nepdate_date` is not a date and every function
@@ -287,6 +308,75 @@ const size_t length = nepdate_fiscal_year_label(2082, NEPDATE_NEPALI, label, siz
 and `NEPDATE_E_INVALID_DATE` for a date no function made. The four functions that build a date from
 a fiscal year or a quarter return `NEPDATE_E_NULL` and `NEPDATE_E_OUT_OF_RANGE`. All of them leave
 the out object unchanged on error.
+
+## Formatting
+
+```c
+size_t nepdate_format(nepdate_date date, const char *pattern, nepdate_lang lang,
+                      char *buffer, size_t size);
+size_t nepdate_format_short(nepdate_date date, nepdate_order order,
+                            nepdate_separator separator, bool pad, nepdate_lang lang,
+                            char *buffer, size_t size);
+size_t nepdate_format_long(nepdate_date date, nepdate_long_options options,
+                           nepdate_lang lang, char *buffer, size_t size);
+```
+
+All three write text with `snprintf` semantics: the return value is the number of bytes the full
+text needs, the text is truncated and NUL-terminated when `size` is too small, and `size` 0 or a
+`NULL` buffer writes nothing. `NEPDATE_NEPALI` selects Devanagari digits and the Nepali names; any
+other language is English. A `nepdate_date` no function made returns 0 and writes nothing.
+
+`nepdate_format` follows `shared/spec/FORMATTING.md` section 5. `NULL`, `""`, `"G"`, `"g"` and
+`"d"` give the default display `2081/04/15`, `"D"` the long format and `"s"` the interchange form
+`2081-04-15`. Any other pattern is scanned for `yyyy`, `yy`, `MMMM`, `MMM`, `MM`, `M`, `dd`, `d`,
+`'...'` and a backslash that escapes the next character; other bytes are copied. `MMM` uses the
+short English month name and the full Nepali one, and its Ashad and Ashoj forms are `Asa` and `Aso`
+(PARITY D-04).
+
+`nepdate_format_short` writes the three fields in the order `order`, separated by `separator`, with
+a 4-digit year and 2-digit month and day when `pad` is true. An `order` or `separator` outside its
+enumerators is treated as `NEPDATE_YMD` or `NEPDATE_SEP_SLASH`.
+
+`nepdate_format_long` writes `[<weekday>, ]<month> <day>[, <year>]`; its `options` select the
+weekday, the year and the padded day. C# defaults are no weekday, the year and the padded day.
+
+```c
+char text[64];
+const size_t length = nepdate_format(date, "yyyy-MM-dd", NEPDATE_ENGLISH, text, sizeof text);
+/* text is "2081-04-15" and length is 10 */
+```
+
+## Parsing
+
+```c
+nepdate_status nepdate_parse(const char *text, size_t len, nepdate_date *out);
+nepdate_status nepdate_parse_lenient(const char *text, size_t len, nepdate_date *out);
+```
+
+Both read at most `len` bytes and need no terminator, so a slice of a larger buffer works. `text`
+is checked after `out`, and either may not be `NULL` (`NEPDATE_E_NULL`); empty input is a non-`NULL`
+pointer with `len` 0.
+
+`nepdate_parse` accepts exactly year, month and day in that order (`shared/spec/PARSING.md` section
+1): groups of 1 to 4 ASCII or Devanagari digits, separated by `-`, `/`, `.`, `_`, backslash, space,
+`|` or the danda `।`. Leading, trailing and repeated separators are ignored. It returns
+`NEPDATE_E_INVALID_CHARACTER`, `NEPDATE_E_WRONG_GROUP_COUNT` or `NEPDATE_E_NUMBER_TOO_LONG`, then
+validates the date and returns `NEPDATE_E_OUT_OF_RANGE`, `NEPDATE_E_INVALID_MONTH` or
+`NEPDATE_E_INVALID_DAY`.
+
+`nepdate_parse_lenient` is for human input. It tries `nepdate_parse` first, then drops era markers
+and the words `गते` and `मिति`, maps Devanagari digits, accepts a month name with two numbers in any
+order, or three numbers as `Y M D` when the first has four digits and `D M Y` when the last does. It
+returns `NEPDATE_E_AMBIGUOUS` or `NEPDATE_E_UNRECOGNIZED` for the rest, and a two-digit year is
+never expanded (PARITY D-06). Both functions leave `*out` unchanged on error.
+
+```c
+nepdate_date date;
+const char text[] = "2080/05/15";
+if (nepdate_parse(text, sizeof text - 1, &date) == NEPDATE_OK) {
+    /* date is 2080-05-15 */
+}
+```
 
 ## Ranges
 

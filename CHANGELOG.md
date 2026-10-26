@@ -23,3 +23,8 @@ Versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - Inclusive date ranges: `nepdate_range`, construction for a pair of dates, a month, a BS year or a
   fiscal year, length, containment, and a day cursor (`nepdate_range_begin`,
   `nepdate_range_next`).
+- Formatting into caller buffers with `snprintf` semantics: `nepdate_format` for custom patterns,
+  `nepdate_format_short` for the six field orders and separators, and `nepdate_format_long` for the
+  long form, in English or Nepali (`nepdate_order`, `nepdate_separator`, `nepdate_long_options`).
+- Strict and lenient parsing from a pointer and length (`nepdate_parse`, `nepdate_parse_lenient`),
+  with the parse error kinds already in `nepdate_status`.

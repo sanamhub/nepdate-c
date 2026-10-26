@@ -4,7 +4,9 @@
 
 #include <nepdate.h>
 
+#include <stddef.h>
 #include <stdint.h>
+#include <string.h>
 
 #ifndef NEPDATE_C_BIT_PATTERN_BITS
 #define NEPDATE_C_BIT_PATTERN_BITS 24
@@ -32,6 +34,11 @@ static void check_invalid(uint32_t value) {
     nepdate_date_diff diff = {-1, -2, -3, -4};
     nepdate_range range = {{-1}, {-1}};
     const nepdate_date valid = anchor_date;
+    const nepdate_long_options long_options = {true, true, true};
+    char text[8];
+    for (size_t i = 0; i < sizeof text; i++) {
+        text[i] = 'X';
+    }
 
     CHECK_EQ_INT(nepdate_to_bs(date, &ymd), NEPDATE_E_INVALID_DATE);
     CHECK_EQ_INT(nepdate_to_ad(date, &ymd), NEPDATE_E_INVALID_DATE);
@@ -56,6 +63,11 @@ static void check_invalid(uint32_t value) {
     CHECK_EQ_INT(nepdate_range_make(date, valid, &range), NEPDATE_E_INVALID_DATE);
     CHECK_EQ_INT(nepdate_range_make(valid, date, &range), NEPDATE_E_INVALID_DATE);
     CHECK_EQ_INT(nepdate_range_contains(anchor_range, date, &contains), NEPDATE_E_INVALID_DATE);
+    CHECK_EQ_INT(nepdate_format(date, "yyyy-MM-dd", NEPDATE_ENGLISH, text, sizeof text), 0);
+    CHECK_EQ_INT(nepdate_format_short(date, NEPDATE_YMD, NEPDATE_SEP_SLASH, true, NEPDATE_ENGLISH,
+                                      text, sizeof text),
+                 0);
+    CHECK_EQ_INT(nepdate_format_long(date, long_options, NEPDATE_ENGLISH, text, sizeof text), 0);
 
     CHECK(ymd.year == -1 && ymd.month == -2 && ymd.day == -3);
     CHECK_EQ_INT(weekday, NEPDATE_SATURDAY);
@@ -72,6 +84,9 @@ static void check_invalid(uint32_t value) {
     CHECK_EQ_INT(diff.days, -4);
     CHECK_EQ_INT(range.start.value, -1);
     CHECK_EQ_INT(range.end.value, -1);
+    for (size_t i = 0; i < sizeof text; i++) {
+        CHECK_EQ_INT(text[i], 'X');
+    }
 }
 
 static void check_valid_arithmetic(nepdate_date date) {
@@ -163,6 +178,15 @@ static void check_valid(uint32_t value) {
     CHECK(comparison >= -1 && comparison <= 1);
     CHECK_EQ_INT(nepdate_compare(valid, date, &comparison), NEPDATE_OK);
     CHECK(comparison >= -1 && comparison <= 1);
+
+    char text[96];
+    CHECK_EQ_INT(nepdate_format(date, NULL, NEPDATE_ENGLISH, text, sizeof text), 10);
+    CHECK_EQ_INT(text[10], '\0');
+    CHECK_EQ_INT(nepdate_format_short(date, NEPDATE_YMD, NEPDATE_SEP_SLASH, true, NEPDATE_ENGLISH,
+                                      text, sizeof text),
+                 10);
+    const nepdate_long_options options = {true, true, true};
+    CHECK(nepdate_format_long(date, options, NEPDATE_ENGLISH, text, sizeof text) > 0);
 
     check_valid_arithmetic(date);
 }

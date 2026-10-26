@@ -14,6 +14,7 @@ set(CMAKE_C_EXTENSIONS OFF)
 set(CMAKE_C_VISIBILITY_PRESET hidden)
 
 option(NEPDATE_C_BUILD_TESTS "Build the tests" ${PROJECT_IS_TOP_LEVEL})
+option(NEPDATE_C_BUILD_FUZZERS "Build the libFuzzer targets (Clang and the fuzz preset)" OFF)
 # The option exists so a core-only package can turn the patro library off.
 option(NEPDATE_C_BUILD_PATRO "Build the nepdate-c::patro library" ON)
 option(NEPDATE_C_BUILD_TOOLS "Build tools/codegen" OFF)
@@ -109,6 +110,10 @@ endif()
 
 if(NEPDATE_C_BUILD_TESTS)
     add_subdirectory(tests)
+endif()
+
+if(NEPDATE_C_BUILD_FUZZERS)
+    add_subdirectory(tests/fuzz)
 endif()
 
 if(NEPDATE_C_BUILD_TOOLS)
