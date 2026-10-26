@@ -1,6 +1,5 @@
-/* The phase-2 rows of the C# test catalogue, each named after its catalog.tsv id. Rows for a
- * later phase are skipped with a cs-pending marker; rows a PARITY deviation covers have a
- * cs-deviation marker naming the D-ID. */
+/* The phase-2 rows of the C# test catalogue, each named after its catalog.tsv id. Rows a PARITY
+ * deviation covers have a cs-deviation marker naming the D-ID. */
 #include "harness.h"
 
 #include <nepdate.h>
@@ -11,6 +10,13 @@
 static nepdate_date bs(int year, int month, int day) {
     nepdate_date date = {0};
     CHECK_EQ_INT(nepdate_from_bs(year, month, day, &date), NEPDATE_OK);
+    return date;
+}
+
+/* 2024-07-30 18:30 UTC, the current-date rows' injected clock. */
+static nepdate_date today_nepal(void) {
+    nepdate_date date = {0};
+    CHECK_EQ_INT(nepdate_today_nepal(INT64_C(1722364200), &date), NEPDATE_OK);
     return date;
 }
 
@@ -382,7 +388,8 @@ TEST(constructor_same_english_date) {
  * (lenient parsing accepts year-month-day and day-month-year, not a day-year-month guess) */
 /* cs-deviation: NepaliDateArithmeticEdgeCaseTests.TryParse_AutoAdjust_MonthDayYearInvertedOrder_ReturnsCorrectDate D-06
  * (lenient parsing does not guess a month-day-year order) */
-/* cs-pending: NepaliDateArithmeticEdgeCaseTests.TryParse_AutoAdjust_TwoDigitYear_ExpandsToCurrentMillennium phase 4: needs today; this port returns Ambiguous (D-06) */
+/* cs-deviation: NepaliDateArithmeticEdgeCaseTests.TryParse_AutoAdjust_TwoDigitYear_ExpandsToCurrentMillennium D-06
+ * (this port never expands a two-digit year; lenient parsing returns Ambiguous) */
 TEST(try_parse_auto_adjust_invalid_date) {
     CHECK(parse_lenient_status("2080/13/40") != NEPDATE_OK);
 }
@@ -464,14 +471,84 @@ TEST(range_calendar_year_length) {
     CHECK(length >= 365 && length <= 366);
 }
 
-/* cs-pending: NepaliDateRangeExtendedTests.CurrentMonth_StartIsFirstDayOfCurrentMonth phase 4: needs today */
-/* cs-pending: NepaliDateRangeExtendedTests.CurrentMonth_EndIsLastDayOfCurrentMonth phase 4: needs today */
-/* cs-pending: NepaliDateRangeExtendedTests.CurrentMonth_ContainsToday phase 4: needs today */
-/* cs-pending: NepaliDateRangeExtendedTests.CurrentFiscalYear_ContainsToday phase 4: needs today */
-/* cs-pending: NepaliDateRangeExtendedTests.CurrentFiscalYear_StartIsShrawan phase 4: needs today */
-/* cs-pending: NepaliDateRangeExtendedTests.CurrentFiscalYear_EndIsAshadh phase 4: needs today */
-/* cs-pending: NepaliDateRangeExtendedTests.CurrentCalendarYear_ContainsToday phase 4: needs today */
-/* cs-pending: NepaliDateRangeExtendedTests.CurrentCalendarYear_StartIsBaishakh1 phase 4: needs today */
+TEST(current_month_start_is_first_day) {
+    const nepdate_date today = today_nepal();
+    nepdate_ymd ymd = {0, 0, 0};
+    CHECK_EQ_INT(nepdate_to_bs(today, &ymd), NEPDATE_OK);
+    nepdate_range range = {{0}, {0}};
+    CHECK_EQ_INT(nepdate_range_of_month(ymd.year, ymd.month, &range), NEPDATE_OK);
+    expect(range.start, ymd.year, ymd.month, 1);
+}
+
+TEST(current_month_end_is_last_day) {
+    const nepdate_date today = today_nepal();
+    nepdate_ymd ymd = {0, 0, 0};
+    CHECK_EQ_INT(nepdate_to_bs(today, &ymd), NEPDATE_OK);
+    nepdate_range range = {{0}, {0}};
+    CHECK_EQ_INT(nepdate_range_of_month(ymd.year, ymd.month, &range), NEPDATE_OK);
+    int length = 0;
+    CHECK_EQ_INT(nepdate_month_length(today, &length), NEPDATE_OK);
+    expect(range.end, ymd.year, ymd.month, length);
+}
+
+TEST(current_month_contains_today) {
+    const nepdate_date today = today_nepal();
+    nepdate_ymd ymd = {0, 0, 0};
+    CHECK_EQ_INT(nepdate_to_bs(today, &ymd), NEPDATE_OK);
+    nepdate_range range = {{0}, {0}};
+    CHECK_EQ_INT(nepdate_range_of_month(ymd.year, ymd.month, &range), NEPDATE_OK);
+    bool contains = false;
+    CHECK_EQ_INT(nepdate_range_contains(range, today, &contains), NEPDATE_OK);
+    CHECK(contains);
+}
+
+TEST(current_fiscal_year_contains_today) {
+    const nepdate_date today = today_nepal();
+    nepdate_range range = {{0}, {0}};
+    CHECK_EQ_INT(nepdate_range_of_fiscal_year(fiscal_year(today), &range), NEPDATE_OK);
+    bool contains = false;
+    CHECK_EQ_INT(nepdate_range_contains(range, today, &contains), NEPDATE_OK);
+    CHECK(contains);
+}
+
+TEST(current_fiscal_year_start_is_shrawan) {
+    const nepdate_date today = today_nepal();
+    nepdate_range range = {{0}, {0}};
+    CHECK_EQ_INT(nepdate_range_of_fiscal_year(fiscal_year(today), &range), NEPDATE_OK);
+    nepdate_ymd ymd = {0, 0, 0};
+    CHECK_EQ_INT(nepdate_to_bs(range.start, &ymd), NEPDATE_OK);
+    CHECK_EQ_INT(ymd.month, 4);
+    CHECK_EQ_INT(ymd.day, 1);
+}
+
+TEST(current_fiscal_year_end_is_ashadh) {
+    const nepdate_date today = today_nepal();
+    nepdate_range range = {{0}, {0}};
+    CHECK_EQ_INT(nepdate_range_of_fiscal_year(fiscal_year(today), &range), NEPDATE_OK);
+    nepdate_ymd ymd = {0, 0, 0};
+    CHECK_EQ_INT(nepdate_to_bs(range.end, &ymd), NEPDATE_OK);
+    CHECK_EQ_INT(ymd.month, 3);
+}
+
+TEST(current_calendar_year_contains_today) {
+    const nepdate_date today = today_nepal();
+    nepdate_ymd ymd = {0, 0, 0};
+    CHECK_EQ_INT(nepdate_to_bs(today, &ymd), NEPDATE_OK);
+    nepdate_range range = {{0}, {0}};
+    CHECK_EQ_INT(nepdate_range_of_year(ymd.year, &range), NEPDATE_OK);
+    bool contains = false;
+    CHECK_EQ_INT(nepdate_range_contains(range, today, &contains), NEPDATE_OK);
+    CHECK(contains);
+}
+
+TEST(current_calendar_year_start_is_baishakh_1) {
+    const nepdate_date today = today_nepal();
+    nepdate_ymd ymd = {0, 0, 0};
+    CHECK_EQ_INT(nepdate_to_bs(today, &ymd), NEPDATE_OK);
+    nepdate_range range = {{0}, {0}};
+    CHECK_EQ_INT(nepdate_range_of_year(ymd.year, &range), NEPDATE_OK);
+    expect(range.start, ymd.year, 1, 1);
+}
 
 /* cs-deviation: NepaliDateRangeExtendedTests.SplitByFiscalQuarter_EmptyRange_ReturnsEmptyArray D-09 no splitting */
 /* cs-deviation: NepaliDateRangeExtendedTests.SplitByFiscalQuarter_RangeWithinOneQuarter_ReturnsSingleRange D-09 no splitting */
@@ -987,6 +1064,22 @@ int main(void) {
         range_calendar_year);
     RUN_TEST_NAMED("NepaliDateRangeExtendedTests.ForCalendarYear_LengthIsReasonable",
                    range_calendar_year_length);
+    RUN_TEST_NAMED("NepaliDateRangeExtendedTests.CurrentMonth_StartIsFirstDayOfCurrentMonth",
+                   current_month_start_is_first_day);
+    RUN_TEST_NAMED("NepaliDateRangeExtendedTests.CurrentMonth_EndIsLastDayOfCurrentMonth",
+                   current_month_end_is_last_day);
+    RUN_TEST_NAMED("NepaliDateRangeExtendedTests.CurrentMonth_ContainsToday",
+                   current_month_contains_today);
+    RUN_TEST_NAMED("NepaliDateRangeExtendedTests.CurrentFiscalYear_ContainsToday",
+                   current_fiscal_year_contains_today);
+    RUN_TEST_NAMED("NepaliDateRangeExtendedTests.CurrentFiscalYear_StartIsShrawan",
+                   current_fiscal_year_start_is_shrawan);
+    RUN_TEST_NAMED("NepaliDateRangeExtendedTests.CurrentFiscalYear_EndIsAshadh",
+                   current_fiscal_year_end_is_ashadh);
+    RUN_TEST_NAMED("NepaliDateRangeExtendedTests.CurrentCalendarYear_ContainsToday",
+                   current_calendar_year_contains_today);
+    RUN_TEST_NAMED("NepaliDateRangeExtendedTests.CurrentCalendarYear_StartIsBaishakh1",
+                   current_calendar_year_start_is_baishakh_1);
     RUN_TEST_NAMED(
         "NepaliDateRangeExtendedTests.FromDayCount_ZeroDays_ThrowsArgumentOutOfRangeException",
         from_day_count_zero);

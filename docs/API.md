@@ -1,8 +1,8 @@
 # API
 
-The public surface of `nepdate-c`. Everything listed here is declared in `<nepdate.h>`; nothing
-else is exported (ADR-0002). The API-surface gate compares the shared library's export table with
-the functions on this page.
+The public surface of `nepdate-c`. The core is declared in `<nepdate.h>` and the patro library in
+`<nepdate_patro.h>`; nothing else is exported (ADR-0002). The API-surface gate compares each shared
+library's export table with the functions on this page.
 
 ## Version
 
@@ -346,6 +346,50 @@ const size_t length = nepdate_format(date, "yyyy-MM-dd", NEPDATE_ENGLISH, text, 
 /* text is "2081-04-15" and length is 10 */
 ```
 
+## Time interop
+
+```c
+nepdate_status nepdate_from_unix(int64_t unix_seconds, int32_t utc_offset_minutes,
+                                 nepdate_date *out);
+nepdate_status nepdate_today_nepal(int64_t unix_seconds, nepdate_date *out);
+```
+
+`nepdate_from_unix` takes an instant as seconds since 1970-01-01 00:00 UTC, adds
+`utc_offset_minutes` (east of UTC is positive) and returns the BS date of the resulting local day.
+Seconds before the epoch are floored, so an instant at 23:59:59 belongs to that day. It returns
+`NEPDATE_E_OUT_OF_RANGE` when the local day is outside the supported range and `NEPDATE_E_NULL`
+when `out` is `NULL`; any `int64_t` seconds and `int32_t` offset are accepted, including their
+extreme values.
+
+`nepdate_today_nepal` is `nepdate_from_unix` with Nepal's offset at that instant: UTC+05:45 from
+1986-01-01 00:00 local (1985-12-31 18:30 UTC) and UTC+05:30 before. Neither function reads the
+clock; the caller passes the instant.
+
+```c
+nepdate_date date;
+/* 2024-07-30 18:30 UTC: 2081-04-15 in UTC and 2081-04-16 in Nepal. */
+if (nepdate_from_unix(1722364200, 0, &date) == NEPDATE_OK &&
+    nepdate_today_nepal(1722364200, &date) == NEPDATE_OK) {
+    /* the second call stores 2081-04-16 */
+}
+```
+
+When the core is built with `NEPDATE_C_WITH_TM=1` (the default), `<nepdate.h>` also defines
+`NEPDATE_C_WITH_TM` and declares:
+
+```c
+nepdate_status nepdate_from_tm(const struct tm *tm, nepdate_date *out);
+nepdate_status nepdate_to_tm(nepdate_date date, struct tm *out);
+```
+
+`nepdate_from_tm` reads `tm_year + 1900`, `tm_mon + 1` and `tm_mday` as an AD date; the time of day
+and `tm_isdst` are ignored. It returns `NEPDATE_E_NULL`, `NEPDATE_E_OUT_OF_RANGE` for a year outside
+`int` or the supported range, and `NEPDATE_E_INVALID_GREGORIAN` for a month or day the Gregorian
+calendar doesn't have. `nepdate_to_tm` writes the AD date, midnight in the time fields,
+`tm_wday` (0 = Sunday), `tm_yday` (0 = 1 January) and `tm_isdst = -1`; it returns
+`NEPDATE_E_NULL` or `NEPDATE_E_INVALID_DATE`, and leaves the object unchanged on error. Neither
+function reads or writes a time zone.
+
 ## Parsing
 
 ```c
@@ -375,6 +419,59 @@ nepdate_date date;
 const char text[] = "2080/05/15";
 if (nepdate_parse(text, sizeof text - 1, &date) == NEPDATE_OK) {
     /* date is 2080-05-15 */
+}
+```
+
+## Patro
+
+The patro library is a separate package and target, `nepdate-c::patro`, with header
+`<nepdate_patro.h>` and pkg-config name `nepdate-c-patro`. It depends on the core; the core never
+depends on it (hub ADR-0004). Its data covers BS 2077-01-01 to 2084-08-20.
+
+```c
+typedef struct nepdate_patro_name {
+    const char *np;
+    size_t np_length;
+    const char *en;
+    size_t en_length;
+} nepdate_patro_name;
+
+typedef struct nepdate_patro_day_info {
+    bool has_tithi;
+    nepdate_patro_name tithi;
+    bool is_public_holiday;
+    size_t event_count;
+} nepdate_patro_day_info;
+
+nepdate_status nepdate_patro_info(nepdate_date date, nepdate_patro_day_info *out);
+nepdate_range nepdate_patro_coverage(void);
+size_t nepdate_patro_public_holidays(nepdate_date *dates, size_t capacity);
+size_t nepdate_patro_events(nepdate_date date, nepdate_patro_name *events, size_t capacity);
+```
+
+A `nepdate_patro_name` holds its Nepali and English UTF-8 bytes and their lengths; the bytes are
+not NUL-terminated. A name with no value has both pointers `NULL` and both lengths 0.
+
+`nepdate_patro_info` returns what the patro says about a day: its tithi (if it has one), whether it
+is a gazetted public holiday, and how many events it has. A day outside the coverage has no tithi,
+no holiday and no events. It returns `NEPDATE_E_NULL` or `NEPDATE_E_INVALID_DATE`, and leaves
+`*out` unchanged on error.
+
+`nepdate_patro_coverage` returns 2077-01-01..2084-08-20 and can't fail.
+
+`nepdate_patro_public_holidays` writes the 294 holiday dates in ascending order and returns 294. It
+writes at most `capacity` dates; `dates` `NULL` or `capacity` 0 writes nothing and still returns the
+count.
+
+`nepdate_patro_events` writes a day's events in file (display) order and returns their number. It
+writes at most `capacity` names; `events` `NULL` or `capacity` 0 writes nothing and still returns
+the count. A date no function made, or a day outside the coverage, returns 0 and writes nothing.
+
+```c
+nepdate_patro_day_info info;
+nepdate_patro_name events[4];
+if (nepdate_patro_info(date, &info) == NEPDATE_OK && info.event_count <= 4) {
+    (void)nepdate_patro_events(date, events, 4);
 }
 ```
 
@@ -427,3 +524,6 @@ Ranges have no set operations, splitting or working-day count (PARITY D-09): ite
 | Shared library through CMake or pkg-config | nothing |
 | Static library through CMake or pkg-config | nothing (the target and the `.pc` file add `NEPDATE_STATIC`) |
 | Sources compiled into the user's project | `NEPDATE_STATIC` |
+| Patro shared library | link `nepdate-c::patro` or use `nepdate-c-patro` from pkg-config; it depends on the core |
+| Patro static library | nothing extra; the target and `nepdate-c-patro.pc` add `NEPDATE_PATRO_STATIC` |
+| Patro sources compiled into the user's project | `NEPDATE_PATRO_STATIC` |

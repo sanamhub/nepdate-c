@@ -46,3 +46,5 @@ read_rows("${SHARED_DIR}/spec/vectors/csharp-golden/format-pattern.tsv" format_r
 write_rows("${OUT_DIR}/parse_strict" "${parse_rows}" 0 "")
 write_rows("${OUT_DIR}/parse_lenient" "${parse_rows}" 0 "")
 write_rows("${OUT_DIR}/format_pattern" "${format_rows}" 1 "")
+# from_unix takes fixed-width binary input; the fuzzer starts from an empty seed directory.
+file(MAKE_DIRECTORY "${OUT_DIR}/from_unix")

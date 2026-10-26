@@ -9,6 +9,12 @@
 #define NEPDATE_VERSION_PRERELEASE ""
 #define NEPDATE_VERSION_STRING "0.0.0"
 
+/* 1 when the struct tm bridge (nepdate_from_tm and nepdate_to_tm) is declared. A build with
+ * NEPDATE_C_WITH_TM=0 omits it so the core needs no <time.h> at all. */
+#ifndef NEPDATE_C_WITH_TM
+#define NEPDATE_C_WITH_TM 1
+#endif
+
 /* Exported functions carry NEPDATE_API (ADR-0002). A Windows DLL needs dllexport while it is built
  * and dllimport in its users; the CMake target defines NEPDATE_STATIC for a static library, and a
  * project that compiles the sources itself defines it too. */
@@ -334,6 +340,40 @@ NEPDATE_API size_t nepdate_format_short(nepdate_date date, nepdate_order order,
  * The truncation, NUL-termination and invalid-date rules are those of nepdate_format. */
 NEPDATE_API size_t nepdate_format_long(nepdate_date date, nepdate_long_options options,
                                        nepdate_lang lang, char *buffer, size_t size);
+
+/* Stores in *out the BS date of the instant unix_seconds after 1970-01-01 00:00 UTC, after
+ * shifting it by utc_offset_minutes (east of UTC is positive) and taking the local day. Seconds
+ * before the epoch are floored, so the result is the day that contains the instant. Returns
+ * NEPDATE_E_NULL when out is NULL and NEPDATE_E_OUT_OF_RANGE when that day is outside the
+ * supported range. Any int64_t seconds and int32_t offset are accepted, INT64_MIN, INT64_MAX,
+ * INT32_MIN and INT32_MAX included. *out is unchanged on error. */
+NEPDATE_API nepdate_status nepdate_from_unix(int64_t unix_seconds, int32_t utc_offset_minutes,
+                                             nepdate_date *out);
+
+/* Stores in *out today's BS date for the instant unix_seconds after 1970-01-01 00:00 UTC, read in
+ * Nepal: UTC+05:45 from 1986-01-01 00:00 local (1985-12-31 18:30 UTC), UTC+05:30 before that.
+ * Returns NEPDATE_E_NULL when out is NULL and NEPDATE_E_OUT_OF_RANGE when the date is outside the
+ * supported range. Any int64_t is accepted; *out is unchanged on error. */
+NEPDATE_API nepdate_status nepdate_today_nepal(int64_t unix_seconds, nepdate_date *out);
+
+#if NEPDATE_C_WITH_TM
+/* The C library's broken-down time. Only the year, month and day fields are read or written by
+ * this pair, so no time zone or daylight-saving state is involved. */
+struct tm;
+
+/* Stores in *out the BS date of the proleptic Gregorian calendar date in tm: tm_year + 1900,
+ * tm_mon + 1 and tm_mday. The time of day and tm_isdst are ignored. Returns NEPDATE_E_NULL when
+ * tm or out is NULL, NEPDATE_E_OUT_OF_RANGE when the year does not fit in int or is outside the
+ * supported range, and NEPDATE_E_INVALID_GREGORIAN for a month or day the Gregorian calendar
+ * doesn't have. *out is unchanged on error. */
+NEPDATE_API nepdate_status nepdate_from_tm(const struct tm *tm, nepdate_date *out);
+
+/* Stores the AD date of date in out's tm_year, tm_mon and tm_mday, sets tm_hour, tm_min and tm_sec
+ * to 0 and tm_isdst to -1, and fills tm_wday (0 = Sunday) and tm_yday (0 = 1 January). Returns
+ * NEPDATE_E_NULL when out is NULL and NEPDATE_E_INVALID_DATE for a date no function made; *out is
+ * unchanged on error. */
+NEPDATE_API nepdate_status nepdate_to_tm(nepdate_date date, struct tm *out);
+#endif
 
 /* Parses exactly year, month and day from text, in that order (PARSING section 1). Reads at most
  * len bytes and never needs a terminator. Returns NEPDATE_OK and stores the date in *out, or one of

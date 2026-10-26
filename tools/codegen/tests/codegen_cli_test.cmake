@@ -1,10 +1,12 @@
 # Runs the generator as a user would and checks the command-line behaviour (ADR-0001).
-# Inputs: -DCODEGEN=<exe> -DSHARED=<shared dir> -DCOMMITTED=<committed header> -DWORK=<scratch dir>
+# Inputs: -DCODEGEN=<exe> -DSHARED=<shared dir> -DCOMMITTED=<header> -DCOMMITTED_PATRO=<header>
+#         -DWORK=<scratch dir>
 
 # Script mode starts with old policies; IN_LIST below needs CMP0057.
 cmake_minimum_required(VERSION 3.25...4.1)
 
-set(relative "src/generated/calendar_tables.h")
+set(relatives src/generated/calendar_tables.h src/generated/patro_tables.h)
+set(committed_headers "${COMMITTED}" "${COMMITTED_PATRO}")
 file(REMOVE_RECURSE "${WORK}")
 
 foreach(run IN ITEMS a b)
@@ -17,22 +19,28 @@ foreach(run IN ITEMS a b)
     endif()
 endforeach()
 
-execute_process(COMMAND "${CMAKE_COMMAND}" -E compare_files
-    "${WORK}/a/${relative}" "${WORK}/b/${relative}" RESULT_VARIABLE rc)
-if(NOT rc EQUAL 0)
-    message(FATAL_ERROR "two runs gave different bytes")
-endif()
-execute_process(COMMAND "${CMAKE_COMMAND}" -E compare_files
-    "${WORK}/a/${relative}" "${COMMITTED}" RESULT_VARIABLE rc)
-if(NOT rc EQUAL 0)
-    message(FATAL_ERROR "${COMMITTED} is out of date: build the codegen target")
-endif()
+foreach(index RANGE 1)
+    list(GET relatives ${index} relative)
+    list(GET committed_headers ${index} committed)
+    execute_process(COMMAND "${CMAKE_COMMAND}" -E compare_files
+        "${WORK}/a/${relative}" "${WORK}/b/${relative}" RESULT_VARIABLE rc)
+    if(NOT rc EQUAL 0)
+        message(FATAL_ERROR "two runs gave different bytes for ${relative}")
+    endif()
+    execute_process(COMMAND "${CMAKE_COMMAND}" -E compare_files
+        "${WORK}/a/${relative}" "${committed}" RESULT_VARIABLE rc)
+    if(NOT rc EQUAL 0)
+        message(FATAL_ERROR "${committed} is out of date: build the codegen target")
+    endif()
 
-file(READ "${WORK}/a/${relative}" hex HEX)
-string(REGEX REPLACE "(..)" "\\1;" bytes "${hex}")
-if("0d" IN_LIST bytes)
-    message(FATAL_ERROR "generated header contains a CR byte")
-endif()
+    file(READ "${WORK}/a/${relative}" hex HEX)
+    string(REGEX REPLACE "(..)" "\\1;" bytes "${hex}")
+    if("0d" IN_LIST bytes)
+        message(FATAL_ERROR "${relative} contains a CR byte")
+    endif()
+endforeach()
+
+set(relative "src/generated/calendar_tables.h")
 
 execute_process(COMMAND "${CODEGEN}" --shared "${SHARED}" --out "${WORK}/a" --check
     RESULT_VARIABLE rc)

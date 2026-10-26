@@ -1,0 +1,748 @@
+#include "patro.h"
+
+#include "calendar.h"
+#include "json.h"
+
+#include <stdarg.h>
+#include <stdint.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+static bool fail(char *error, size_t error_size, const char *format, ...) {
+    if (error_size > 0) {
+        const int prefix = snprintf(error, error_size, "patro data: ");
+        if (prefix > 0 && (size_t)prefix < error_size) {
+            va_list args;
+            va_start(args, format);
+            (void)vsnprintf(error + prefix, error_size - (size_t)prefix, format, args);
+            va_end(args);
+        }
+    }
+    return false;
+}
+
+static char *copy_text(const char *text) {
+    const size_t size = strlen(text) + 1U;
+    char *copy = malloc(size);
+    if (copy != NULL) {
+        memcpy(copy, text, size);
+    }
+    return copy;
+}
+
+/* Both strings of a name pair of PATRO.md section 1: present and non-empty. */
+static bool name_pair(const json_value *object, codegen_patro_name *out) {
+    if (object == NULL || object->type != JSON_OBJECT) {
+        return false;
+    }
+    const json_value *np = json_get(object, "np");
+    const json_value *en = json_get(object, "en");
+    if (np == NULL || en == NULL || np->type != JSON_STRING || en->type != JSON_STRING ||
+        np->string[0] == '\0' || en->string[0] == '\0') {
+        return false;
+    }
+    char *np_copy = copy_text(np->string);
+    char *en_copy = copy_text(en->string);
+    if (np_copy == NULL || en_copy == NULL) {
+        free(np_copy);
+        free(en_copy);
+        return false;
+    }
+    out->np = np_copy;
+    out->en = en_copy;
+    return true;
+}
+
+static void name_free(codegen_patro_name *name) {
+    free(name->np);
+    free(name->en);
+    name->np = NULL;
+    name->en = NULL;
+}
+
+static void day_free(codegen_patro_day *day) {
+    name_free(&day->tithi);
+    for (size_t i = 0; i < day->event_count; i++) {
+        name_free(&day->events[i]);
+    }
+    free(day->events);
+    day->events = NULL;
+    day->event_count = 0;
+    day->event_capacity = 0;
+}
+
+void codegen_patro_input_free(codegen_patro_input *input) {
+    for (size_t i = 0; i < input->count; i++) {
+        day_free(&input->days[i]);
+    }
+    free(input->days);
+    input->days = NULL;
+    input->count = 0;
+    input->capacity = 0;
+}
+
+void codegen_patro_tables_free(codegen_patro_tables *tables) {
+    free(tables->day_tithi);
+    free(tables->holiday_bits);
+    free(tables->day_event_start);
+    free(tables->events);
+    free(tables->holiday_serials);
+    for (size_t i = 0; i < tables->name_count; i++) {
+        name_free(&tables->names[i]);
+    }
+    free(tables->names);
+    free(tables->name_blob);
+    free(tables->name_offsets);
+    memset(tables, 0, sizeof *tables);
+}
+
+static bool grow_days(codegen_patro_input *input) {
+    if (input->count < input->capacity) {
+        return true;
+    }
+    const size_t capacity = input->capacity == 0 ? 256 : input->capacity * 2U;
+    codegen_patro_day *days = realloc(input->days, capacity * sizeof *days);
+    if (days == NULL) {
+        return false;
+    }
+    input->days = days;
+    input->capacity = capacity;
+    return true;
+}
+
+static bool grow_events(codegen_patro_day *day) {
+    if (day->event_count < day->event_capacity) {
+        return true;
+    }
+    const size_t capacity = day->event_capacity == 0 ? 4 : day->event_capacity * 2U;
+    codegen_patro_name *events = realloc(day->events, capacity * sizeof *events);
+    if (events == NULL) {
+        return false;
+    }
+    day->events = events;
+    day->event_capacity = capacity;
+    return true;
+}
+
+static bool add_event(codegen_patro_day *day, const json_value *value, char *error,
+                      size_t error_size) {
+    codegen_patro_name name = {NULL, NULL};
+    if (!name_pair(value, &name)) {
+        return fail(error, error_size, "%04d-%02d-%02d: an event lacks non-empty np and en",
+                    day->year, day->month, day->day);
+    }
+    if (!grow_events(day)) {
+        name_free(&name);
+        return fail(error, error_size, "out of memory");
+    }
+    day->events[day->event_count] = name;
+    day->event_count++;
+    return true;
+}
+
+static int two_digits(const char *text) {
+    if (text[0] < '0' || text[0] > '9' || text[1] < '0' || text[1] > '9') {
+        return -1;
+    }
+    return (text[0] - '0') * 10 + (text[1] - '0');
+}
+
+/* "2081-01-01" to its parts; false when the key is not exactly that shape. */
+static bool parse_date_key(const char *key, int *year, int *month, int *day) {
+    if (strlen(key) != 10U || key[4] != '-' || key[7] != '-') {
+        return false;
+    }
+    if (key[0] < '0' || key[0] > '9' || key[1] < '0' || key[1] > '9' || key[2] < '0' ||
+        key[2] > '9' || key[3] < '0' || key[3] > '9') {
+        return false;
+    }
+    *year = (key[0] - '0') * 1000 + (key[1] - '0') * 100 + (key[2] - '0') * 10 + (key[3] - '0');
+    *month = two_digits(key + 5);
+    *day = two_digits(key + 8);
+    return *year > 0 && *month > 0 && *day > 0;
+}
+
+/* NOLINTNEXTLINE(readability-function-cognitive-complexity): one validation per JSON field */
+bool codegen_patro_add_year(const json_value *doc, int expected_year, codegen_patro_input *input,
+                            char *error, size_t error_size) {
+    if (doc == NULL || doc->type != JSON_OBJECT) {
+        return fail(error, error_size, "a year file is not a JSON object");
+    }
+    const json_value *schema = json_get(doc, "schema");
+    if (schema == NULL || schema->type != JSON_NUMBER || !schema->is_integer ||
+        schema->integer != 1) {
+        return fail(error, error_size, "schema must be 1");
+    }
+    const json_value *year = json_get(doc, "year");
+    if (year == NULL || year->type != JSON_NUMBER || !year->is_integer ||
+        year->integer != expected_year) {
+        return fail(error, error_size, "year must be %d", expected_year);
+    }
+    const json_value *days = json_get(doc, "days");
+    if (days == NULL || days->type != JSON_OBJECT || days->count == 0) {
+        return fail(error, error_size, "year %d: days must be a non-empty object", expected_year);
+    }
+    for (size_t i = 0; i < days->count; i++) {
+        const char *key = days->keys[i];
+        int key_year = 0;
+        codegen_patro_day day = {0};
+        day.year = expected_year;
+        if (!parse_date_key(key, &key_year, &day.month, &day.day) || key_year != expected_year) {
+            return fail(error, error_size, "day key '%s' does not match year %d", key,
+                        expected_year);
+        }
+        const json_value *value = &days->items[i];
+        if (value->type != JSON_OBJECT) {
+            return fail(error, error_size, "%s: day must be an object", key);
+        }
+        const json_value *tithi = json_get(value, "tithi");
+        if (tithi != NULL) {
+            if (!name_pair(tithi, &day.tithi)) {
+                return fail(error, error_size, "%s: tithi must have non-empty np and en", key);
+            }
+            day.has_tithi = true;
+        }
+        const json_value *holiday = json_get(value, "holiday");
+        if (holiday != NULL) {
+            if (holiday->type != JSON_BOOL) {
+                day_free(&day);
+                return fail(error, error_size, "%s: holiday must be a boolean", key);
+            }
+            day.holiday = holiday->boolean;
+        }
+        const json_value *events = json_get(value, "events");
+        if (events != NULL) {
+            if (events->type != JSON_ARRAY) {
+                day_free(&day);
+                return fail(error, error_size, "%s: events must be an array", key);
+            }
+            for (size_t k = 0; k < events->count; k++) {
+                if (!add_event(&day, &events->items[k], error, error_size)) {
+                    day_free(&day);
+                    return false;
+                }
+            }
+        }
+        if (!grow_days(input)) {
+            day_free(&day);
+            return fail(error, error_size, "out of memory");
+        }
+        input->days[input->count] = day;
+        input->count++;
+    }
+    return true;
+}
+
+static int compare_days(const void *a, const void *b) {
+    const codegen_patro_day *left = a;
+    const codegen_patro_day *right = b;
+    if (left->year != right->year) {
+        return left->year < right->year ? -1 : 1;
+    }
+    if (left->month != right->month) {
+        return left->month < right->month ? -1 : 1;
+    }
+    if (left->day != right->day) {
+        return left->day < right->day ? -1 : 1;
+    }
+    return 0;
+}
+
+static bool serial_of(const codegen_calendar *calendar, const codegen_patro_day *day,
+                      uint32_t *serial) {
+    const uint32_t years = (uint32_t)day->year - (uint32_t)CODEGEN_MIN_YEAR;
+    if (day->year < CODEGEN_MIN_YEAR || day->year > CODEGEN_MAX_YEAR) {
+        return false;
+    }
+    const uint32_t index = years * (uint32_t)CODEGEN_MONTHS + (uint32_t)day->month - 1U;
+    if (day->month < 1 || day->month > CODEGEN_MONTHS || index >= (uint32_t)CODEGEN_ALL_MONTHS) {
+        return false;
+    }
+    if (day->day < 1) {
+        return false;
+    }
+    const long length = calendar->month_start[index + 1U] - calendar->month_start[index];
+    if ((long)day->day > length) {
+        return false;
+    }
+    *serial = (uint32_t)(calendar->month_start[index] + (long)day->day - 1L);
+    return true;
+}
+
+static bool grow_names(codegen_patro_tables *tables) {
+    const size_t capacity = tables->name_count == 0 ? 256 : tables->name_count * 2U;
+    codegen_patro_name *names = realloc(tables->names, capacity * sizeof *names);
+    if (names == NULL) {
+        return false;
+    }
+    tables->names = names;
+    return true;
+}
+
+/* The index of a name pair, adding it at the end when it is new. Returns -1 on failure. */
+static int intern_name(codegen_patro_tables *tables, const codegen_patro_name *name) {
+    for (size_t i = 0; i < tables->name_count; i++) {
+        if (strcmp(tables->names[i].np, name->np) == 0 &&
+            strcmp(tables->names[i].en, name->en) == 0) {
+            return (int)i;
+        }
+    }
+    if (tables->name_count >= 65535U || !grow_names(tables)) {
+        return -1;
+    }
+    codegen_patro_name copy = {copy_text(name->np), copy_text(name->en)};
+    if (copy.np == NULL || copy.en == NULL) {
+        name_free(&copy);
+        return -1;
+    }
+    tables->names[tables->name_count] = copy;
+    tables->name_count++;
+    return (int)(tables->name_count - 1U);
+}
+
+static bool grow_u16(uint16_t **values, size_t *capacity, size_t needed) {
+    if (needed <= *capacity) {
+        return true;
+    }
+    size_t capacity_now = *capacity == 0 ? 1024 : *capacity * 2U;
+    while (capacity_now < needed) {
+        capacity_now *= 2U;
+    }
+    uint16_t *bigger = realloc(*values, capacity_now * sizeof *bigger);
+    if (bigger == NULL) {
+        return false;
+    }
+    *values = bigger;
+    *capacity = capacity_now;
+    return true;
+}
+
+static bool build_names(codegen_patro_tables *tables, char *error, size_t error_size) {
+    size_t total = 0;
+    for (size_t i = 0; i < tables->name_count; i++) {
+        total += strlen(tables->names[i].np) + strlen(tables->names[i].en);
+    }
+    if (total != CODEGEN_PATRO_NAME_BYTES) {
+        return fail(error, error_size, "%zu name bytes, spec says %d", total,
+                    CODEGEN_PATRO_NAME_BYTES);
+    }
+    tables->name_blob = malloc(total);
+    tables->name_offsets = malloc((2U * tables->name_count + 1U) * sizeof *tables->name_offsets);
+    if (tables->name_blob == NULL || tables->name_offsets == NULL) {
+        return fail(error, error_size, "out of memory");
+    }
+    tables->name_blob_size = 0;
+    size_t offsets = 0;
+    for (size_t i = 0; i < tables->name_count; i++) {
+        const codegen_patro_name *name = &tables->names[i];
+        tables->name_offsets[offsets++] = (uint32_t)tables->name_blob_size;
+        memcpy(tables->name_blob + tables->name_blob_size, name->np, strlen(name->np));
+        tables->name_blob_size += strlen(name->np);
+        tables->name_offsets[offsets++] = (uint32_t)tables->name_blob_size;
+        memcpy(tables->name_blob + tables->name_blob_size, name->en, strlen(name->en));
+        tables->name_blob_size += strlen(name->en);
+    }
+    tables->name_offsets[offsets++] = (uint32_t)tables->name_blob_size;
+    tables->name_offset_count = offsets;
+    return true;
+}
+
+/* NOLINTNEXTLINE(readability-function-cognitive-complexity): one pass per table, build-time tool */
+bool codegen_build_patro_tables(codegen_patro_input *input, const codegen_calendar *calendar,
+                                codegen_patro_tables *tables, char *error, size_t error_size) {
+    memset(tables, 0, sizeof *tables);
+    if (input->count == 0) {
+        return fail(error, error_size, "no days with metadata");
+    }
+    qsort(input->days, input->count, sizeof *input->days, compare_days);
+    for (size_t i = 1; i < input->count; i++) {
+        if (compare_days(&input->days[i - 1], &input->days[i]) == 0) {
+            return fail(error, error_size, "%04d-%02d-%02d appears twice", input->days[i].year,
+                        input->days[i].month, input->days[i].day);
+        }
+    }
+
+    uint32_t first = 0;
+    uint32_t previous = 0;
+    for (size_t i = 0; i < input->count; i++) {
+        uint32_t serial = 0;
+        if (!serial_of(calendar, &input->days[i], &serial)) {
+            return fail(error, error_size, "%04d-%02d-%02d is not a BS date in %d..%d",
+                        input->days[i].year, input->days[i].month, input->days[i].day,
+                        CODEGEN_MIN_YEAR, CODEGEN_MAX_YEAR);
+        }
+        if (i == 0) {
+            first = serial;
+        }
+        previous = serial;
+    }
+    if (input->days[0].year != CODEGEN_PATRO_FIRST_YEAR || input->days[0].month != 1 ||
+        input->days[0].day != 1 || input->days[input->count - 1].year != CODEGEN_PATRO_LAST_YEAR ||
+        input->days[input->count - 1].month != 8 || input->days[input->count - 1].day != 20) {
+        return fail(error, error_size, "coverage must be exactly %d-01-01..%d-08-20",
+                    CODEGEN_PATRO_FIRST_YEAR, CODEGEN_PATRO_LAST_YEAR);
+    }
+    tables->first = first;
+    tables->days = previous - first + 1U;
+    if (tables->first != (uint32_t)CODEGEN_PATRO_FIRST_SERIAL ||
+        tables->days != (uint32_t)CODEGEN_PATRO_DAYS) {
+        return fail(error, error_size, "coverage must be serials %d..%d",
+                    CODEGEN_PATRO_FIRST_SERIAL,
+                    CODEGEN_PATRO_FIRST_SERIAL + CODEGEN_PATRO_DAYS - 1);
+    }
+
+    uint32_t tithi_first = 0;
+    uint32_t tithi_last = 0;
+    size_t tithi_days = 0;
+    size_t tithi_names = 0;
+    for (size_t i = 0; i < input->count; i++) {
+        const codegen_patro_day *day = &input->days[i];
+        if (!day->has_tithi) {
+            continue;
+        }
+        const int index = intern_name(tables, &day->tithi);
+        if (index < 0) {
+            return fail(error, error_size, "out of memory");
+        }
+        if ((size_t)index >= CODEGEN_PATRO_TITHI_NAMES) {
+            return fail(error, error_size, "more than %d tithi names", CODEGEN_PATRO_TITHI_NAMES);
+        }
+        uint32_t serial = 0;
+        (void)serial_of(calendar, day, &serial);
+        if (tithi_days == 0) {
+            tithi_first = serial;
+        }
+        tithi_last = serial;
+        tithi_days++;
+    }
+    if (tithi_days == 0) {
+        return fail(error, error_size, "no tithi days");
+    }
+    tithi_names = tables->name_count;
+    if (tithi_names != CODEGEN_PATRO_TITHI_NAMES) {
+        return fail(error, error_size, "%zu tithi names, spec says %d", tithi_names,
+                    CODEGEN_PATRO_TITHI_NAMES);
+    }
+
+    for (size_t i = 0; i < input->count; i++) {
+        for (size_t k = 0; k < input->days[i].event_count; k++) {
+            if (intern_name(tables, &input->days[i].events[k]) < 0) {
+                return fail(error, error_size, "out of memory");
+            }
+        }
+    }
+    if (tables->name_count != CODEGEN_PATRO_NAMES) {
+        return fail(error, error_size, "%zu names, spec says %d", tables->name_count,
+                    CODEGEN_PATRO_NAMES);
+    }
+
+    tables->day_tithi = malloc(tables->days);
+    tables->holiday_bit_count = ((size_t)tables->days + 63U) / 64U;
+    tables->holiday_bits = calloc(tables->holiday_bit_count, sizeof *tables->holiday_bits);
+    tables->day_event_start = calloc((size_t)tables->days + 1U, sizeof *tables->day_event_start);
+    tables->holiday_serials = malloc((size_t)tables->days * sizeof *tables->holiday_serials);
+    if (tables->day_tithi == NULL || tables->holiday_bits == NULL ||
+        tables->day_event_start == NULL || tables->holiday_serials == NULL) {
+        return fail(error, error_size, "out of memory");
+    }
+    memset(tables->day_tithi, 0xFF, tables->days);
+
+    size_t event_capacity = 0;
+    size_t day_index = 0;
+    size_t event_days = 0;
+    for (uint32_t offset = 0; offset < tables->days; offset++) {
+        tables->day_event_start[offset] = (uint16_t)tables->event_count;
+        while (day_index < input->count) {
+            uint32_t serial = 0;
+            (void)serial_of(calendar, &input->days[day_index], &serial);
+            if (serial - tables->first != offset) {
+                break;
+            }
+            const codegen_patro_day *day = &input->days[day_index];
+            if (day->has_tithi) {
+                for (size_t k = 0; k < tables->name_count; k++) {
+                    if (strcmp(tables->names[k].np, day->tithi.np) == 0 &&
+                        strcmp(tables->names[k].en, day->tithi.en) == 0) {
+                        tables->day_tithi[offset] = (uint8_t)k;
+                        break;
+                    }
+                }
+            }
+            if (day->holiday) {
+                tables->holiday_bits[offset / 64U] |= UINT64_C(1) << (offset % 64U);
+                tables->holiday_serials[tables->holiday_count] = serial;
+                tables->holiday_count++;
+            }
+            for (size_t k = 0; k < day->event_count; k++) {
+                int index = -1;
+                for (size_t n = 0; n < tables->name_count; n++) {
+                    if (strcmp(tables->names[n].np, day->events[k].np) == 0 &&
+                        strcmp(tables->names[n].en, day->events[k].en) == 0) {
+                        index = (int)n;
+                        break;
+                    }
+                }
+                if (index < 0 ||
+                    !grow_u16(&tables->events, &event_capacity, tables->event_count + 1U)) {
+                    return fail(error, error_size, "out of memory");
+                }
+                tables->events[tables->event_count] = (uint16_t)index;
+                tables->event_count++;
+            }
+            if (day->event_count > 0) {
+                event_days++;
+            }
+            day_index++;
+        }
+    }
+    tables->day_event_start[tables->days] = (uint16_t)tables->event_count;
+
+    if (tithi_days != CODEGEN_PATRO_TITHI_DAYS) {
+        return fail(error, error_size, "T = %zu, spec says %d", tithi_days,
+                    CODEGEN_PATRO_TITHI_DAYS);
+    }
+    if (tables->holiday_count != CODEGEN_PATRO_HOLIDAYS) {
+        return fail(error, error_size, "H = %zu, spec says %d", tables->holiday_count,
+                    CODEGEN_PATRO_HOLIDAYS);
+    }
+    if (event_days != CODEGEN_PATRO_EVENT_DAYS) {
+        return fail(error, error_size, "E = %zu, spec says %d", event_days,
+                    CODEGEN_PATRO_EVENT_DAYS);
+    }
+    if (tables->event_count != CODEGEN_PATRO_EVENTS) {
+        return fail(error, error_size, "%zu events, spec says %d", tables->event_count,
+                    CODEGEN_PATRO_EVENTS);
+    }
+
+    for (uint32_t serial = tithi_first; serial <= tithi_last; serial++) {
+        if (tables->day_tithi[serial - tables->first] == 0xFFU) {
+            return fail(error, error_size, "tithi gap at serial %u", serial);
+        }
+    }
+    return build_names(tables, error, error_size);
+}
+
+/* A growing string. A failed allocation leaves text NULL, and every later append does nothing. */
+typedef struct {
+    char *text;
+    size_t length;
+    size_t capacity;
+} builder;
+
+static void builder_drop(builder *b) {
+    free(b->text);
+    b->text = NULL;
+}
+
+static void append(builder *b, const char *format, ...) {
+    if (b->text == NULL) {
+        return;
+    }
+    va_list args;
+    va_start(args, format);
+    va_list copy;
+    va_copy(copy, args);
+    const int n = vsnprintf(NULL, 0, format, copy);
+    va_end(copy);
+    if (n < 0) {
+        va_end(args);
+        builder_drop(b);
+        return;
+    }
+    const size_t needed = b->length + (size_t)n + 1U;
+    if (needed > b->capacity) {
+        size_t capacity = b->capacity * 2U;
+        while (capacity < needed) {
+            capacity *= 2U;
+        }
+        char *bigger = realloc(b->text, capacity);
+        if (bigger == NULL) {
+            va_end(args);
+            builder_drop(b);
+            return;
+        }
+        b->text = bigger;
+        b->capacity = capacity;
+    }
+    (void)vsnprintf(b->text + b->length, b->capacity - b->length, format, args);
+    va_end(args);
+    b->length += (size_t)n;
+}
+
+static void append_date(builder *b, const codegen_calendar *calendar, uint32_t serial) {
+    size_t month = 0;
+    while (month + 1U < (size_t)CODEGEN_ALL_MONTHS &&
+           (uint32_t)calendar->month_start[month + 1U] <= serial) {
+        month++;
+    }
+    const int year = CODEGEN_MIN_YEAR + (int)(month / CODEGEN_MONTHS);
+    const int month_number = (int)(month % CODEGEN_MONTHS) + 1;
+    const int day = (int)(serial - (uint32_t)calendar->month_start[month]) + 1;
+    append(b, "%04d-%02d-%02d", year, month_number, day);
+}
+
+static void append_u8_table(builder *b, const char *name, const uint8_t *values, size_t count,
+                            size_t per_line, const codegen_calendar *calendar, uint32_t first) {
+    append(b, "static const uint8_t %s[%zu] = {\n", name, count);
+    for (size_t i = 0; i < count; i += per_line) {
+        append(b, "   ");
+        for (size_t k = i; k < i + per_line && k < count; k++) {
+            append(b, " 0x%02x,", (unsigned)values[k]);
+        }
+        append(b, " /* ");
+        append_date(b, calendar, first + (uint32_t)i);
+        append(b, " */\n");
+    }
+    append(b, "};\n");
+}
+
+static void append_u16_table(builder *b, const char *name, const uint16_t *values, size_t count,
+                             size_t per_line, const codegen_calendar *calendar, uint32_t first) {
+    append(b, "static const uint16_t %s[%zu] = {\n", name, count);
+    for (size_t i = 0; i < count; i += per_line) {
+        append(b, "   ");
+        for (size_t k = i; k < i + per_line && k < count; k++) {
+            append(b, " %u,", (unsigned)values[k]);
+        }
+        append(b, " /* ");
+        append_date(b, calendar, first + (uint32_t)i);
+        append(b, " */\n");
+    }
+    append(b, "};\n");
+}
+
+static void append_u16_plain(builder *b, const char *name, const uint16_t *values, size_t count,
+                             size_t per_line) {
+    append(b, "static const uint16_t %s[%zu] = {\n", name, count);
+    for (size_t i = 0; i < count; i += per_line) {
+        append(b, "   ");
+        for (size_t k = i; k < i + per_line && k < count; k++) {
+            append(b, " %u,", (unsigned)values[k]);
+        }
+        append(b, "\n");
+    }
+    append(b, "};\n");
+}
+
+static void append_hex64_table(builder *b, const char *name, const uint64_t *values, size_t count,
+                               size_t per_line, size_t days) {
+    append(b, "static const uint64_t %s[%zu] = {\n", name, count);
+    for (size_t i = 0; i < count; i += per_line) {
+        append(b, "   ");
+        for (size_t k = i; k < i + per_line && k < count; k++) {
+            append(b, " 0x%016llxULL,", (unsigned long long)values[k]);
+        }
+        const size_t first_day = i * 64U;
+        const size_t last_day = first_day + 63U < days ? first_day + 63U : days - 1U;
+        append(b, " /* days %zu..%zu */\n", first_day, last_day);
+    }
+    append(b, "};\n");
+}
+
+static void append_holiday_table(builder *b, const codegen_patro_tables *tables,
+                                 const codegen_calendar *calendar) {
+    append(b, "static const int32_t nepdate_patro_holiday_values[%zu] = {\n",
+           tables->holiday_count);
+    for (size_t i = 0; i < tables->holiday_count; i++) {
+        append(b, "    %u, /* ", tables->holiday_serials[i] + 1U);
+        append_date(b, calendar, tables->holiday_serials[i]);
+        append(b, " */\n");
+    }
+    append(b, "};\n");
+}
+
+static void append_byte_literals(builder *b, const char *text) {
+    const size_t length = strlen(text);
+    for (size_t i = 0; i < length; i++) {
+        if (i % 16U == 0U) {
+            append(b, "    ");
+        }
+        append(b, "'\\%03o',", (unsigned)(unsigned char)text[i]);
+        if (i % 16U == 15U) {
+            append(b, "\n");
+        }
+    }
+    if (length % 16U != 0U) {
+        append(b, "\n");
+    }
+}
+
+static void append_name_blob(builder *b, const codegen_patro_tables *tables) {
+    append(b, "static const char nepdate_patro_name_blob[%zu] = {\n", tables->name_blob_size);
+    for (size_t i = 0; i < tables->name_count; i++) {
+        append(b, "    /* %zu: %s */\n", i, tables->names[i].en);
+        append_byte_literals(b, tables->names[i].np);
+        append_byte_literals(b, tables->names[i].en);
+    }
+    append(b, "};\n");
+}
+
+static void append_name_offsets(builder *b, const codegen_patro_tables *tables) {
+    append(b, "static const uint32_t nepdate_patro_name_offsets[%zu] = {\n",
+           tables->name_offset_count);
+    for (size_t i = 0; i < tables->name_count; i++) {
+        append(b, "    %u, %u, /* %zu: %s */\n", tables->name_offsets[2U * i],
+               tables->name_offsets[2U * i + 1U], i, tables->names[i].en);
+    }
+    append(b, "    %u,\n", tables->name_offsets[tables->name_offset_count - 1U]);
+    append(b, "};\n");
+}
+
+char *codegen_render_patro_tables(const codegen_patro_tables *tables,
+                                  const codegen_calendar *calendar) {
+    enum { INITIAL_CAPACITY = 65536 };
+    builder b = {malloc(INITIAL_CAPACITY), 0, INITIAL_CAPACITY};
+    append(&b, "/* Generated by tools/codegen from shared/data. DO NOT EDIT. */\n"
+               "/* Source: the JSON files under shared/data/patro. Layout and use: PATRO.md "
+               "section 3. */\n"
+               "#ifndef NEPDATE_GENERATED_PATRO_TABLES_H\n"
+               "#define NEPDATE_GENERATED_PATRO_TABLES_H\n"
+               "\n"
+               "#include <stdint.h>\n"
+               "\n");
+    append(&b,
+           "/* Serial of the first covered day, %d-01-01. */\n"
+           "#define NEPDATE_PATRO_FIRST_SERIAL %uU\n"
+           "/* Covered days, %d-01-01 through %d-08-20. */\n"
+           "#define NEPDATE_PATRO_DAYS %uU\n"
+           "#define NEPDATE_PATRO_TITHI_DAYS %dU\n"
+           "#define NEPDATE_PATRO_TITHI_NAMES %dU\n"
+           "#define NEPDATE_PATRO_HOLIDAYS %dU\n"
+           "#define NEPDATE_PATRO_EVENT_DAYS %dU\n"
+           "#define NEPDATE_PATRO_EVENTS %dU\n"
+           "#define NEPDATE_PATRO_NAMES %dU\n"
+           "\n",
+           CODEGEN_PATRO_FIRST_YEAR, tables->first, CODEGEN_PATRO_FIRST_YEAR,
+           CODEGEN_PATRO_LAST_YEAR, tables->days, CODEGEN_PATRO_TITHI_DAYS,
+           CODEGEN_PATRO_TITHI_NAMES, CODEGEN_PATRO_HOLIDAYS, CODEGEN_PATRO_EVENT_DAYS,
+           CODEGEN_PATRO_EVENTS, CODEGEN_PATRO_NAMES);
+    append(&b,
+           "/* The calendar fingerprint the tables were built from; patro.c asserts it equals\n"
+           " * NEPDATE_CAL_FINGERPRINT. */\n"
+           "#define NEPDATE_PATRO_CALENDAR_FINGERPRINT 0x%016llxULL\n"
+           "\n",
+           (unsigned long long)calendar->fingerprint);
+    append(&b, "/* Tithi name index of each covered day, 0xFF = none. */\n");
+    append_u8_table(&b, "nepdate_patro_day_tithi", tables->day_tithi, tables->days, 32U, calendar,
+                    tables->first);
+    append(&b, "\n/* Bit i set = day i is a public holiday. */\n");
+    append_hex64_table(&b, "nepdate_patro_holiday_bits", tables->holiday_bits,
+                       tables->holiday_bit_count, 4U, tables->days);
+    append(&b, "\n/* Events of day i are events[start[i] .. start[i + 1]), in file order. */\n");
+    append_u16_table(&b, "nepdate_patro_day_event_start", tables->day_event_start,
+                     (size_t)tables->days + 1U, 16U, calendar, tables->first);
+    append(&b, "\n/* Name table indices, one per event. */\n");
+    append_u16_plain(&b, "nepdate_patro_event_names", tables->events, tables->event_count, 16U);
+    append(&b, "\n/* The public holiday dates, ascending, as nepdate_date.value. */\n");
+    append_holiday_table(&b, tables, calendar);
+    append(&b, "\n/* Every distinct name, np then en per pair, concatenated. The 32 tithi names\n"
+               " * come first (PATRO.md section 3). */\n");
+    append_name_blob(&b, tables);
+    append(&b,
+           "\n/* Name k in language l (0 = np, 1 = en) is blob[off[2k + l] .. off[2k + l + 1]).\n"
+           " */\n");
+    append_name_offsets(&b, tables);
+    append(&b, "\n#endif /* NEPDATE_GENERATED_PATRO_TABLES_H */\n");
+    return b.text;
+}

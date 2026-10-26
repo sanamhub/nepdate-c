@@ -6,6 +6,8 @@
  * writing. Exit 2 means bad arguments, unreadable input, invalid data or an output directory that
  * doesn't exist (the tool creates files, not directories). */
 #include "calendar.h"
+#include "json.h"
+#include "patro.h"
 
 #include <stdbool.h>
 #include <stdio.h>
@@ -145,12 +147,61 @@ int main(int argc, char **argv) {
         return 2;
     }
 
-    char *tables = codegen_render_calendar_tables(&calendar);
-    if (tables == NULL) {
-        (void)fprintf(stderr, "out of memory\n");
+    codegen_patro_input patro_input = {0};
+    for (int year = CODEGEN_PATRO_FIRST_YEAR; year <= CODEGEN_PATRO_LAST_YEAR; year++) {
+        char relative[32];
+        (void)snprintf(relative, sizeof relative, "data/patro/%d.json", year);
+        char *patro_path = join(opts.shared, relative);
+        size_t patro_length = 0;
+        char *patro_text = patro_path == NULL ? NULL : read_file(patro_path, &patro_length);
+        if (patro_text == NULL) {
+            (void)fprintf(stderr, "cannot read %s\n", patro_path == NULL ? "" : patro_path);
+            free(patro_path);
+            codegen_patro_input_free(&patro_input);
+            return 2;
+        }
+        char json_error[160];
+        json_value *patro_doc = json_parse(patro_text, patro_length, json_error, sizeof json_error);
+        free(patro_text);
+        free(patro_path);
+        if (patro_doc == NULL) {
+            (void)fprintf(stderr, "patro data: %s\n", json_error);
+            codegen_patro_input_free(&patro_input);
+            return 2;
+        }
+        const bool added =
+            codegen_patro_add_year(patro_doc, year, &patro_input, error, sizeof error);
+        json_free(patro_doc);
+        if (!added) {
+            (void)fprintf(stderr, "%s\n", error);
+            codegen_patro_input_free(&patro_input);
+            return 2;
+        }
+    }
+
+    codegen_patro_tables patro_tables;
+    if (!codegen_build_patro_tables(&patro_input, &calendar, &patro_tables, error, sizeof error)) {
+        (void)fprintf(stderr, "%s\n", error);
+        codegen_patro_input_free(&patro_input);
+        codegen_patro_tables_free(&patro_tables);
         return 2;
     }
-    const int status = emit(&opts, "src/generated/calendar_tables.h", tables);
-    free(tables);
+    codegen_patro_input_free(&patro_input);
+
+    char *calendar_header = codegen_render_calendar_tables(&calendar);
+    char *patro_header = codegen_render_patro_tables(&patro_tables, &calendar);
+    codegen_patro_tables_free(&patro_tables);
+    if (calendar_header == NULL || patro_header == NULL) {
+        (void)fprintf(stderr, "out of memory\n");
+        free(calendar_header);
+        free(patro_header);
+        return 2;
+    }
+    int status = emit(&opts, "src/generated/calendar_tables.h", calendar_header);
+    if (status == 0) {
+        status = emit(&opts, "src/generated/patro_tables.h", patro_header);
+    }
+    free(calendar_header);
+    free(patro_header);
     return status;
 }

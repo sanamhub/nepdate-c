@@ -697,7 +697,8 @@ int main(void) {
     RUN_TEST_NAMED(
         "OptimizationVerificationTests.SmartDateParser_NepaliUnicodeMonthNames_ParseCorrectly#4",
         optimization_nepali_month_names);
-    /* cs-pending: OptimizationVerificationTests.SmartDateParser_TwoDigitYear_AdjustedTo2000s phase 4: needs today; this port returns Ambiguous (D-06) */
+    /* cs-deviation: OptimizationVerificationTests.SmartDateParser_TwoDigitYear_AdjustedTo2000s D-06
+     * (this port never expands a two-digit year; lenient parsing returns Ambiguous) */
     RUN_TEST_NAMED(
         "OptimizationVerificationTests.SmartDateParser_InvalidInput_ThrowsFormatException",
         optimization_invalid_input);

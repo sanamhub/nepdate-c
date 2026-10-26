@@ -1,0 +1,11 @@
+prefix=@NEPDATE_C_PC_PREFIX@
+libdir=${prefix}/@CMAKE_INSTALL_LIBDIR@
+includedir=${prefix}/@CMAKE_INSTALL_INCLUDEDIR@
+
+Name: nepdate-c-patro
+Description: Patro (tithi, holidays and events) for nepdate-c
+URL: https://github.com/sanamhub/nepdate-c
+Version: @PROJECT_VERSION@
+Requires: nepdate-c
+Cflags: -I${includedir}@NEPDATE_C_PATRO_PC_CFLAGS@
+Libs: -L${libdir} -lnepdate-c-patro

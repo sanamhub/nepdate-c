@@ -29,11 +29,13 @@ CMake 3.25 or newer, Ninja and a C11 compiler (GCC 13, Clang 18, MSVC 2022, `zig
 cmake --workflow --preset dev
 ```
 
-`cmake --install` gives a CMake package and a pkg-config file, both named `nepdate-c`:
+`cmake --install` gives a CMake package and a pkg-config file, both named `nepdate-c`. The patro
+(tithi, holidays and events) is a second target in the same package:
 
 ```cmake
 find_package(nepdate-c CONFIG REQUIRED)
 target_link_libraries(app PRIVATE nepdate-c::nepdate)
+# optional: target_link_libraries(app PRIVATE nepdate-c::patro)
 ```
 
 ```c
