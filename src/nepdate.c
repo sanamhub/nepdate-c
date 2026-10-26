@@ -28,7 +28,8 @@ typedef struct text_span {
     size_t length;
 } text_span;
 
-/* clang-format off: clang-format 18.1.3 and 18.1.8 disagree on a braced macro body. */
+/* clang-format 18.1.3 and 18.1.8 disagree on this braced macro body, so neither formats it. */
+/* clang-format off */
 #define TEXT(literal) {(literal), sizeof(literal) - 1U}
 /* clang-format on */
 
