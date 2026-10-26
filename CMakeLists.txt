@@ -17,6 +17,7 @@ option(NEPDATE_C_BUILD_TESTS "Build the tests" ${PROJECT_IS_TOP_LEVEL})
 option(NEPDATE_C_BUILD_FUZZERS "Build the libFuzzer targets (Clang and the fuzz preset)" OFF)
 # The option exists so a core-only package can turn the patro library off.
 option(NEPDATE_C_BUILD_PATRO "Build the nepdate-c::patro library" ON)
+option(NEPDATE_C_WITH_TM "Build the struct tm bridge (needs <time.h>)" ON)
 option(NEPDATE_C_BUILD_TOOLS "Build tools/codegen" OFF)
 option(NEPDATE_C_CXX_HEADERS "Compile the public headers as C++ too (ADR-0001)" OFF)
 
@@ -58,6 +59,14 @@ if(nepdate_type STREQUAL "STATIC_LIBRARY")
     set(NEPDATE_C_PC_CFLAGS " -DNEPDATE_STATIC")
 else()
     set(NEPDATE_C_PC_CFLAGS "")
+endif()
+if(NEPDATE_C_WITH_TM)
+    target_sources(nepdate PRIVATE src/tm.c)
+else()
+    # The header hides the struct tm declarations from this build's users too, through the
+    # CMake package and the pkg-config file alike.
+    target_compile_definitions(nepdate PUBLIC NEPDATE_C_WITH_TM=0)
+    string(APPEND NEPDATE_C_PC_CFLAGS " -DNEPDATE_C_WITH_TM=0")
 endif()
 nepdate_c_set_warnings(nepdate)
 nepdate_c_set_instrumentation(nepdate)

@@ -29,6 +29,16 @@ target_compile_definitions(parse_test PRIVATE
 nepdate_c_add_test_program(cs_phase1 cs_phase1.c)
 nepdate_c_add_test_program(cs_phase2 cs_phase2.c)
 nepdate_c_add_test_program(cs_phase3 cs_phase3.c)
+nepdate_c_add_test_program(time_test time_test.c)
+target_include_directories(time_test PRIVATE "${PROJECT_SOURCE_DIR}/src")
+
+if(TARGET patro)
+    nepdate_c_add_test_program(patro_test patro_test.c)
+    target_link_libraries(patro_test PRIVATE nepdate-c::patro)
+    nepdate_c_add_test_program(cs_phase4 cs_phase4.c)
+    target_link_libraries(cs_phase4 PRIVATE nepdate-c::patro)
+    target_include_directories(cs_phase4 PRIVATE "${PROJECT_SOURCE_DIR}/src")
+endif()
 
 # The sample of the 2^32 date values the property test checks on a normal CI job. Valgrind and
 # MemorySanitizer are far slower than native code, so they check smaller samples (the msan preset
@@ -42,15 +52,24 @@ endif()
 nepdate_c_add_test_program(bit_patterns_test bit_patterns_test.c)
 target_compile_definitions(bit_patterns_test PRIVATE
     NEPDATE_C_BIT_PATTERN_BITS=${bit_pattern_bits})
+if(TARGET patro)
+    target_link_libraries(bit_patterns_test PRIVATE nepdate-c::patro)
+    target_compile_definitions(bit_patterns_test PRIVATE NEPDATE_C_TEST_PATRO)
+endif()
 option(NEPDATE_C_FULL_SWEEP "Check all 2^32 bit patterns in bit_patterns_test" OFF)
 if(NEPDATE_C_FULL_SWEEP)
     target_compile_definitions(bit_patterns_test PRIVATE NEPDATE_C_FULL_SWEEP)
     set_tests_properties(bit_patterns_test PROPERTIES TIMEOUT 3600)
 endif()
 
-# Every phase-1 to phase-3 row of the C# catalogue, or a comment naming the deviation or the later
-# phase. Each phase has its own test source, so each test checks its own rows.
-foreach(phase IN ITEMS 1 2 3)
+# Every phase-1 to phase-4 row of the C# catalogue, or a comment naming the deviation or the later
+# phase. Each phase has its own test source, so each test checks its own rows. The phase-4 rows
+# need the patro library, so a core-only build checks phases 1 to 3.
+set(catalog_phases 1 2 3)
+if(TARGET patro)
+    list(APPEND catalog_phases 4)
+endif()
+foreach(phase IN LISTS catalog_phases)
     add_test(NAME catalog_coverage_${phase}
         COMMAND "${CMAKE_COMMAND}"
             -DPHASE=${phase}
@@ -102,6 +121,9 @@ if(NEPDATE_C_CXX_HEADERS)
         set_target_properties(cxx_headers_${standard} PROPERTIES
             CXX_STANDARD ${standard} CXX_STANDARD_REQUIRED ON CXX_EXTENSIONS OFF)
         target_link_libraries(cxx_headers_${standard} PRIVATE nepdate-c::nepdate)
+        if(TARGET patro)
+            target_link_libraries(cxx_headers_${standard} PRIVATE nepdate-c::patro)
+        endif()
         nepdate_c_set_cxx_warnings(cxx_headers_${standard})
         nepdate_c_set_instrumentation(cxx_headers_${standard})
         nepdate_c_add_test(cxx_headers_${standard} cxx_headers_${standard})

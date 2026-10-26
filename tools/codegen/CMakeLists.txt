@@ -1,4 +1,4 @@
-add_library(nepdate_c_codegen_lib STATIC calendar.c calendar.h json.c json.h)
+add_library(nepdate_c_codegen_lib STATIC calendar.c calendar.h json.c json.h patro.c patro.h)
 target_include_directories(nepdate_c_codegen_lib PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}")
 
 add_executable(nepdate_c_codegen main.c)

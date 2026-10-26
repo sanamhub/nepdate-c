@@ -19,7 +19,7 @@ if(NOT corpus_result EQUAL 0)
     message(FATAL_ERROR "the fuzz seed corpus could not be written")
 endif()
 
-foreach(target IN ITEMS parse_strict parse_lenient format_pattern)
+foreach(target IN ITEMS parse_strict parse_lenient format_pattern from_unix)
     add_executable(fuzz_${target} ${target}.c)
     target_link_libraries(fuzz_${target} PRIVATE nepdate-c::nepdate)
     nepdate_c_set_warnings(fuzz_${target})

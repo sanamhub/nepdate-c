@@ -53,8 +53,8 @@ jobs:
         with:
           persist-credentials: false
       - run: sudo apt-get update && sudo apt-get install -y ninja-build pkg-config gcc-${{ matrix.version }}
-      - name: Gates 4, 13 and 14
-        run: cmake -DONLY=build-and-test,no-libc,api-surface -P tools/ci.cmake
+      - name: Gates 4, 13, 14 and 15
+        run: cmake -DONLY=build-and-test,no-libc,api-surface,isolation -P tools/ci.cmake
 
   clang:
     runs-on: ubuntu-24.04

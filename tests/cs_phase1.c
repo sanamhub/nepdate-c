@@ -1,13 +1,13 @@
 /* The phase-1 rows of C# NepDate's own tests (shared/spec/vectors/csharp-tests/catalog.tsv).
- * Each row is a test named after its id, or a cs-deviation / cs-n/a / cs-pending line. A row that
- * needs today() is skipped with a comment naming the later phase. The CTest test catalog_coverage
- * (tools/check_catalog.cmake) checks that every phase-1 row is here. */
+ * Each row is a test named after its id, or a cs-deviation / cs-n/a line. The CTest test
+ * catalog_coverage (tools/check_catalog.cmake) checks that every phase-1 row is here. */
 #include "harness.h"
 #include "hinnant_reference.h"
 
 #include <nepdate.h>
 
 #include <stddef.h>
+#include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -299,8 +299,13 @@ TEST(month_name) {
     CHECK_EQ_INT(nepdate_month_of(date_of(2080, 5, 15), &month), NEPDATE_OK);
     CHECK_EQ_INT(month, NEPDATE_BHADRA);
 }
-/* cs-pending: NepaliDatePropertiesTests.Today_ReturnsCurrentNepaliDate phase 4: needs today */
-TEST(today) { SKIP("phase 4: needs today"); }
+TEST(today) {
+    /* 2024-07-30 18:30 UTC is 2024-07-31 00:15 in Nepal. */
+    nepdate_date date = {0};
+    CHECK_EQ_INT(nepdate_today_nepal(INT64_C(1722364200), &date), NEPDATE_OK);
+    const nepdate_ymd ymd = to_bs(date);
+    CHECK(ymd.year == 2081 && ymd.month == 4 && ymd.day == 16);
+}
 TEST(day_of_year_first) { CHECK_EQ_INT(day_of_year(date_of(2080, 1, 1)), 1); }
 TEST(day_of_year_shrawan) {
     const int expected = month_length(date_of(2080, 1, 1)) + month_length(date_of(2080, 2, 1)) +

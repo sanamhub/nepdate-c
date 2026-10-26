@@ -867,6 +867,48 @@ size_t nepdate_format_long(nepdate_date date, nepdate_long_options options, nepd
     return finish_text(buffer, size, write_long(buffer, size, 0, date, options, lang));
 }
 
+/* Floor division by a positive divisor, for instants before 1970. */
+static int64_t floor_divide(int64_t value, int64_t divisor) {
+    int64_t quotient = value / divisor;
+    if (value % divisor < 0) {
+        quotient--;
+    }
+    return quotient;
+}
+
+nepdate_status nepdate_from_unix(int64_t unix_seconds, int32_t utc_offset_minutes,
+                                 nepdate_date *out) {
+    if (out == NULL) {
+        return NEPDATE_E_NULL;
+    }
+    int64_t days = unix_seconds / INT64_C(86400);
+    int64_t second_of_day = unix_seconds % INT64_C(86400);
+    if (second_of_day < 0) {
+        days--;
+        second_of_day += INT64_C(86400);
+    }
+    const int64_t local_second = second_of_day + (int64_t)utc_offset_minutes * INT64_C(60);
+    days += floor_divide(local_second, INT64_C(86400));
+    const int64_t value = days - (int64_t)NEPDATE_CAL_EPOCH_UNIX_DAYS + 1;
+    if (value < 1 || value > LAST_VALUE) {
+        return NEPDATE_E_OUT_OF_RANGE;
+    }
+    out->value = (int32_t)value;
+    return NEPDATE_OK;
+}
+
+/* Nepal moved from UTC+05:30 to UTC+05:45 at 1986-01-01 00:00 local, which is 1985-12-31 18:30
+ * UTC. IANA's tzdata records the transition at this instant (Asia/Kathmandu). */
+static const int64_t nepal_1986_transition = INT64_C(504901800);
+
+nepdate_status nepdate_today_nepal(int64_t unix_seconds, nepdate_date *out) {
+    if (out == NULL) {
+        return NEPDATE_E_NULL;
+    }
+    const int32_t offset = unix_seconds >= nepal_1986_transition ? 345 : 330;
+    return nepdate_from_unix(unix_seconds, offset, out);
+}
+
 /* A label is at most '-', ten digits of three bytes, '/', two digits of three bytes: 38 bytes. */
 size_t nepdate_fiscal_year_label(int fiscal_year, nepdate_lang lang, char *buffer, size_t size) {
     size_t length = 0;

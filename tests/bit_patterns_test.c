@@ -3,10 +3,53 @@
 #include "harness.h"
 
 #include <nepdate.h>
+#ifdef NEPDATE_C_TEST_PATRO
+#include <nepdate_patro.h>
+#endif
 
 #include <stddef.h>
 #include <stdint.h>
 #include <string.h>
+#if NEPDATE_C_WITH_TM
+#include <time.h>
+#endif
+
+#ifdef NEPDATE_C_TEST_PATRO
+static bool name_is_same(nepdate_patro_name left, nepdate_patro_name right) {
+    return left.np == right.np && left.np_length == right.np_length && left.en == right.en &&
+           left.en_length == right.en_length;
+}
+
+static bool info_is_same(nepdate_patro_day_info left, nepdate_patro_day_info right) {
+    return left.has_tithi == right.has_tithi && name_is_same(left.tithi, right.tithi) &&
+           left.is_public_holiday == right.is_public_holiday &&
+           left.event_count == right.event_count;
+}
+#endif
+
+#if NEPDATE_C_WITH_TM
+static struct tm tm_sentinel(void) {
+    struct tm value = {0};
+    value.tm_sec = 1;
+    value.tm_min = 2;
+    value.tm_hour = 3;
+    value.tm_mday = 4;
+    value.tm_mon = 5;
+    value.tm_year = 6;
+    value.tm_wday = 7;
+    value.tm_yday = 8;
+    value.tm_isdst = 9;
+    return value;
+}
+
+static bool tm_is_same(const struct tm *left, const struct tm *right) {
+    return left->tm_sec == right->tm_sec && left->tm_min == right->tm_min &&
+           left->tm_hour == right->tm_hour && left->tm_mday == right->tm_mday &&
+           left->tm_mon == right->tm_mon && left->tm_year == right->tm_year &&
+           left->tm_wday == right->tm_wday && left->tm_yday == right->tm_yday &&
+           left->tm_isdst == right->tm_isdst;
+}
+#endif
 
 #ifndef NEPDATE_C_BIT_PATTERN_BITS
 #define NEPDATE_C_BIT_PATTERN_BITS 24
@@ -39,6 +82,16 @@ static void check_invalid(uint32_t value) {
     for (size_t i = 0; i < sizeof text; i++) {
         text[i] = 'X';
     }
+#ifdef NEPDATE_C_TEST_PATRO
+    nepdate_patro_day_info patro_info = {true, {"x", 1, "y", 1}, true, 7};
+    const nepdate_patro_day_info patro_before = patro_info;
+    nepdate_patro_name events[2] = {{"x", 1, "y", 1}, {"x", 1, "y", 1}};
+    const nepdate_patro_name events_before[2] = {events[0], events[1]};
+#endif
+#if NEPDATE_C_WITH_TM
+    struct tm tm_out = tm_sentinel();
+    const struct tm tm_before = tm_out;
+#endif
 
     CHECK_EQ_INT(nepdate_to_bs(date, &ymd), NEPDATE_E_INVALID_DATE);
     CHECK_EQ_INT(nepdate_to_ad(date, &ymd), NEPDATE_E_INVALID_DATE);
@@ -68,6 +121,17 @@ static void check_invalid(uint32_t value) {
                                       text, sizeof text),
                  0);
     CHECK_EQ_INT(nepdate_format_long(date, long_options, NEPDATE_ENGLISH, text, sizeof text), 0);
+#ifdef NEPDATE_C_TEST_PATRO
+    CHECK_EQ_INT(nepdate_patro_info(date, &patro_info), NEPDATE_E_INVALID_DATE);
+    CHECK(info_is_same(patro_info, patro_before));
+    CHECK_EQ_INT(nepdate_patro_events(date, events, 2), 0);
+    CHECK(name_is_same(events[0], events_before[0]));
+    CHECK(name_is_same(events[1], events_before[1]));
+#endif
+#if NEPDATE_C_WITH_TM
+    CHECK_EQ_INT(nepdate_to_tm(date, &tm_out), NEPDATE_E_INVALID_DATE);
+    CHECK(tm_is_same(&tm_out, &tm_before));
+#endif
 
     CHECK(ymd.year == -1 && ymd.month == -2 && ymd.day == -3);
     CHECK_EQ_INT(weekday, NEPDATE_SATURDAY);
@@ -187,6 +251,16 @@ static void check_valid(uint32_t value) {
                  10);
     const nepdate_long_options options = {true, true, true};
     CHECK(nepdate_format_long(date, options, NEPDATE_ENGLISH, text, sizeof text) > 0);
+#ifdef NEPDATE_C_TEST_PATRO
+    nepdate_patro_day_info patro_info;
+    CHECK_EQ_INT(nepdate_patro_info(date, &patro_info), NEPDATE_OK);
+    nepdate_patro_name events[8];
+    CHECK_EQ_INT(nepdate_patro_events(date, events, 8), patro_info.event_count);
+#endif
+#if NEPDATE_C_WITH_TM
+    struct tm tm_value;
+    CHECK_EQ_INT(nepdate_to_tm(date, &tm_value), NEPDATE_OK);
+#endif
 
     check_valid_arithmetic(date);
 }

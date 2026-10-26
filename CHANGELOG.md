@@ -28,3 +28,9 @@ Versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   long form, in English or Nepali (`nepdate_order`, `nepdate_separator`, `nepdate_long_options`).
 - Strict and lenient parsing from a pointer and length (`nepdate_parse`, `nepdate_parse_lenient`),
   with the parse error kinds already in `nepdate_status`.
+- `nepdate_from_unix` and `nepdate_today_nepal`, which take the instant from the caller and know
+  Nepal's move from UTC+05:30 to UTC+05:45 in 1986. The optional `nepdate_from_tm`/`nepdate_to_tm`
+  bridge for `struct tm` is built unless `NEPDATE_C_WITH_TM=OFF`.
+- The separate `nepdate-c-patro` library with `<nepdate_patro.h>`: tithi, public holidays and
+  events for BS 2077-01-01..2084-08-20 through `nepdate_patro_info`, `nepdate_patro_coverage`,
+  `nepdate_patro_public_holidays` and `nepdate_patro_events`. The core has none of its data.
