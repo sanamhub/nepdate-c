@@ -1,4 +1,4 @@
-# The three libFuzzer targets with ASan and UBSan: 60 seconds on a pull request and 10 minutes
+# The four libFuzzer targets with ASan and UBSan: 60 seconds on a pull request and 10 minutes
 # nightly. The corpus is restored and saved through the Actions cache, so a found path survives the
 # run; a crashing input is uploaded as an artifact for the minimised regression test.
 name: fuzz
@@ -25,7 +25,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        target: [parse_strict, parse_lenient, format_pattern]
+        target: [parse_strict, parse_lenient, format_pattern, from_unix]
     runs-on: ubuntu-24.04
     timeout-minutes: 45
     steps:
