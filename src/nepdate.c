@@ -111,19 +111,20 @@ static int32_t day_count(nepdate_date date) {
 
 /* Month index (year - 1901) * 12 + month - 1 of day count s: an estimate that the generator
  * proves is at most one month off, then one correction. Precondition: s is a valid day count. */
-// NOLINTBEGIN(clang-analyzer-core.UndefinedBinaryOperatorResult,
-// clang-analyzer-core.uninitialized.Assign): the generator proves the estimate is in range.
+/* NOLINTBEGIN(clang-analyzer-core.UndefinedBinaryOperatorResult,
+ * clang-analyzer-core.uninitialized.Assign): the generator proves the estimate is in range, and
+ * month 0 starts at day count 0, so i never steps below 0. */
 static uint32_t month_index_of(uint32_t s) {
     uint32_t i = (uint32_t)(((uint64_t)s * NEPDATE_CAL_ESTIMATE_MUL) >> NEPDATE_CAL_ESTIMATE_SHIFT);
-    if (i > 0U && nepdate_cal_month_start[i] > s) {
+    if (nepdate_cal_month_start[i] > s) {
         i--;
     } else if (nepdate_cal_month_start[i + 1] <= s) {
         i++;
     }
     return i;
 }
-// NOLINTEND(clang-analyzer-core.UndefinedBinaryOperatorResult,
-// clang-analyzer-core.uninitialized.Assign)
+/* NOLINTEND(clang-analyzer-core.UndefinedBinaryOperatorResult,
+ * clang-analyzer-core.uninitialized.Assign) */
 
 nepdate_status nepdate_from_bs(int year, int month, int day, nepdate_date *out) {
     if (out == NULL) {
@@ -428,9 +429,9 @@ nepdate_status nepdate_diff(nepdate_date a, nepdate_date b, nepdate_date_diff *o
     uint32_t length = nepdate_cal_month_length[last_month];
     uint32_t landed_day = day < length ? day : length;
     int32_t landed = (int32_t)nepdate_cal_month_start[last_month] + (int32_t)landed_day - 1;
-    // NOLINTBEGIN(clang-analyzer-core.UndefinedBinaryOperatorResult,
-    // clang-analyzer-core.uninitialized.Assign): landed is never past a month that is also the
-    // first month, so last_month is never 0 here.
+    /* NOLINTBEGIN(clang-analyzer-core.UndefinedBinaryOperatorResult,
+     * clang-analyzer-core.uninitialized.Assign): landed is never past a month that is also the
+     * first month, so last_month is never 0 here. */
     if (landed > last) {
         months--;
         last_month--;
@@ -438,8 +439,8 @@ nepdate_status nepdate_diff(nepdate_date a, nepdate_date b, nepdate_date_diff *o
         landed_day = day < length ? day : length;
         landed = (int32_t)nepdate_cal_month_start[last_month] + (int32_t)landed_day - 1;
     }
-    // NOLINTEND(clang-analyzer-core.UndefinedBinaryOperatorResult,
-    // clang-analyzer-core.uninitialized.Assign)
+    /* NOLINTEND(clang-analyzer-core.UndefinedBinaryOperatorResult,
+     * clang-analyzer-core.uninitialized.Assign) */
     out->sign = sign;
     out->years = months / 12;
     out->months = months % 12;
