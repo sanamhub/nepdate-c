@@ -21,52 +21,72 @@ enum {
     AD_LAST_MONTH = (NEPDATE_CAL_AD_FIRST_MONTH - 1 + NEPDATE_CAL_AD_MONTHS - 1) % 12 + 1
 };
 
+/* A text and its length in bytes, so writing it needs no scan for the terminator, which a compiler
+ * could turn into a strlen call. */
+typedef struct text_span {
+    const char *text;
+    size_t length;
+} text_span;
+
+#define TEXT(literal) {(literal), sizeof(literal) - 1U}
+
 /* Month and weekday names in the order of their enums (FORMATTING section 1). Devanagari strings
  * are octal escapes of their UTF-8 bytes, with the readable text in the comment. The Nepali short
  * month name is the full name: Nepali has no customary month abbreviation. */
-static const char *const month_names[12][2] = {
-    {"Baishakh", "\340\244\254\340\245\210\340\244\266\340\244\276\340\244\226"}, /* Baishakh */
-    {"Jestha", "\340\244\234\340\245\207\340\244\240"},                           /* Jestha */
-    {"Ashad", "\340\244\205\340\244\270\340\244\276\340\244\260"},                /* Ashad */
-    {"Shrawan", "\340\244\270\340\244\276\340\244\211\340\244\250"},              /* Shrawan */
-    {"Bhadra", "\340\244\255\340\244\246\340\245\214"},                           /* Bhadra */
-    {"Ashoj", "\340\244\205\340\244\270\340\245\213\340\244\234"},                /* Ashoj */
-    {"Kartik",
-     "\340\244\225\340\244\276\340\244\260\340\245\215\340\244\244\340\244\277\340\244\225"},
-    {"Mangsir", "\340\244\256\340\244\202\340\244\270\340\244\277\340\244\260"},
-    {"Poush", "\340\244\252\340\245\201\340\244\267"}, /* Poush */
-    {"Magh", "\340\244\256\340\244\276\340\244\230"},  /* Magh */
-    {"Falgun", "\340\244\253\340\244\276\340\244\227\340\245\201\340\244\250"},
-    {"Chaitra", "\340\244\232\340\245\210\340\244\244"}, /* Chaitra */
+static const text_span month_names[12][2] = {
+    {TEXT("Baishakh"),
+     TEXT("\340\244\254\340\245\210\340\244\266\340\244\276\340\244\226")},      /* Baishakh */
+    {TEXT("Jestha"), TEXT("\340\244\234\340\245\207\340\244\240")},              /* Jestha */
+    {TEXT("Ashad"), TEXT("\340\244\205\340\244\270\340\244\276\340\244\260")},   /* Ashad */
+    {TEXT("Shrawan"), TEXT("\340\244\270\340\244\276\340\244\211\340\244\250")}, /* Shrawan */
+    {TEXT("Bhadra"), TEXT("\340\244\255\340\244\246\340\245\214")},              /* Bhadra */
+    {TEXT("Ashoj"), TEXT("\340\244\205\340\244\270\340\245\213\340\244\234")},   /* Ashoj */
+    {TEXT("Kartik"),
+     TEXT("\340\244\225\340\244\276\340\244\260\340\245\215\340\244\244\340\244\277\340\244\225")},
+    {TEXT("Mangsir"), TEXT("\340\244\256\340\244\202\340\244\270\340\244\277\340\244\260")},
+    {TEXT("Poush"), TEXT("\340\244\252\340\245\201\340\244\267")}, /* Poush */
+    {TEXT("Magh"), TEXT("\340\244\256\340\244\276\340\244\230")},  /* Magh */
+    {TEXT("Falgun"), TEXT("\340\244\253\340\244\276\340\244\227\340\245\201\340\244\250")},
+    {TEXT("Chaitra"), TEXT("\340\244\232\340\245\210\340\244\244")}, /* Chaitra */
 };
 
-static const char *const month_short_names[12][2] = {
-    {"Bai", "\340\244\254\340\245\210\340\244\266\340\244\276\340\244\226"}, /* Bai */
-    {"Jes", "\340\244\234\340\245\207\340\244\240"},                         /* Jes */
-    {"Asa", "\340\244\205\340\244\270\340\244\276\340\244\260"},             /* Asa */
-    {"Shr", "\340\244\270\340\244\276\340\244\211\340\244\250"},             /* Shr */
-    {"Bha", "\340\244\255\340\244\246\340\245\214"},                         /* Bha */
-    {"Aso", "\340\244\205\340\244\270\340\245\213\340\244\234"},             /* Aso */
-    {"Kar", "\340\244\225\340\244\276\340\244\260\340\245\215\340\244\244\340\244\277\340\244\225"},
-    {"Man", "\340\244\256\340\244\202\340\244\270\340\244\277\340\244\260"},
-    {"Pou", "\340\244\252\340\245\201\340\244\267"}, /* Pou */
-    {"Mag", "\340\244\256\340\244\276\340\244\230"}, /* Mag */
-    {"Fal", "\340\244\253\340\244\276\340\244\227\340\245\201\340\244\250"},
-    {"Cha", "\340\244\232\340\245\210\340\244\244"}, /* Cha */
+static const text_span month_short_names[12][2] = {
+    {TEXT("Bai"), TEXT("\340\244\254\340\245\210\340\244\266\340\244\276\340\244\226")}, /* Bai */
+    {TEXT("Jes"), TEXT("\340\244\234\340\245\207\340\244\240")},                         /* Jes */
+    {TEXT("Asa"), TEXT("\340\244\205\340\244\270\340\244\276\340\244\260")},             /* Asa */
+    {TEXT("Shr"), TEXT("\340\244\270\340\244\276\340\244\211\340\244\250")},             /* Shr */
+    {TEXT("Bha"), TEXT("\340\244\255\340\244\246\340\245\214")},                         /* Bha */
+    {TEXT("Aso"), TEXT("\340\244\205\340\244\270\340\245\213\340\244\234")},             /* Aso */
+    {TEXT("Kar"),
+     TEXT("\340\244\225\340\244\276\340\244\260\340\245\215\340\244\244\340\244\277\340\244\225")},
+    {TEXT("Man"), TEXT("\340\244\256\340\244\202\340\244\270\340\244\277\340\244\260")},
+    {TEXT("Pou"), TEXT("\340\244\252\340\245\201\340\244\267")}, /* Pou */
+    {TEXT("Mag"), TEXT("\340\244\256\340\244\276\340\244\230")}, /* Mag */
+    {TEXT("Fal"), TEXT("\340\244\253\340\244\276\340\244\227\340\245\201\340\244\250")},
+    {TEXT("Cha"), TEXT("\340\244\232\340\245\210\340\244\244")}, /* Cha */
 };
 
-static const char *const weekday_names[7][2] = {
-    {"Sunday", "\340\244\206\340\244\207\340\244\244\340\244\265\340\244\276\340\244\260"},
-    {"Monday", "\340\244\270\340\245\213\340\244\256\340\244\265\340\244\276\340\244\260"},
-    {"Tuesday", "\340\244\256\340\244\231\340\245\215\340\244\227\340\244\262\340\244\265\340\244"
-                "\276\340\244\260"},
-    {"Wednesday", "\340\244\254\340\245\201\340\244\247\340\244\265\340\244\276\340\244\260"},
-    {"Thursday",
-     "\340\244\254\340\244\277\340\244\271\340\244\277\340\244\265\340\244\276\340\244\260"},
-    {"Friday", "\340\244\266\340\245\201\340\244\225\340\245\215\340\244\260\340\244\265\340\244"
-               "\276\340\244\260"},
-    {"Saturday", "\340\244\266\340\244\250\340\244\277\340\244\265\340\244\276\340\244\260"},
+static const text_span weekday_names[7][2] = {
+    {TEXT("Sunday"),
+     TEXT("\340\244\206\340\244\207\340\244\244\340\244\265\340\244\276\340\244\260")},
+    {TEXT("Monday"),
+     TEXT("\340\244\270\340\245\213\340\244\256\340\244\265\340\244\276\340\244\260")},
+    {TEXT("Tuesday"),
+     TEXT("\340\244\256\340\244\231\340\245\215\340\244\227\340\244\262\340\244\265\340\244"
+          "\276\340\244\260")},
+    {TEXT("Wednesday"),
+     TEXT("\340\244\254\340\245\201\340\244\247\340\244\265\340\244\276\340\244\260")},
+    {TEXT("Thursday"),
+     TEXT("\340\244\254\340\244\277\340\244\271\340\244\277\340\244\265\340\244\276\340\244\260")},
+    {TEXT("Friday"),
+     TEXT("\340\244\266\340\245\201\340\244\225\340\245\215\340\244\260\340\244\265\340\244"
+          "\276\340\244\260")},
+    {TEXT("Saturday"),
+     TEXT("\340\244\266\340\244\250\340\244\277\340\244\265\340\244\276\340\244\260")},
 };
+
+/* ", " between the parts of the long format. */
+static const text_span comma_space = TEXT(", ");
 
 const char *nepdate_version(void) { return NEPDATE_VERSION_STRING; }
 
@@ -607,12 +627,11 @@ static size_t put_number(char *buffer, size_t size, size_t position, uint32_t va
     return position;
 }
 
-/* Writes a NUL-terminated text and returns the new position. */
-static size_t write_text(char *buffer, size_t size, size_t position, const char *text) {
-    while (*text != '\0') {
-        put_byte(buffer, size, position, *text);
+/* Writes text and returns the new position. */
+static size_t write_text(char *buffer, size_t size, size_t position, text_span text) {
+    for (size_t i = 0; i < text.length; i++) {
+        put_byte(buffer, size, position, text.text[i]);
         position++;
-        text++;
     }
     return position;
 }
@@ -713,7 +732,7 @@ static size_t write_long(char *buffer, size_t size, size_t position, nepdate_dat
     const unsigned language = lang == NEPDATE_NEPALI ? 1U : 0U;
     if (options.weekday) {
         position = write_text(buffer, size, position, weekday_names[(serial + 4U) % 7U][language]);
-        position = write_text(buffer, size, position, ", ");
+        position = write_text(buffer, size, position, comma_space);
     }
     position = write_text(buffer, size, position, month_names[index % 12U][language]);
     put_byte(buffer, size, position, ' ');
@@ -721,7 +740,7 @@ static size_t write_long(char *buffer, size_t size, size_t position, nepdate_dat
     position = put_number(buffer, size, position, serial - nepdate_cal_month_start[index] + 1U,
                           options.pad ? 2U : 1U, lang);
     if (options.year) {
-        position = write_text(buffer, size, position, ", ");
+        position = write_text(buffer, size, position, comma_space);
         position = put_number(buffer, size, position,
                               (uint32_t)(NEPDATE_CAL_MIN_YEAR + (int)(index / 12U)), 4U, lang);
     }
@@ -983,26 +1002,20 @@ static const char *const era_markers[] = {
 };
 
 /* The two words lenient parsing drops, compared exactly. */
-static const char *const dropped_words[] = {
-    "\340\244\227\340\244\244\340\245\207",             /* gate */
-    "\340\244\256\340\244\277\340\244\244\340\244\277", /* miti */
+static const text_span dropped_words[] = {
+    TEXT("\340\244\227\340\244\244\340\245\207"),             /* gate */
+    TEXT("\340\244\256\340\244\277\340\244\244\340\244\277"), /* miti */
 };
 
-static size_t text_length(const char *text) {
-    size_t length = 0;
-    while (text[length] != '\0') {
-        length++;
-    }
-    return length;
-}
+#undef TEXT
 
 /* True when text[0..length) is exactly entry. */
-static bool exact_equal(const char *text, size_t length, const char *entry) {
-    if (length != text_length(entry)) {
+static bool exact_equal(const char *text, size_t length, text_span entry) {
+    if (length != entry.length) {
         return false;
     }
     for (size_t i = 0; i < length; i++) {
-        if (text[i] != entry[i]) {
+        if (text[i] != entry.text[i]) {
             return false;
         }
     }
@@ -1094,9 +1107,14 @@ static bool digits_and_dots(const char *text, size_t length) {
     return true;
 }
 
-/* Reads the digits of a piece made only of digits; stores the count and the value of the first four
- * digits, so a long piece can't overflow. */
-static void read_digits(const char *text, size_t length, size_t *digits, unsigned *value) {
+/* The digit count of a piece made only of digits, and the value of its first four digits, so a long
+ * piece can't overflow. */
+typedef struct digit_run {
+    size_t count;
+    unsigned value;
+} digit_run;
+
+static digit_run read_digits(const char *text, size_t length) {
     size_t count = 0;
     unsigned number = 0;
     size_t i = 0;
@@ -1113,8 +1131,8 @@ static void read_digits(const char *text, size_t length, size_t *digits, unsigne
             number = number * 10U + digit;
         }
     }
-    *digits = count;
-    *value = number;
+    const digit_run run = {count, number};
+    return run;
 }
 
 typedef struct lenient_state {
@@ -1128,10 +1146,14 @@ typedef struct lenient_state {
     unsigned month;
     size_t month_count;
     size_t unknown_count;
+    bool too_long;
 } lenient_state;
 
+/* The lenient state passes by value: a local whose address reached another function would make
+ * -fstack-protector-strong add a canary, and the core links no __stack_chk_fail. */
+
 /* Appends the numbers of a digits-and-dots token, re-split on dots. */
-static nepdate_status append_digit_token(const char *text, size_t length, lenient_state *state) {
+static lenient_state append_digit_token(const char *text, size_t length, lenient_state state) {
     size_t start = 0;
     for (;;) {
         size_t end = start;
@@ -1139,60 +1161,63 @@ static nepdate_status append_digit_token(const char *text, size_t length, lenien
             end++;
         }
         if (end > start) {
-            size_t digits = 0;
-            unsigned value = 0;
-            read_digits(text + start, end - start, &digits, &value);
-            if (digits > 4U) {
-                return NEPDATE_E_NUMBER_TOO_LONG;
+            const digit_run run = read_digits(text + start, end - start);
+            if (run.count > 4U) {
+                state.too_long = true;
+                return state;
             }
-            if (state->number_count == 0U) {
-                state->number0 = value;
-                state->digits0 = digits;
-            } else if (state->number_count == 1U) {
-                state->number1 = value;
-                state->digits1 = digits;
-            } else if (state->number_count == 2U) {
-                state->number2 = value;
-                state->digits2 = digits;
+            if (state.number_count == 0U) {
+                state.number0 = run.value;
+                state.digits0 = run.count;
+            } else if (state.number_count == 1U) {
+                state.number1 = run.value;
+                state.digits1 = run.count;
+            } else if (state.number_count == 2U) {
+                state.number2 = run.value;
+                state.digits2 = run.count;
             }
-            state->number_count++;
+            state.number_count++;
         }
         if (end == length) {
             break;
         }
         start = end + 1U;
     }
-    return NEPDATE_OK;
+    return state;
 }
 
 /* Classifies one token: a dropped word, an era marker, a month name, or an unknown word. */
-static void classify_word(const char *text, size_t length, lenient_state *state) {
+static lenient_state classify_word(const char *text, size_t length, lenient_state state) {
     const size_t dropped_count = sizeof dropped_words / sizeof dropped_words[0];
     for (size_t i = 0; i < dropped_count; i++) {
         if (exact_equal(text, length, dropped_words[i])) {
-            return;
+            return state;
         }
     }
     const size_t era_count = sizeof era_markers / sizeof era_markers[0];
     for (size_t i = 0; i < era_count; i++) {
         if (folded_equal(text, length, era_markers[i])) {
-            return;
+            return state;
         }
     }
     const size_t spelling_count = sizeof month_spellings / sizeof month_spellings[0];
     for (size_t i = 0; i < spelling_count; i++) {
         if (folded_equal(text, length, month_spellings[i].text)) {
-            if (state->month_count == 0) {
-                state->month = month_spellings[i].month;
+            if (state.month_count == 0) {
+                state.month = month_spellings[i].month;
             }
-            state->month_count++;
-            return;
+            state.month_count++;
+            return state;
         }
     }
-    state->unknown_count++;
+    state.unknown_count++;
+    return state;
 }
 
-static nepdate_status tokenize(const char *text, size_t length, lenient_state *state) {
+/* Splits text into tokens; stops early with too_long set when a number has more than four digits.
+ */
+static lenient_state tokenize(const char *text, size_t length) {
+    lenient_state state = {0};
     size_t i = 0;
     while (i < length) {
         const size_t separator = lenient_separator_size(text, length, i);
@@ -1205,55 +1230,55 @@ static nepdate_status tokenize(const char *text, size_t length, lenient_state *s
             i++;
         }
         if (digits_and_dots(text + start, i - start)) {
-            const nepdate_status status = append_digit_token(text + start, i - start, state);
-            if (status != NEPDATE_OK) {
-                return status;
+            state = append_digit_token(text + start, i - start, state);
+            if (state.too_long) {
+                return state;
             }
         } else {
-            classify_word(text + start, i - start, state);
+            state = classify_word(text + start, i - start, state);
         }
     }
-    return NEPDATE_OK;
+    return state;
 }
 
 /* The month-name form of PARSING section 2. */
-static nepdate_status assemble_month_name(const lenient_state *state, nepdate_date *out) {
+static nepdate_status assemble_month_name(lenient_state state, nepdate_date *out) {
     unsigned year = 0;
     unsigned day = 0;
     size_t day_digits = 0;
-    if (state->digits0 == 4U && state->digits1 != 4U) {
-        year = state->number0;
-        day = state->number1;
-        day_digits = state->digits1;
-    } else if (state->digits1 == 4U && state->digits0 != 4U) {
-        year = state->number1;
-        day = state->number0;
-        day_digits = state->digits0;
+    if (state.digits0 == 4U && state.digits1 != 4U) {
+        year = state.number0;
+        day = state.number1;
+        day_digits = state.digits1;
+    } else if (state.digits1 == 4U && state.digits0 != 4U) {
+        year = state.number1;
+        day = state.number0;
+        day_digits = state.digits0;
     } else {
         return NEPDATE_E_AMBIGUOUS;
     }
     if (day_digits > 2U) {
         return NEPDATE_E_AMBIGUOUS;
     }
-    return nepdate_from_bs((int)year, (int)state->month, (int)day, out);
+    return nepdate_from_bs((int)year, (int)state.month, (int)day, out);
 }
 
 /* The numeric form of PARSING section 2. */
-static nepdate_status assemble_numeric(const lenient_state *state, nepdate_date *out) {
-    if (state->digits0 == 4U) {
-        return nepdate_from_bs((int)state->number0, (int)state->number1, (int)state->number2, out);
+static nepdate_status assemble_numeric(lenient_state state, nepdate_date *out) {
+    if (state.digits0 == 4U) {
+        return nepdate_from_bs((int)state.number0, (int)state.number1, (int)state.number2, out);
     }
-    if (state->digits2 == 4U) {
-        return nepdate_from_bs((int)state->number2, (int)state->number1, (int)state->number0, out);
+    if (state.digits2 == 4U) {
+        return nepdate_from_bs((int)state.number2, (int)state.number1, (int)state.number0, out);
     }
     return NEPDATE_E_AMBIGUOUS;
 }
 
-static nepdate_status assemble(const lenient_state *state, nepdate_date *out) {
-    if (state->month_count == 1U && state->unknown_count == 0U && state->number_count == 2U) {
+static nepdate_status assemble(lenient_state state, nepdate_date *out) {
+    if (state.month_count == 1U && state.unknown_count == 0U && state.number_count == 2U) {
         return assemble_month_name(state, out);
     }
-    if (state->month_count == 0U && state->unknown_count == 0U && state->number_count == 3U) {
+    if (state.month_count == 0U && state.unknown_count == 0U && state.number_count == 3U) {
         return assemble_numeric(state, out);
     }
     return NEPDATE_E_UNRECOGNIZED;
@@ -1366,18 +1391,15 @@ nepdate_status nepdate_parse_lenient(const char *text, size_t len, nepdate_date 
     if (text == NULL) {
         return NEPDATE_E_NULL;
     }
-    nepdate_date strict_date = {0};
-    const nepdate_status strict_status = parse_strict(text, len, &strict_date);
-    if (strict_status == NEPDATE_OK) {
-        *out = strict_date;
+    /* parse_strict leaves *out unchanged on error, so it can write there directly. */
+    if (parse_strict(text, len, out) == NEPDATE_OK) {
         return NEPDATE_OK;
     }
-    lenient_state state = {0};
-    const nepdate_status token_status = tokenize(text, len, &state);
-    if (token_status != NEPDATE_OK) {
-        return token_status;
+    const lenient_state state = tokenize(text, len);
+    if (state.too_long) {
+        return NEPDATE_E_NUMBER_TOO_LONG;
     }
-    return assemble(&state, out);
+    return assemble(state, out);
 }
 
 /* True when range holds two dates this library made, with start not after end. */
