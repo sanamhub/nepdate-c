@@ -352,6 +352,8 @@ NEPDATE_API nepdate_status nepdate_from_unix(int64_t unix_seconds, int32_t utc_o
 
 /* Stores in *out today's BS date for the instant unix_seconds after 1970-01-01 00:00 UTC, read in
  * Nepal: UTC+05:45 from 1986-01-01 00:00 local (1985-12-31 18:30 UTC), UTC+05:30 before that.
+ * The +05:30 rule also covers instants before 1920, where IANA's tzdata has local mean time
+ * (+05:41:16) instead.
  * Returns NEPDATE_E_NULL when out is NULL and NEPDATE_E_OUT_OF_RANGE when the date is outside the
  * supported range. Any int64_t is accepted; *out is unchanged on error. */
 NEPDATE_API nepdate_status nepdate_today_nepal(int64_t unix_seconds, nepdate_date *out);

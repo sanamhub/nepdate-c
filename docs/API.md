@@ -362,8 +362,9 @@ when `out` is `NULL`; any `int64_t` seconds and `int32_t` offset are accepted, i
 extreme values.
 
 `nepdate_today_nepal` is `nepdate_from_unix` with Nepal's offset at that instant: UTC+05:45 from
-1986-01-01 00:00 local (1985-12-31 18:30 UTC) and UTC+05:30 before. Neither function reads the
-clock; the caller passes the instant.
+1986-01-01 00:00 local (1985-12-31 18:30 UTC) and UTC+05:30 before. The +05:30 rule also covers
+instants before 1920, where IANA's tzdata has local mean time (+05:41:16). Neither function reads
+the clock; the caller passes the instant.
 
 ```c
 nepdate_date date;

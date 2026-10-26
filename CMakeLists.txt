@@ -40,12 +40,6 @@ endif()
 
 add_library(nepdate src/nepdate.c)
 add_library(nepdate-c::nepdate ALIAS nepdate)
-if(NEPDATE_C_WITH_TM)
-    target_sources(nepdate PRIVATE src/tm.c)
-else()
-    # The header hides the struct tm declarations from this build's users too.
-    target_compile_definitions(nepdate PUBLIC NEPDATE_C_WITH_TM=0)
-endif()
 target_sources(nepdate
     PUBLIC
         FILE_SET HEADERS
@@ -65,6 +59,14 @@ if(nepdate_type STREQUAL "STATIC_LIBRARY")
     set(NEPDATE_C_PC_CFLAGS " -DNEPDATE_STATIC")
 else()
     set(NEPDATE_C_PC_CFLAGS "")
+endif()
+if(NEPDATE_C_WITH_TM)
+    target_sources(nepdate PRIVATE src/tm.c)
+else()
+    # The header hides the struct tm declarations from this build's users too, through the
+    # CMake package and the pkg-config file alike.
+    target_compile_definitions(nepdate PUBLIC NEPDATE_C_WITH_TM=0)
+    string(APPEND NEPDATE_C_PC_CFLAGS " -DNEPDATE_C_WITH_TM=0")
 endif()
 nepdate_c_set_warnings(nepdate)
 nepdate_c_set_instrumentation(nepdate)
