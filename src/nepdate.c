@@ -28,7 +28,9 @@ typedef struct text_span {
     size_t length;
 } text_span;
 
+/* clang-format off: clang-format 18.1.3 and 18.1.8 disagree on a braced macro body. */
 #define TEXT(literal) {(literal), sizeof(literal) - 1U}
+/* clang-format on */
 
 /* Month and weekday names in the order of their enums (FORMATTING section 1). Devanagari strings
  * are octal escapes of their UTF-8 bytes, with the readable text in the comment. The Nepali short
