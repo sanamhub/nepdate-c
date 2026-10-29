@@ -1,0 +1,138 @@
+# One tag vX.Y.Z releases the core and the patro. On a tag push: preflight (tools/release_check.cmake
+# and the tag's ancestry), the full CI workflow, then the production environment's required reviewer
+# creates the GitHub Release with the changelog section as notes, the source archive and the
+# amalgamation, their SHA-256 files, and a build provenance attestation for both archives.
+# workflow_dispatch runs preflight and CI only; the release job is skipped because there is no tag.
+
+name: release
+
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+    inputs:
+      version:
+        description: Version to preflight (X.Y.Z or X.Y.Z-prerelease, no leading v)
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  preflight:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    outputs:
+      version: ${{ steps.meta.outputs.version }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Resolve and validate the version
+        id: meta
+        shell: bash
+        env:
+          INPUT_VERSION: ${{ inputs.version }}
+        run: |
+          set -euo pipefail
+          if [[ "$GITHUB_REF_TYPE" == "tag" ]]; then
+            tag="$GITHUB_REF_NAME"
+            version="${tag#v}"
+          else
+            version="$INPUT_VERSION"
+            tag="v$version"
+          fi
+          if [[ ! "$version" =~ ^[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z.-]+)?$ ]]; then
+            echo "::error::version must look like X.Y.Z or X.Y.Z-prerelease, got '$version'"
+            exit 1
+          fi
+          if [[ "$tag" != "v$version" ]]; then
+            echo "::error::tag $tag does not match v$version"
+            exit 1
+          fi
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+      - name: The tagged commit is on main
+        if: github.ref_type == 'tag'
+        shell: bash
+        run: |
+          set -euo pipefail
+          if ! git merge-base --is-ancestor "$GITHUB_SHA" origin/main; then
+            echo "::error::tag $GITHUB_REF_NAME points at a commit that is not on main"
+            exit 1
+          fi
+      - name: Release check
+        env:
+          VERSION: ${{ steps.meta.outputs.version }}
+        run: cmake "-DVERSION=$VERSION" -P tools/release_check.cmake
+      - name: The amalgamation is current
+        run: cmake -DCHECK=ON -P tools/amalgamate.cmake
+
+  ci:
+    needs: preflight
+    uses: ./.github/workflows/ci.yml
+    permissions:
+      contents: read
+
+  release:
+    if: github.ref_type == 'tag'
+    needs: ci
+    runs-on: ubuntu-24.04
+    environment: production
+    timeout-minutes: 15
+    permissions:
+      contents: write
+      id-token: write
+      attestations: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Archive names
+        id: archive
+        shell: bash
+        run: |
+          version="${GITHUB_REF_NAME#v}"
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+          echo "source=nepdate-c-$version.tar.gz" >> "$GITHUB_OUTPUT"
+          echo "amalgamation=nepdate-c-$version-amalgamation.tar.gz" >> "$GITHUB_OUTPUT"
+      - name: Source archive
+        run: |
+          git archive --format=tar.gz --prefix="nepdate-c-${{ steps.archive.outputs.version }}/" \
+            -o "${{ steps.archive.outputs.source }}" "$GITHUB_REF_NAME"
+      - name: Amalgamation archive
+        run: |
+          tar -czf "${{ steps.archive.outputs.amalgamation }}" \
+            -C dist nepdate.c nepdate.h nepdate_patro.c nepdate_patro.h
+      - name: Checksums
+        run: |
+          sha256sum "${{ steps.archive.outputs.source }}" \
+            "${{ steps.archive.outputs.amalgamation }}" > SHA256SUMS
+      - name: Changelog notes
+        shell: bash
+        run: |
+          version="${{ steps.archive.outputs.version }}"
+          awk -v want="## [$version]" '
+            /^## \[/ { if (in_section) exit; if (index($0, want) == 1) in_section = 1 }
+            in_section { print }
+          ' CHANGELOG.md > release-notes.md
+          test -s release-notes.md
+          cat release-notes.md
+      - name: Attest the source archive
+        uses: actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8 # v4.2.2
+        with:
+          subject-path: "${{ steps.archive.outputs.source }}"
+      - name: Attest the amalgamation archive
+        uses: actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8 # v4.2.2
+        with:
+          subject-path: "${{ steps.archive.outputs.amalgamation }}"
+      - name: GitHub Release
+        uses: softprops/action-gh-release@efb35369e0ad2afab669f228072c1b0d510eae64 # v3.0.3
+        with:
+          name: "v${{ steps.archive.outputs.version }}"
+          body_path: release-notes.md
+          files: |
+            ${{ steps.archive.outputs.source }}
+            ${{ steps.archive.outputs.amalgamation }}
+            SHA256SUMS
