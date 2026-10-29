@@ -8,10 +8,10 @@ library's export table with the functions on this page.
 
 ```c
 #define NEPDATE_VERSION_MAJOR 0
-#define NEPDATE_VERSION_MINOR 0
+#define NEPDATE_VERSION_MINOR 1
 #define NEPDATE_VERSION_PATCH 0
-#define NEPDATE_VERSION_PRERELEASE ""
-#define NEPDATE_VERSION_STRING "0.0.0"
+#define NEPDATE_VERSION_PRERELEASE "beta.1"
+#define NEPDATE_VERSION_STRING "0.1.0-beta.1"
 
 const char *nepdate_version(void);
 ```
@@ -527,4 +527,5 @@ Ranges have no set operations, splitting or working-day count (PARITY D-09): ite
 | Sources compiled into the user's project | `NEPDATE_STATIC` |
 | Patro shared library | link `nepdate-c::patro` or use `nepdate-c-patro` from pkg-config; it depends on the core |
 | Patro static library | nothing extra; the target and `nepdate-c-patro.pc` add `NEPDATE_PATRO_STATIC` |
+| Patro installed on its own (vcpkg, Conan) | `find_package(nepdate-c-patro CONFIG REQUIRED)` gives the `nepdate-c::patro` target |
 | Patro sources compiled into the user's project | `NEPDATE_PATRO_STATIC` |

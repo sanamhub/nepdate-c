@@ -42,6 +42,7 @@ CI sets `NEPDATE_C_CI=1`, which turns a skip into a failure.
 | `msan` | Clang on Linux |
 | `valgrind` | Valgrind on Linux |
 | `no-libc`, `api-surface` | `nm`, or `dumpbin` from a Visual Studio developer prompt |
+| `amalgamation` | CMake and Ninja; builds `dist/` with the current compiler and runs its test |
 
 On a machine where the default compiler is not the one you want, copy `CMakePresets.json` to the
 gitignored `CMakeUserPresets.json` and add `local-*` presets that inherit the public ones; the

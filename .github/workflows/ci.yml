@@ -36,8 +36,8 @@ jobs:
       - uses: ilammy/msvc-dev-cmd@0b201ec74fa43914dc39ae48a89fd1d8cb592756 # v1.13.0
         with:
           arch: x64
-      - name: Gates 3, 4, 5, 9, 13 and 14
-        run: cmake "-DONLY=codegen,build-and-test,cxx-headers,sanitizers,no-libc,api-surface" -P tools/ci.cmake
+      - name: Gates 3, 4, 5, 9, 13, 14 and 15
+        run: cmake "-DONLY=codegen,build-and-test,cxx-headers,sanitizers,no-libc,api-surface,amalgamation" -P tools/ci.cmake
 
   gcc:
     strategy:
@@ -53,8 +53,8 @@ jobs:
         with:
           persist-credentials: false
       - run: sudo apt-get update && sudo apt-get install -y ninja-build pkg-config gcc-${{ matrix.version }}
-      - name: Gates 4, 13, 14 and 15
-        run: cmake -DONLY=build-and-test,no-libc,api-surface,isolation -P tools/ci.cmake
+      - name: Gates 4, 13, 14, 15 and 16
+        run: cmake -DONLY=build-and-test,no-libc,api-surface,amalgamation,isolation -P tools/ci.cmake
 
   clang:
     runs-on: ubuntu-24.04
@@ -66,8 +66,8 @@ jobs:
         with:
           persist-credentials: false
       - run: sudo apt-get update && sudo apt-get install -y ninja-build pkg-config clang-18
-      - name: Gates 4, 13 and 14
-        run: cmake -DONLY=build-and-test,no-libc,api-surface -P tools/ci.cmake
+      - name: Gates 4, 13, 14 and 15
+        run: cmake -DONLY=build-and-test,no-libc,api-surface,amalgamation -P tools/ci.cmake
 
   zig:
     runs-on: ubuntu-24.04
@@ -85,10 +85,17 @@ jobs:
           # CMake wants one program as the compiler, so `zig cc` gets a one-word name.
           printf '#!/bin/sh\nexec zig cc "$@"\n' | sudo tee /usr/local/bin/zig-cc
           sudo chmod +x /usr/local/bin/zig-cc
-      - name: Gate 4
+      - name: Gate 4 and the amalgamation
         env:
           CC: zig-cc
-        run: cmake -DONLY=build-and-test -P tools/ci.cmake
+        run: cmake -DONLY=build-and-test,amalgamation -P tools/ci.cmake
+      - name: Zig consumer
+        env:
+          ZIG_GLOBAL_CACHE_DIR: ${{ runner.temp }}/zig-global
+        run: |
+          cd tests/zig_consumer
+          zig build run --cache-dir "$RUNNER_TEMP/zig-cache" --prefix "$RUNNER_TEMP/zig-out" 2>&1 | tee "$RUNNER_TEMP/zig-consumer.log"
+          grep -F "BS 2081-04-15" "$RUNNER_TEMP/zig-consumer.log"
 
   apple:
     runs-on: macos-15
@@ -182,7 +189,7 @@ jobs:
           persist-credentials: false
       - run: sudo apt-get update && sudo apt-get install -y ninja-build gcc-14 gcc-14-multilib
       - name: Gate 4, 32-bit
-        run: cmake -DONLY=build-and-test -P tools/ci.cmake
+        run: cmake -DONLY=build-and-test,amalgamation -P tools/ci.cmake
       - name: Show that the tests are 32-bit programs
         run: file build/dev/bin/version_test
 
@@ -221,6 +228,43 @@ jobs:
       - run: sudo apt-get update && sudo apt-get install -y ninja-build g++-14
       - name: Gate 5
         run: cmake -DONLY=cxx-headers -P tools/ci.cmake
+
+  packages:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    env:
+      VCPKG_COMMIT: 0699a19d0c6386247ce50d4dedbb8217d484d536
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - run: sudo apt-get update && sudo apt-get install -y ninja-build
+      - name: vcpkg overlay ports and consumer
+        env:
+          NEPDATE_C_SOURCE: ${{ github.workspace }}
+          VCPKG_KEEP_ENV_VARS: NEPDATE_C_SOURCE
+        run: |
+          set -euo pipefail
+          git clone --quiet https://github.com/microsoft/vcpkg.git "$RUNNER_TEMP/vcpkg"
+          git -C "$RUNNER_TEMP/vcpkg" checkout --quiet "$VCPKG_COMMIT"
+          "$RUNNER_TEMP/vcpkg/bootstrap-vcpkg.sh" -disableMetrics
+          "$RUNNER_TEMP/vcpkg/vcpkg" install --classic nepdate-c nepdate-c-patro \
+            --overlay-ports=ports --triplet x64-linux
+          cmake -S tests/consumer -B build/consumer-vcpkg -G Ninja \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DCMAKE_TOOLCHAIN_FILE="$RUNNER_TEMP/vcpkg/scripts/buildsystems/vcpkg.cmake"
+          cmake --build build/consumer-vcpkg -j 4
+          build/consumer-vcpkg/consumer
+      - name: Conan recipes
+        env:
+          CONAN_HOME: ${{ runner.temp }}/conan2
+          NEPDATE_C_SOURCE: ${{ github.workspace }}
+        run: |
+          set -euo pipefail
+          pipx install conan==2.33.0
+          conan profile detect --force
+          conan create conan/nepdate-c --build=missing
+          conan create conan/nepdate-c-patro --build=missing
 
   shared-check:
     permissions:

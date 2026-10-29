@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.25...4.1)
 
-project(nepdate-c VERSION 0.0.0 LANGUAGES C)
+project(nepdate-c VERSION 0.1.0 LANGUAGES C)
 
 # The regenerate command is `cmake --build <dir> --target codegen` (ADR-0001). CMake 3.31 and later
 # reserve that target name for their own CODEGEN commands unless this policy is OLD.
