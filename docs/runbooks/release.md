@@ -27,7 +27,7 @@ branch, push it, and delete the branch and tag before the approval:
 
 ```bash
 git switch -c release-dry-run
-git tag -s v0.1.0-beta.1 -m "v0.1.0-beta.1"
+git tag -a v0.1.0-beta.1 -m "v0.1.0-beta.1"
 git push origin release-dry-run v0.1.0-beta.1
 # open the release run, confirm it reaches production approval, then:
 git push origin :refs/tags/v0.1.0-beta.1
@@ -40,7 +40,7 @@ Do not approve the dry run. The real tag is `v0.1.0-beta.1`; pushing it is the r
 ## Releasing
 
 ```bash
-git tag -s v0.1.0-beta.1 -m "v0.1.0-beta.1"
+git tag -a v0.1.0-beta.1 -m "v0.1.0-beta.1"
 git push origin v0.1.0-beta.1
 ```
 
@@ -56,14 +56,15 @@ section as notes.
    `curl -L -o nepdate-c-0.1.0-beta.1.tar.gz https://github.com/sanamhub/nepdate-c/archive/refs/tags/v0.1.0-beta.1.tar.gz`
    then `sha512sum` for vcpkg and `sha256sum` for Conan, and put them in the two portfiles and
    `conandata.yml` in place of the placeholders.
-3. From a vcpkg fork, copy `ports/nepdate-c` and `ports/nepdate-c-patro` to `ports/`, run
+3. Registry submissions wait until the project meets the vcpkg and Conan Center intake rules for
+   age and use; until then the overlay ports and recipes in this repository are the install path.
+   When submitting, from a vcpkg fork, copy `ports/nepdate-c` and `ports/nepdate-c-patro` to `ports/`, run
    `vcpkg install --classic nepdate-c nepdate-c-patro --overlay-ports=ports`, then
    `vcpkg x-add-version --all`, and open the PR.
 4. From a Conan Center fork, copy `conan/nepdate-c` and `conan/nepdate-c-patro` to
    `recipes/<name>/all/`, add `config.yml` with the version, and run `conan create` for both before
    opening the PR.
-5. Add an empty `## [Unreleased]` to the changelog on `main`.
-6. Verify the side-by-side install from the released tree once more, then update the hub site with
+5. Verify the side-by-side install from the released tree once more, then update the hub site with
    the C page, the code tab and the benchmark rows (the hub PR).
 
 ## Rolling back

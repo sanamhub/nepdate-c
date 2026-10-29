@@ -17,16 +17,25 @@ class NepdateCConan(ConanFile):
     options = {
         "shared": [True, False],
         "fPIC": [True, False],
-        "patro": [True, False],
         "with_tm": [True, False],
     }
     default_options = {
         "shared": False,
         "fPIC": True,
-        "patro": False,
         "with_tm": True,
     }
     no_copy_source = True
+
+    def config_options(self):
+        if self.settings.os == "Windows":
+            del self.options.fPIC
+
+    def configure(self):
+        if self.options.shared:
+            self.options.rm_safe("fPIC")
+        # A C library: the C++ standard library and standard setting do not apply.
+        self.settings.rm_safe("compiler.libcxx")
+        self.settings.rm_safe("compiler.cppstd")
 
     def layout(self):
         cmake_layout(self)
@@ -45,7 +54,7 @@ class NepdateCConan(ConanFile):
         tc = CMakeToolchain(self)
         tc.variables["BUILD_SHARED_LIBS"] = self.options.shared
         tc.variables["NEPDATE_C_WITH_TM"] = self.options.with_tm
-        tc.variables["NEPDATE_C_BUILD_PATRO"] = self.options.patro
+        tc.variables["NEPDATE_C_BUILD_PATRO"] = "OFF"
         tc.variables["NEPDATE_C_BUILD_TESTS"] = "OFF"
         tc.variables["NEPDATE_C_BUILD_TOOLS"] = "OFF"
         tc.variables["NEPDATE_C_BUILD_BENCH"] = "OFF"

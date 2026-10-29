@@ -17,7 +17,7 @@ library found by [`docs/competitors.md`](competitors.md).
 | State | not fully idle |
 
 Browsers, editors, the Acer control panel and Task Manager were closed before the C runs and did not
-hold the benchmark core. Windows services and the desktop session was still running, so the machine
+hold the benchmark core. Windows services and the desktop session were still running, so the machine
 was not quiet to the standard of BENCHMARK section 1. Every row was measured under that same
 background load, in one session.
 
@@ -27,8 +27,8 @@ background load, in one session.
 |---|---|
 | C, MSVC | 19.51.36260, x64, Release `/O2 /DNDEBUG` |
 | C, clang-cl | 23.1.4, x64, Release `/O2 /DNDEBUG` |
-| C, Rust | rustc 1.99.0, `lto = "fat"`, one codegen unit |
-| C, C++ | MSVC 19.51.36260, x64, Release `/O2 /DNDEBUG` |
+| Rust | rustc 1.99.0, `lto = "fat"`, one codegen unit |
+| C++ | MSVC 19.51.36260, x64, Release `/O2 /DNDEBUG` |
 | C++ port | `main` at `2520cff` |
 | Rust port | `3936a58` |
 | C benchmark | `nepdate_bench`, 25 samples, median; the amalgamation row includes the library sources in the harness's translation unit |
@@ -136,7 +136,7 @@ C++:
 
 ```
 cmake -S bench -B build/bench-msvc -G Ninja -DCMAKE_BUILD_TYPE=Release
-      -DCMAKE_TOOLCHAIN_FILE=E:/tools/vcpkg/scripts/buildsystems/vcpkg.cmake
+      -DCMAKE_TOOLCHAIN_FILE=<vcpkg-root>/scripts/buildsystems/vcpkg.cmake
       -DVCPKG_MANIFEST_DIR=. -DVCPKG_MANIFEST_FEATURES=dev
 cmake --build build/bench-msvc -j 4
 start /affinity 4 /wait build\bench-msvc\nepdate_bench.exe --benchmark_repetitions=10

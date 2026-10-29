@@ -18,6 +18,17 @@ class NepdateCPatroConan(ConanFile):
     default_options = {"shared": False, "fPIC": True}
     no_copy_source = True
 
+    def config_options(self):
+        if self.settings.os == "Windows":
+            del self.options.fPIC
+
+    def configure(self):
+        if self.options.shared:
+            self.options.rm_safe("fPIC")
+        # A C library: the C++ standard library and standard setting do not apply.
+        self.settings.rm_safe("compiler.libcxx")
+        self.settings.rm_safe("compiler.cppstd")
+
     def requirements(self):
         self.requires("nepdate-c/0.1.0-beta.1", transitive_headers=True)
 
