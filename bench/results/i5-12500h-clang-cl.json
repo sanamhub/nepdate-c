@@ -1,0 +1,10 @@
+{
+  "id": "c",
+  "name": "C",
+  "machine": "Intel Core i5-12500H laptop, Windows 11 10.0.26300",
+  "ops": [5.297, 6.610, 5.923, 8.422, 38.918, 15.961, 13.207, 421.684],
+  "competitors": [
+    {"name": "aatishnn/nepdate", "b1": 17797.188, "b2": 64213.438}
+  ],
+  "source": "https://github.com/sanamhub/nepdate-c/blob/main/docs/benchmarks.md"
+}

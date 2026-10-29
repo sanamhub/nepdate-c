@@ -17,8 +17,7 @@ hub [`sanamhub/nepdate`](https://github.com/sanamhub/nepdate); the C# original i
 Plain ISO C11 with no allocation, no global state and no dependencies, so it also builds into Zig
 projects and into extensions for languages that call C.
 
-> **Status:** in development, nothing is released. The build, the checks and CI are in place; the
-> calendar code is being written. Until the first release, use one of the
+> **Status:** `0.1.0-beta.1` is prepared for its tag after review. Until it is tagged, use one of the
 > [released languages](https://github.com/sanamhub/nepdate#packages).
 
 ## Build
@@ -38,15 +37,37 @@ target_link_libraries(app PRIVATE nepdate-c::nepdate)
 # optional: target_link_libraries(app PRIVATE nepdate-c::patro)
 ```
 
+## Quick start
+
 ```c
 #include <nepdate.h>
 #include <stdio.h>
 
 int main(void) {
-    printf("nepdate-c %s\n", nepdate_version());
+    nepdate_date date;
+    nepdate_ymd bs;
+    if (nepdate_from_ad(2024, 7, 30, &date) != NEPDATE_OK ||
+        nepdate_to_bs(date, &bs) != NEPDATE_OK) {
+        return 1;
+    }
+    printf("BS %04d-%02d-%02d\n", bs.year, bs.month, bs.day);
     return 0;
 }
 ```
+
+## Packages
+
+The CMake package installs the core and the patro target together. The vcpkg ports and the Conan
+recipes install the core and the patro separately; the patro package is found with
+`find_package(nepdate-c-patro CONFIG REQUIRED)`. The amalgamation is in `dist/`: `nepdate.c` with
+`nepdate.h`, and `nepdate_patro.c` with `nepdate_patro.h`.
+
+## Zig
+
+`build.zig` and `build.zig.zon` are tested with Zig **0.17.0**, the stable release at the time. A
+Zig project can add this repository as a path or fetch dependency and link the `nepdate-c` and
+`nepdate-c-patro` static libraries; `tests/zig_consumer` is a working consumer. The consumer prints
+`BS 2081-04-15` for AD 2024-07-30.
 
 ## More
 
@@ -55,6 +76,8 @@ int main(void) {
 | Every public name, with signatures | [docs/API.md](https://github.com/sanamhub/nepdate-c/blob/main/docs/API.md) |
 | Architecture decision records | [docs/adr](https://github.com/sanamhub/nepdate-c/blob/main/docs/adr/README.md) |
 | What changed in each version | [CHANGELOG.md](https://github.com/sanamhub/nepdate-c/blob/main/CHANGELOG.md) |
+| Measured B1 to B8, with Rust and C++ | [docs/benchmarks.md](https://github.com/sanamhub/nepdate-c/blob/main/docs/benchmarks.md) |
+| The other C code for Bikram Sambat | [docs/competitors.md](https://github.com/sanamhub/nepdate-c/blob/main/docs/competitors.md) |
 | Building, gates and pull requests | [CONTRIBUTING.md](https://github.com/sanamhub/nepdate-c/blob/main/CONTRIBUTING.md) |
 | Reporting a vulnerability | [SECURITY.md](https://github.com/sanamhub/nepdate-c/blob/main/SECURITY.md) |
 | Guides and examples | [nepdate.com/docs/c](https://nepdate.com/docs/c/) |
