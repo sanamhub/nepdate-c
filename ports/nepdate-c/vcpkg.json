@@ -1,0 +1,20 @@
+{
+  "name": "nepdate-c",
+  "version-semver": "0.1.0-beta.1",
+  "description": "Bikram Sambat (Nepali calendar) dates for C11: BS to AD and back, arithmetic, formatting, parsing and time interop. No dependencies.",
+  "homepage": "https://github.com/sanamhub/nepdate-c",
+  "license": "MIT",
+  "features": {
+    "without-tm": {
+      "description": "Build the core without the struct tm bridge and its <time.h> include"
+    }
+  },
+  "dependencies": [
+    {
+      "name": "vcpkg-cmake"
+    },
+    {
+      "name": "vcpkg-cmake-config"
+    }
+  ]
+}
