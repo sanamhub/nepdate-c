@@ -1,0 +1,19 @@
+{
+  "name": "nepdate-c-patro",
+  "version-semver": "0.1.0-beta.1",
+  "description": "The patro (Nepali almanac) library for nepdate-c: tithi, public holidays and events, BS 2077 to 2084.",
+  "homepage": "https://github.com/sanamhub/nepdate-c",
+  "license": "MIT",
+  "dependencies": [
+    {
+      "name": "nepdate-c",
+      "version>=": "0.1.0-beta.1"
+    },
+    {
+      "name": "vcpkg-cmake"
+    },
+    {
+      "name": "vcpkg-cmake-config"
+    }
+  ]
+}

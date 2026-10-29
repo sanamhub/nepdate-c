@@ -1,0 +1,14 @@
+.{
+    .name = .nepdate_zig_consumer,
+    .version = "0.0.0",
+    .fingerprint = 0xf66acbe9fb62e825,
+    .minimum_zig_version = "0.17.0",
+    .dependencies = .{
+        .nepdate_c = .{ .path = "../.." },
+    },
+    .paths = .{
+        "build.zig",
+        "build.zig.zon",
+        "src",
+    },
+}

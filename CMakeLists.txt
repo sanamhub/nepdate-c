@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.25...4.1)
 
-project(nepdate-c VERSION 0.0.0 LANGUAGES C)
+project(nepdate-c VERSION 0.1.0 LANGUAGES C)
 
 # The regenerate command is `cmake --build <dir> --target codegen` (ADR-0001). CMake 3.31 and later
 # reserve that target name for their own CODEGEN commands unless this policy is OLD.
@@ -19,6 +19,7 @@ option(NEPDATE_C_BUILD_FUZZERS "Build the libFuzzer targets (Clang and the fuzz 
 option(NEPDATE_C_BUILD_PATRO "Build the nepdate-c::patro library" ON)
 option(NEPDATE_C_WITH_TM "Build the struct tm bridge (needs <time.h>)" ON)
 option(NEPDATE_C_BUILD_TOOLS "Build tools/codegen" OFF)
+option(NEPDATE_C_BUILD_BENCH "Build the benchmark harness (never installed)" OFF)
 option(NEPDATE_C_CXX_HEADERS "Compile the public headers as C++ too (ADR-0001)" OFF)
 
 if(NEPDATE_C_CXX_HEADERS)
@@ -123,6 +124,13 @@ endif()
 
 if(NEPDATE_C_BUILD_FUZZERS)
     add_subdirectory(tests/fuzz)
+endif()
+
+if(NEPDATE_C_BUILD_BENCH)
+    if(NOT NEPDATE_C_BUILD_PATRO)
+        message(FATAL_ERROR "NEPDATE_C_BUILD_BENCH needs NEPDATE_C_BUILD_PATRO")
+    endif()
+    add_subdirectory(bench)
 endif()
 
 if(NEPDATE_C_BUILD_TOOLS)

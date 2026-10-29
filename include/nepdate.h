@@ -3,11 +3,11 @@
 #define NEPDATE_H
 
 #define NEPDATE_VERSION_MAJOR 0
-#define NEPDATE_VERSION_MINOR 0
+#define NEPDATE_VERSION_MINOR 1
 #define NEPDATE_VERSION_PATCH 0
 /* The part after "-" in a pre-release version such as 0.1.0-beta.1, empty for a stable one. */
-#define NEPDATE_VERSION_PRERELEASE ""
-#define NEPDATE_VERSION_STRING "0.0.0"
+#define NEPDATE_VERSION_PRERELEASE "beta.1"
+#define NEPDATE_VERSION_STRING "0.1.0-beta.1"
 
 /* 1 when the struct tm bridge (nepdate_from_tm and nepdate_to_tm) is declared. A build with
  * NEPDATE_C_WITH_TM=0 omits it so the core needs no <time.h> at all. */

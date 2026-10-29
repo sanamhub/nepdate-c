@@ -1,0 +1,15 @@
+.{
+    .name = .nepdate_c,
+    .version = "0.1.0-beta.1",
+    .fingerprint = 0x72256ca455dbfb10,
+    .minimum_zig_version = "0.17.0",
+    .dependencies = .{},
+    .paths = .{
+        "build.zig",
+        "build.zig.zon",
+        "include",
+        "src",
+        "LICENSE",
+        "README.md",
+    },
+}

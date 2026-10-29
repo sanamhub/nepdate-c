@@ -9,16 +9,16 @@
 #include <stdint.h>
 #include <time.h>
 
-static bool leap_year(int year) { return (year % 4 == 0 && year % 100 != 0) || year % 400 == 0; }
+static bool tm_leap_year(int year) { return (year % 4 == 0 && year % 100 != 0) || year % 400 == 0; }
 
-static int gregorian_month_length(int year, int month) {
+static int tm_gregorian_month_length(int year, int month) {
     if (month == 2) {
-        return leap_year(year) ? 29 : 28;
+        return tm_leap_year(year) ? 29 : 28;
     }
     return month == 4 || month == 6 || month == 9 || month == 11 ? 30 : 31;
 }
 
-static int64_t floor_div(int64_t value, int64_t divisor) {
+static int64_t tm_floor_div(int64_t value, int64_t divisor) {
     int64_t quotient = value / divisor;
     if (value % divisor < 0) {
         quotient--;
@@ -27,9 +27,9 @@ static int64_t floor_div(int64_t value, int64_t divisor) {
 }
 
 /* Days since 1970-01-01 of a proleptic Gregorian date. */
-static int64_t days_from_civil(int64_t year, int64_t month, int64_t day) {
+static int64_t tm_days_from_civil(int64_t year, int64_t month, int64_t day) {
     const int64_t y = month <= 2 ? year - 1 : year;
-    const int64_t era = floor_div(y, 400);
+    const int64_t era = tm_floor_div(y, 400);
     const int64_t year_of_era = y - era * 400;
     const int64_t month_prime = (month + 9) % 12;
     const int64_t day_of_year = (153 * month_prime + 2) / 5 + day - 1;
@@ -51,11 +51,11 @@ nepdate_status nepdate_from_tm(const struct tm *tm, nepdate_date *out) {
         return NEPDATE_E_INVALID_GREGORIAN;
     }
     const int month = tm->tm_mon + 1;
-    if (tm->tm_mday < 1 || tm->tm_mday > gregorian_month_length((int)year, month)) {
+    if (tm->tm_mday < 1 || tm->tm_mday > tm_gregorian_month_length((int)year, month)) {
         return NEPDATE_E_INVALID_GREGORIAN;
     }
     const int64_t value =
-        days_from_civil(year, month, tm->tm_mday) - (int64_t)NEPDATE_CAL_EPOCH_UNIX_DAYS + 1;
+        tm_days_from_civil(year, month, tm->tm_mday) - (int64_t)NEPDATE_CAL_EPOCH_UNIX_DAYS + 1;
     if (value < 1 || value > NEPDATE_CAL_DAYS) {
         return NEPDATE_E_OUT_OF_RANGE;
     }
@@ -64,10 +64,10 @@ nepdate_status nepdate_from_tm(const struct tm *tm, nepdate_date *out) {
 }
 
 /* The 0-based day of the AD year of a valid Gregorian date. */
-static int ad_day_of_year(int year, int month, int day) {
+static int tm_ad_day_of_year(int year, int month, int day) {
     static const int month_start[12] = {0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334};
     int result = month_start[month - 1] + day - 1;
-    if (month > 2 && leap_year(year)) {
+    if (month > 2 && tm_leap_year(year)) {
         result++;
     }
     return result;
@@ -102,7 +102,7 @@ nepdate_status nepdate_to_tm(nepdate_date date, struct tm *out) {
     out->tm_min = 0;
     out->tm_sec = 0;
     out->tm_wday = (int)((serial + 4U) % 7U);
-    out->tm_yday = ad_day_of_year(ad_year, ad_month, ad_day);
+    out->tm_yday = tm_ad_day_of_year(ad_year, ad_month, ad_day);
     out->tm_isdst = -1;
     return NEPDATE_OK;
 }

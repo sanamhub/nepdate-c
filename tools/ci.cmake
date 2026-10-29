@@ -45,7 +45,7 @@ if(PRESET_PREFIX)
 endif()
 
 set(all_gates format ascii codegen build-and-test cxx-headers tidy cppcheck analyzer sanitizers
-    msan valgrind coverage no-libc api-surface isolation)
+    msan valgrind coverage no-libc api-surface amalgamation isolation)
 if(DEFINED ONLY)
     string(REPLACE "," ";" gates "${ONLY}")
     foreach(gate IN LISTS gates)
@@ -152,12 +152,13 @@ endfunction()
 
 # Every C source clang-format checks: the source directories, never the build trees or shared/.
 set(sources "")
-foreach(directory IN ITEMS include src tests tools)
+foreach(directory IN ITEMS include src tests tools bench)
     file(GLOB_RECURSE found RELATIVE "${root}" "${root}/${directory}/*.c" "${root}/${directory}/*.h"
         "${root}/${directory}/*.cpp")
     list(APPEND sources ${found})
 endforeach()
 list(FILTER sources EXCLUDE REGEX "^src/generated/")
+list(FILTER sources EXCLUDE REGEX "^bench/(golden\\.h|results/)")
 list(SORT sources)
 
 # ---- gate 1: format ----
@@ -288,7 +289,8 @@ if("cppcheck" IN_LIST gates)
         ci_run("${cppcheck}" --std=c11 --language=c --enable=warning,style,performance,portability
             --error-exitcode=1 --inline-suppr --quiet --suppress=missingIncludeSystem
             "--cppcheck-build-dir=${cppcheck_dir}" -I include -I src -I tests -I tools/codegen
-            "-DNEPDATE_C_SHARED_DIR=\"shared\"" src tests tools/codegen)
+            "-DNEPDATE_C_SHARED_DIR=\"shared\"" -i tests/side_by_side/cpp_consumer.cpp
+            src tests tools/codegen)
         if(NOT ci_rc EQUAL 0)
             ci_fail(cppcheck "see the findings above")
         endif()
@@ -579,7 +581,37 @@ if("api-surface" IN_LIST gates)
     endif()
 endif()
 
-# ---- gate 15: the core has no patro data ----
+# ---- gate 15: the amalgamation is current and builds from dist/ only ----
+if("amalgamation" IN_LIST gates)
+    ci_run("${CMAKE_COMMAND}" -DCHECK=ON -P "${root}/tools/amalgamate.cmake")
+    if(NOT ci_rc EQUAL 0)
+        ci_fail(amalgamation "dist/ differs from the sources; run tools/amalgamate.cmake")
+    endif()
+    set(amalgamation_dir "${root}/build/${PRESET_PREFIX}amalgamation")
+    file(REMOVE_RECURSE "${amalgamation_dir}")
+    find_program(ninja_program NAMES ninja)
+    set(configure_args -S "${root}/tests/amalgamation" -B "${amalgamation_dir}"
+        "-DROOT=${root}" -DCMAKE_BUILD_TYPE=Release)
+    if(ninja_program)
+        list(APPEND configure_args -G Ninja "-DCMAKE_MAKE_PROGRAM=${ninja_program}")
+    endif()
+    if(DEFINED CMAKE_C_COMPILER AND NOT CMAKE_C_COMPILER STREQUAL "")
+        list(APPEND configure_args "-DCMAKE_C_COMPILER=${CMAKE_C_COMPILER}")
+    endif()
+    ci_run("${CMAKE_COMMAND}" ${configure_args})
+    if(ci_rc EQUAL 0)
+        ci_run("${CMAKE_COMMAND}" --build "${amalgamation_dir}" -j 4)
+    endif()
+    if(ci_rc EQUAL 0)
+        ci_run("${CMAKE_CTEST_COMMAND}" --test-dir "${amalgamation_dir}" --output-on-failure)
+    endif()
+    if(NOT ci_rc EQUAL 0)
+        ci_fail(amalgamation "the dist-only build or its test failed")
+    endif()
+    ci_pass()
+endif()
+
+# ---- gate 16: the core has no patro data ----
 if("isolation" IN_LIST gates)
     set(isolation_core "${root}/build/${PRESET_PREFIX}isolation-core")
     set(isolation_patro "${root}/build/${PRESET_PREFIX}isolation-patro")

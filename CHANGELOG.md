@@ -5,6 +5,8 @@ Versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [0.1.0-beta.1] - 2026-10-29
+
 ### Added
 
 - `nepdate_date`, a 4-byte BS date, with `nepdate_from_bs` and `nepdate_to_bs`. Validation follows

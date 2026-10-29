@@ -7,6 +7,8 @@ function(nepdate_c_add_test_program name)
     nepdate_c_add_test(${name} ${name})
 endfunction()
 
+add_subdirectory(readme)
+
 nepdate_c_add_test_program(version_test version_test.c)
 nepdate_c_add_test_program(validation_test validation_test.c)
 nepdate_c_add_test_program(conversion_test conversion_test.c)
@@ -134,4 +136,4 @@ endif()
 add_test(NAME release_check_rejects_other_version
     COMMAND "${CMAKE_COMMAND}" -DVERSION=9.9.9 -P "${PROJECT_SOURCE_DIR}/tools/release_check.cmake")
 set_tests_properties(release_check_rejects_other_version PROPERTIES PASS_REGULAR_EXPRESSION
-    "release_check: 9\.9\.9 doesn't match:.*CMakeLists\.txt: project version 0\.0\.0, want 9\.9\.9")
+    "release_check: 9\.9\.9 doesn't match:.*CMakeLists\.txt: project version 0\.1\.0, want 9\.9\.9")
