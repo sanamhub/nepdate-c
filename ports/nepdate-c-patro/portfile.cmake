@@ -1,9 +1,5 @@
 # Overlay port for the patro library. It finds the installed nepdate-c package and builds the
-# standalone patro project; the hash is a placeholder until the release tag exists.
-# Compute it with:
-#   curl -L -o nepdate-c.tar.gz https://github.com/sanamhub/nepdate-c/archive/refs/tags/v0.1.0-beta.1.tar.gz
-#   sha512sum nepdate-c.tar.gz
-# then replace PLACEHOLDER_ARCHIVE_SHA512 with the printed hash and remove this note.
+# standalone patro project.
 
 vcpkg_minimum_required(VERSION 2024-05-24)
 
@@ -14,7 +10,7 @@ else()
         OUT_SOURCE_PATH SOURCE_PATH
         REPO sanamhub/nepdate-c
         REF "v${VERSION}"
-        SHA512 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000 # PLACEHOLDER_ARCHIVE_SHA512
+        SHA512 45c3da3a2160e9c0eb4d75286a12483ec61b2e285c043944ef1c2752d262d2f1d329c0086630c4b7d1b12a9654b67bdbd0c43ae57ab8003484392e81ac3485df
         HEAD_REF main
     )
 endif()
