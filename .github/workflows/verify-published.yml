@@ -183,7 +183,9 @@ jobs:
         env:
           VERSION: ${{ needs.resolve.outputs.version }}
           GITHUB_TOKEN: ${{ github.token }}
-        run: bash scripts/verify-published.sh "$VERSION" --metadata 2>&1 | tee metadata.log
+        run: |
+          set -o pipefail
+          bash scripts/verify-published.sh "$VERSION" --metadata 2>&1 | tee metadata.log
       - name: Step summary
         if: always()
         env:
