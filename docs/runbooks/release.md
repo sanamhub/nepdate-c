@@ -49,6 +49,12 @@ for the approver; the release job creates the source archive and the amalgamatio
 `SHA256SUMS`, a build provenance attestation for each, and the GitHub Release with the changelog
 section as notes.
 
+The release also runs `verify-published`, which downloads both archives from the release page and
+builds a consumer from each. The same workflow runs on a schedule: every Monday with the newest
+release on Linux, and every day a metadata-only check that the release still lists both archives
+and their URLs answer, without downloading either. A failed scheduled run opens or updates one
+issue labelled `published-check`; create that label once. A green scheduled run is silent.
+
 ## After releasing
 
 1. Download both archives and `SHA256SUMS`; check `sha256sum -c SHA256SUMS`.
