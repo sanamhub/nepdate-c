@@ -5,6 +5,13 @@ Versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Added
+
+- `verify-published.yml`: the release workflow now checks the GitHub release the way a user gets
+  it, downloading the source archive and the amalgamation and building a consumer from each. The
+  same workflow runs weekly with the newest release and daily against the release metadata, and
+  reports a failure as one issue labelled `published-check`.
+
 ### Fixed
 
 - The CMake targets are now named `nepdate-c` and `nepdate-c-patro`, so a project that adds

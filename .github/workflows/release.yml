@@ -2,7 +2,9 @@
 # and the tag's ancestry), the full CI workflow, then the production environment's required reviewer
 # creates the GitHub Release with the changelog section as notes, the source archive and the
 # amalgamation, their SHA-256 files, and a build provenance attestation for both archives.
-# workflow_dispatch runs preflight and CI only; the release job is skipped because there is no tag.
+# verify-published then downloads both archives from the release page and builds a consumer from
+# each. workflow_dispatch runs preflight and CI only; the release and verify-published jobs are
+# skipped because there is no tag.
 
 name: release
 
@@ -94,9 +96,11 @@ jobs:
         shell: bash
         run: |
           version="${GITHUB_REF_NAME#v}"
-          echo "version=$version" >> "$GITHUB_OUTPUT"
-          echo "source=nepdate-c-$version.tar.gz" >> "$GITHUB_OUTPUT"
-          echo "amalgamation=nepdate-c-$version-amalgamation.tar.gz" >> "$GITHUB_OUTPUT"
+          {
+            echo "version=$version"
+            echo "source=nepdate-c-$version.tar.gz"
+            echo "amalgamation=nepdate-c-$version-amalgamation.tar.gz"
+          } >> "$GITHUB_OUTPUT"
       - name: Source archive
         run: |
           git archive --format=tar.gz --prefix="nepdate-c-${{ steps.archive.outputs.version }}/" \
@@ -136,3 +140,13 @@ jobs:
             ${{ steps.archive.outputs.source }}
             ${{ steps.archive.outputs.amalgamation }}
             SHA256SUMS
+
+  # Called, not triggered: a release created with GITHUB_TOKEN fires no release event.
+  verify-published:
+    if: github.ref_type == 'tag'
+    needs: [preflight, release]
+    permissions:
+      contents: read
+    uses: ./.github/workflows/verify-published.yml
+    with:
+      version: ${{ needs.preflight.outputs.version }}
