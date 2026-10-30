@@ -5,6 +5,14 @@ Versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Fixed
+
+- The CMake targets are now named `nepdate-c` and `nepdate-c-patro`, so a project that adds
+  nepdate-c with `FetchContent` or `add_subdirectory` can have its own targets named `nepdate` or
+  `patro`, and can fetch nepdate-cpp, whose core target is `nepdate`, into the same build. Link
+  `nepdate-c::nepdate` and `nepdate-c::patro` as before; installed packages and library file names
+  don't change.
+
 ## [0.1.0-beta.1] - 2026-10-29
 
 ### Added
