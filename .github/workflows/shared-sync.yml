@@ -17,7 +17,8 @@ jobs:
     permissions:
       contents: write
       pull-requests: write
-    uses: sanamhub/nepdate/.github/workflows/shared-sync.yml@94946acd87bf4775c481811c0cdd63a7aaef2c84 # main 2026-10-09
+      actions: write
+    uses: sanamhub/nepdate/.github/workflows/shared-sync.yml@827791325bf9c16258e5619dce5ecbd8e55e63e1 # main 2026-10-30
     with:
       regenerate: >-
         cmake -S . -B build/codegen -DNEPDATE_C_BUILD_TOOLS=ON -DNEPDATE_C_BUILD_TESTS=OFF &&
