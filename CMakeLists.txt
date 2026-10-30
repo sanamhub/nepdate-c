@@ -39,42 +39,46 @@ if(PROJECT_IS_TOP_LEVEL AND NOT DEFINED CMAKE_RUNTIME_OUTPUT_DIRECTORY)
     set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}/bin")
 endif()
 
-add_library(nepdate src/nepdate.c)
-add_library(nepdate-c::nepdate ALIAS nepdate)
-target_sources(nepdate
+# The target has the project's name, so a parent project that adds this one with FetchContent or
+# add_subdirectory keeps its own nepdate target (nepdate-cpp has one). Users see nepdate-c::nepdate:
+# the alias here, the export name once installed.
+add_library(nepdate-c src/nepdate.c)
+add_library(nepdate-c::nepdate ALIAS nepdate-c)
+target_sources(nepdate-c
     PUBLIC
         FILE_SET HEADERS
         BASE_DIRS include
         FILES include/nepdate.h
 )
-set_target_properties(nepdate PROPERTIES
+set_target_properties(nepdate-c PROPERTIES
     OUTPUT_NAME nepdate-c
+    EXPORT_NAME nepdate
     VERSION ${PROJECT_VERSION}
     SOVERSION 0
 )
-target_compile_definitions(nepdate PRIVATE NEPDATE_BUILDING)
-get_target_property(nepdate_type nepdate TYPE)
+target_compile_definitions(nepdate-c PRIVATE NEPDATE_BUILDING)
+get_target_property(nepdate_type nepdate-c TYPE)
 if(nepdate_type STREQUAL "STATIC_LIBRARY")
     # No dllimport in the users of a static library (include/nepdate.h).
-    target_compile_definitions(nepdate PUBLIC NEPDATE_STATIC)
+    target_compile_definitions(nepdate-c PUBLIC NEPDATE_STATIC)
     set(NEPDATE_C_PC_CFLAGS " -DNEPDATE_STATIC")
 else()
     set(NEPDATE_C_PC_CFLAGS "")
 endif()
 if(NEPDATE_C_WITH_TM)
-    target_sources(nepdate PRIVATE src/tm.c)
+    target_sources(nepdate-c PRIVATE src/tm.c)
 else()
     # The header hides the struct tm declarations from this build's users too, through the
     # CMake package and the pkg-config file alike.
-    target_compile_definitions(nepdate PUBLIC NEPDATE_C_WITH_TM=0)
+    target_compile_definitions(nepdate-c PUBLIC NEPDATE_C_WITH_TM=0)
     string(APPEND NEPDATE_C_PC_CFLAGS " -DNEPDATE_C_WITH_TM=0")
 endif()
-nepdate_c_set_warnings(nepdate)
-nepdate_c_set_instrumentation(nepdate)
+nepdate_c_set_warnings(nepdate-c)
+nepdate_c_set_instrumentation(nepdate-c)
 
 set(NEPDATE_C_CONFIG_INSTALL_DIR "${CMAKE_INSTALL_LIBDIR}/cmake/nepdate-c")
 
-install(TARGETS nepdate
+install(TARGETS nepdate-c
     EXPORT nepdate-cTargets
     ARCHIVE DESTINATION "${CMAKE_INSTALL_LIBDIR}"
     LIBRARY DESTINATION "${CMAKE_INSTALL_LIBDIR}"

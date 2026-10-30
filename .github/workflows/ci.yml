@@ -229,6 +229,28 @@ jobs:
       - name: Gate 5
         run: cmake -DONLY=cxx-headers -P tools/ci.cmake
 
+  # Gate 4 builds tests/fetch_content with nepdate-c alone; this job adds nepdate-cpp, whose core
+  # target is named nepdate, to the same build.
+  fetch-content:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      CC: gcc-14
+      CXX: g++-14
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - run: sudo apt-get update && sudo apt-get install -y ninja-build g++-14
+      - name: nepdate-c and nepdate-cpp in one FetchContent build
+        run: |
+          set -euo pipefail
+          cmake -S tests/fetch_content -B build/fetch-content -G Ninja -DCMAKE_BUILD_TYPE=Release \
+            "-DFETCHCONTENT_SOURCE_DIR_NEPDATE-C=$GITHUB_WORKSPACE" -DCONSUMER_WITH_CPP=ON
+          cmake --build build/fetch-content -j 4
+          build/fetch-content/consumer
+          build/fetch-content/cpp_consumer
+
   packages:
     runs-on: ubuntu-24.04
     timeout-minutes: 60

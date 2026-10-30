@@ -18,25 +18,28 @@ else()
     set(NEPDATE_C_PATRO_STANDALONE OFF)
 endif()
 
-add_library(patro "${NEPDATE_C_ROOT}/src/patro.c")
-add_library(nepdate-c::patro ALIAS patro)
+# Named like the core target, so a parent project keeps its own patro target. Users see
+# nepdate-c::patro.
+add_library(nepdate-c-patro "${NEPDATE_C_ROOT}/src/patro.c")
+add_library(nepdate-c::patro ALIAS nepdate-c-patro)
 
-target_sources(patro
+target_sources(nepdate-c-patro
     PUBLIC
         FILE_SET HEADERS
         BASE_DIRS "${NEPDATE_C_ROOT}/include"
         FILES "${NEPDATE_C_ROOT}/include/nepdate_patro.h"
 )
-target_link_libraries(patro PUBLIC nepdate-c::nepdate)
-set_target_properties(patro PROPERTIES
+target_link_libraries(nepdate-c-patro PUBLIC nepdate-c::nepdate)
+set_target_properties(nepdate-c-patro PROPERTIES
     OUTPUT_NAME nepdate-c-patro
+    EXPORT_NAME patro
     VERSION ${PROJECT_VERSION}
     SOVERSION 0
 )
-target_compile_definitions(patro PRIVATE NEPDATE_PATRO_BUILDING)
-get_target_property(patro_type patro TYPE)
+target_compile_definitions(nepdate-c-patro PRIVATE NEPDATE_PATRO_BUILDING)
+get_target_property(patro_type nepdate-c-patro TYPE)
 if(patro_type STREQUAL "STATIC_LIBRARY")
-    target_compile_definitions(patro PUBLIC NEPDATE_PATRO_STATIC)
+    target_compile_definitions(nepdate-c-patro PUBLIC NEPDATE_PATRO_STATIC)
     set(NEPDATE_C_PATRO_PC_CFLAGS " -DNEPDATE_PATRO_STATIC")
 else()
     set(NEPDATE_C_PATRO_PC_CFLAGS "")
@@ -58,9 +61,9 @@ install(FILES "${PROJECT_BINARY_DIR}/nepdate-c-patro.pc"
     DESTINATION "${CMAKE_INSTALL_LIBDIR}/pkgconfig")
 
 if(NOT NEPDATE_C_PATRO_STANDALONE)
-    nepdate_c_set_warnings(patro)
-    nepdate_c_set_instrumentation(patro)
-    install(TARGETS patro
+    nepdate_c_set_warnings(nepdate-c-patro)
+    nepdate_c_set_instrumentation(nepdate-c-patro)
+    install(TARGETS nepdate-c-patro
         EXPORT nepdate-cTargets
         ARCHIVE DESTINATION "${CMAKE_INSTALL_LIBDIR}"
         LIBRARY DESTINATION "${CMAKE_INSTALL_LIBDIR}"
@@ -68,7 +71,7 @@ if(NOT NEPDATE_C_PATRO_STANDALONE)
         FILE_SET HEADERS
     )
 else()
-    install(TARGETS patro
+    install(TARGETS nepdate-c-patro
         EXPORT nepdate-c-patroTargets
         ARCHIVE DESTINATION "${CMAKE_INSTALL_LIBDIR}"
         LIBRARY DESTINATION "${CMAKE_INSTALL_LIBDIR}"

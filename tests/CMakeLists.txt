@@ -34,7 +34,7 @@ nepdate_c_add_test_program(cs_phase3 cs_phase3.c)
 nepdate_c_add_test_program(time_test time_test.c)
 target_include_directories(time_test PRIVATE "${PROJECT_SOURCE_DIR}/src")
 
-if(TARGET patro)
+if(TARGET nepdate-c::patro)
     nepdate_c_add_test_program(patro_test patro_test.c)
     target_link_libraries(patro_test PRIVATE nepdate-c::patro)
     nepdate_c_add_test_program(cs_phase4 cs_phase4.c)
@@ -54,7 +54,7 @@ endif()
 nepdate_c_add_test_program(bit_patterns_test bit_patterns_test.c)
 target_compile_definitions(bit_patterns_test PRIVATE
     NEPDATE_C_BIT_PATTERN_BITS=${bit_pattern_bits})
-if(TARGET patro)
+if(TARGET nepdate-c::patro)
     target_link_libraries(bit_patterns_test PRIVATE nepdate-c::patro)
     target_compile_definitions(bit_patterns_test PRIVATE NEPDATE_C_TEST_PATRO)
 endif()
@@ -68,7 +68,7 @@ endif()
 # phase. Each phase has its own test source, so each test checks its own rows. The phase-4 rows
 # need the patro library, so a core-only build checks phases 1 to 3.
 set(catalog_phases 1 2 3)
-if(TARGET patro)
+if(TARGET nepdate-c::patro)
     list(APPEND catalog_phases 4)
 endif()
 foreach(phase IN LISTS catalog_phases)
@@ -115,6 +115,23 @@ if(NOT NEPDATE_C_INSTRUMENTED AND NOT CMAKE_CROSSCOMPILING_EMULATOR)
             -DPKG_CONFIG=${NEPDATE_C_PKG_CONFIG}
             -P "${CMAKE_CURRENT_SOURCE_DIR}/install_consumer.cmake"
     )
+    # fetch_content: builds tests/fetch_content, which pulls this checkout in with FetchContent and
+    # has its own targets named nepdate and patro. It needs the patro library, which a core-only
+    # build leaves out.
+    if(TARGET nepdate-c::patro)
+        add_test(NAME fetch_content
+            COMMAND "${CMAKE_COMMAND}"
+                -DROOT=${PROJECT_SOURCE_DIR}
+                -DSOURCE_DIR=${CMAKE_CURRENT_SOURCE_DIR}/fetch_content
+                -DWORK=${CMAKE_CURRENT_BINARY_DIR}/fetch_content
+                -DGENERATOR=${CMAKE_GENERATOR}
+                -DMAKE_PROGRAM=${CMAKE_MAKE_PROGRAM}
+                -DC_COMPILER=${CMAKE_C_COMPILER}
+                -DTOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
+                -DBUILD_TYPE=${CMAKE_BUILD_TYPE}
+                -P "${CMAKE_CURRENT_SOURCE_DIR}/fetch_content.cmake"
+        )
+    endif()
 endif()
 
 if(NEPDATE_C_CXX_HEADERS)
@@ -123,7 +140,7 @@ if(NEPDATE_C_CXX_HEADERS)
         set_target_properties(cxx_headers_${standard} PROPERTIES
             CXX_STANDARD ${standard} CXX_STANDARD_REQUIRED ON CXX_EXTENSIONS OFF)
         target_link_libraries(cxx_headers_${standard} PRIVATE nepdate-c::nepdate)
-        if(TARGET patro)
+        if(TARGET nepdate-c::patro)
             target_link_libraries(cxx_headers_${standard} PRIVATE nepdate-c::patro)
         endif()
         nepdate_c_set_cxx_warnings(cxx_headers_${standard})
