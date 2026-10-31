@@ -54,13 +54,12 @@ typedef struct nepdate_patro_day_info {
  */
 NEPDATE_PATRO_API nepdate_status nepdate_patro_info(nepdate_date date, nepdate_patro_day_info *out);
 
-/* Returns the smallest BS range containing every day with metadata, 2077-01-01..2084-08-20. It
- * can't fail. */
+/* Returns the smallest BS range containing every day with metadata, the range the generated tables
+ * cover. It can't fail. */
 NEPDATE_PATRO_API nepdate_range nepdate_patro_coverage(void);
 
-/* Writes the public holiday dates in ascending order and returns how many there are (294 today).
- * It writes at most capacity dates; a NULL dates or capacity 0 writes nothing and still returns
- * the count. */
+/* Writes the public holiday dates in ascending order and returns how many there are. It writes at
+ * most capacity dates; a NULL dates or capacity 0 writes nothing and still returns the count. */
 NEPDATE_PATRO_API size_t nepdate_patro_public_holidays(nepdate_date *dates, size_t capacity);
 
 /* Writes the events of date in file (display) order and returns how many there are. It writes at
