@@ -5,6 +5,7 @@
 #include "generated/calendar_tables.h"
 #include "generated/patro_tables.h"
 #include "harness.h"
+#include "summary.h"
 
 #include <nepdate.h>
 #include <nepdate_patro.h>
@@ -45,7 +46,7 @@ TEST(calendar_strings_pool_is_not_empty) { CHECK(nepdate_patro_name_blob[0] != '
 
 TEST(calendar_strings_have_non_empty_names) {
     const size_t names = sizeof nepdate_patro_name_offsets / sizeof nepdate_patro_name_offsets[0];
-    CHECK_EQ_INT(names, 2U * 753U + 1U);
+    CHECK_EQ_INT(names, 2U * summary_number("names") + 1U);
     size_t failures = 0;
     for (size_t k = 0; k + 1 < names; k += 2) {
         failures += nepdate_patro_name_offsets[k] < nepdate_patro_name_offsets[k + 1] ? 0U : 1U;
@@ -92,24 +93,26 @@ TEST(tithi_day_offsets_are_strictly_sorted) {
     CHECK_EQ_INT(runs, 1);
     CHECK(first < last);
     CHECK(last < NEPDATE_PATRO_DAYS);
-    CHECK_EQ_INT(tithi_days, 2190);
+    CHECK_EQ_INT(tithi_days, summary_number("tithi_days"));
 }
 
 TEST(tithi_pool_ids_are_in_range) {
     size_t failures = 0;
+    const unsigned long tithi_names = summary_number("tithi_names");
     for (size_t i = 0; i < NEPDATE_PATRO_DAYS; i++) {
-        failures +=
-            nepdate_patro_day_tithi[i] != 0xFFU && nepdate_patro_day_tithi[i] >= 32U ? 1U : 0U;
+        failures += nepdate_patro_day_tithi[i] != 0xFFU && nepdate_patro_day_tithi[i] >= tithi_names
+                        ? 1U
+                        : 0U;
     }
     CHECK_EQ_INT(failures, 0);
 }
 
-TEST(tithi_entry_count_matches_2190) {
+TEST(tithi_entry_count_matches_the_summary) {
     size_t tithi_days = 0;
     for (size_t i = 0; i < NEPDATE_PATRO_DAYS; i++) {
         tithi_days += nepdate_patro_day_tithi[i] != 0xFFU ? 1U : 0U;
     }
-    CHECK_EQ_INT(tithi_days, 2190);
+    CHECK_EQ_INT(tithi_days, summary_number("tithi_days"));
 }
 
 TEST(event_day_offsets_are_strictly_sorted) {
@@ -118,7 +121,7 @@ TEST(event_day_offsets_are_strictly_sorted) {
         event_days +=
             nepdate_patro_day_event_start[i] < nepdate_patro_day_event_start[i + 1U] ? 1U : 0U;
     }
-    CHECK_EQ_INT(event_days, 1671);
+    CHECK_EQ_INT(event_days, summary_number("event_days"));
 }
 
 TEST(event_slice_start_is_non_decreasing) {
@@ -149,13 +152,13 @@ TEST(event_entries_are_in_range) {
     CHECK_EQ_INT(failures, 0);
 }
 
-TEST(event_day_count_matches_1671) {
+TEST(event_day_count_matches_the_summary) {
     size_t event_days = 0;
     for (size_t i = 0; i < NEPDATE_PATRO_DAYS; i++) {
         event_days +=
             nepdate_patro_day_event_start[i] < nepdate_patro_day_event_start[i + 1U] ? 1U : 0U;
     }
-    CHECK_EQ_INT(event_days, 1671);
+    CHECK_EQ_INT(event_days, summary_number("event_days"));
 }
 
 TEST(holiday_day_offsets_are_strictly_sorted) {
@@ -168,8 +171,9 @@ TEST(holiday_day_offsets_are_strictly_sorted) {
     CHECK_EQ_INT(failures, 0);
 }
 
-TEST(holiday_count_matches_294) {
-    CHECK_EQ_INT(sizeof nepdate_patro_holiday_values / sizeof nepdate_patro_holiday_values[0], 294);
+TEST(holiday_count_matches_the_summary) {
+    CHECK_EQ_INT(sizeof nepdate_patro_holiday_values / sizeof nepdate_patro_holiday_values[0],
+                 summary_number("holidays"));
 }
 
 TEST(get_offset_base_year_returns_zero) {
@@ -339,8 +343,8 @@ TEST(all_event_offsets_are_in_bounds) {
     CHECK_EQ_INT(failures, 0);
 }
 
-TEST(holiday_count_from_the_api_matches_294) {
-    CHECK_EQ_INT(nepdate_patro_public_holidays(NULL, 0), 294);
+TEST(holiday_count_from_the_api_matches_the_summary) {
+    CHECK_EQ_INT(nepdate_patro_public_holidays(NULL, 0), summary_number("holidays"));
 }
 
 TEST(calendar_info_event_array_is_never_null) {
@@ -395,7 +399,7 @@ int main(void) {
     RUN_TEST_NAMED("CalendarDataTests.TithiData_AllPoolIds_AreInRange",
                    tithi_pool_ids_are_in_range);
     RUN_TEST_NAMED("CalendarDataTests.TithiData_EntryCount_Matches2190",
-                   tithi_entry_count_matches_2190);
+                   tithi_entry_count_matches_the_summary);
     RUN_TEST_NAMED("CalendarDataTests.EventData_DayOffsets_IsStrictlySorted",
                    event_day_offsets_are_strictly_sorted);
     RUN_TEST_NAMED("CalendarDataTests.EventData_SliceStart_IsNonDecreasing",
@@ -404,10 +408,11 @@ int main(void) {
                    event_slice_start_sentinel_equals_entries_length);
     RUN_TEST_NAMED("CalendarDataTests.EventData_AllEntries_AreInRange", event_entries_are_in_range);
     RUN_TEST_NAMED("CalendarDataTests.EventData_DayCount_Matches1671",
-                   event_day_count_matches_1671);
+                   event_day_count_matches_the_summary);
     RUN_TEST_NAMED("CalendarDataTests.HolidayData_DayOffsets_IsStrictlySorted",
                    holiday_day_offsets_are_strictly_sorted);
-    RUN_TEST_NAMED("CalendarDataTests.HolidayData_Count_Matches294", holiday_count_matches_294);
+    RUN_TEST_NAMED("CalendarDataTests.HolidayData_Count_Matches294",
+                   holiday_count_matches_the_summary);
     RUN_TEST_NAMED("CalendarDataTests.CalendarOffsets_GetOffset_BaseYear_Month1_Day1_ReturnsZero",
                    get_offset_base_year_returns_zero);
     RUN_TEST_NAMED("CalendarDataTests.CalendarOffsets_GetOffset_OutOfRange_ReturnsNegativeOne",
@@ -444,7 +449,7 @@ int main(void) {
     RUN_TEST_NAMED("CalendarDataTests.AllEventOffsets_AreInBounds",
                    all_event_offsets_are_in_bounds);
     RUN_TEST_NAMED("CalendarDataTests.HolidayCount_ViaApi_Matches294",
-                   holiday_count_from_the_api_matches_294);
+                   holiday_count_from_the_api_matches_the_summary);
     RUN_TEST_NAMED("CalendarDataTests.CalendarInfo_EventArrays_AreNeverNull",
                    calendar_info_event_array_is_never_null);
     RUN_TEST_NAMED("DateTimeExtensionsTests.ToNepaliDate_ValidDateTime_ReturnsCorrectNepaliDate",

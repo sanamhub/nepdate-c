@@ -458,9 +458,11 @@ is a gazetted public holiday, and how many events it has. A day outside the cove
 no holiday and no events. It returns `NEPDATE_E_NULL` or `NEPDATE_E_INVALID_DATE`, and leaves
 `*out` unchanged on error.
 
-`nepdate_patro_coverage` returns 2077-01-01..2084-08-20 and can't fail.
+`nepdate_patro_coverage` returns the range the generated tables cover, the `first_day` to `last_day`
+range of `shared/spec/vectors/patro-summary.json`, and can't fail.
 
-`nepdate_patro_public_holidays` writes the 294 holiday dates in ascending order and returns 294. It
+`nepdate_patro_public_holidays` writes the public holiday dates in ascending order and returns how
+many there are, the summary's `holidays` count. It
 writes at most `capacity` dates; `dates` `NULL` or `capacity` 0 writes nothing and still returns the
 count.
 

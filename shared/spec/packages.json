@@ -1,0 +1,117 @@
+{
+  "about": "What each port publishes, where it is published, and the workflow that checks the published copy. tools/package_status.py reads this file to report the scheduled install and registry checks of every port, and the site may read it later. A new language adds one entry here and its own verify-published.yml (spec/PORT-PLAN.md). C# NepDate is not listed: it is the upstream library, published from its own repository with its own version line.",
+  "ports": [
+    {
+      "id": "rust",
+      "name": "Rust",
+      "repository": "sanamhub/nepdate-rust",
+      "workflow": "verify-published.yml",
+      "registry": {
+        "name": "crates.io",
+        "url": "https://crates.io/crates/nepdate"
+      },
+      "package": "nepdate",
+      "packages": ["nepdate", "nepdate-patro"],
+      "managers": ["cargo"],
+      "install": "cargo add nepdate@=0.1.0-beta.1"
+    },
+    {
+      "id": "go",
+      "name": "Go",
+      "repository": "sanamhub/nepdate-go",
+      "workflow": "verify-published.yml",
+      "registry": {
+        "name": "proxy.golang.org",
+        "url": "https://pkg.go.dev/github.com/sanamhub/nepdate-go"
+      },
+      "package": "github.com/sanamhub/nepdate-go",
+      "packages": ["github.com/sanamhub/nepdate-go", "github.com/sanamhub/nepdate-go/patro"],
+      "managers": ["go"],
+      "install": "go get github.com/sanamhub/nepdate-go@v0.1.0-beta.1"
+    },
+    {
+      "id": "typescript",
+      "name": "TypeScript",
+      "repository": "sanamhub/nepdate-typescript",
+      "workflow": "verify-published.yml",
+      "registry": {
+        "name": "npm",
+        "url": "https://www.npmjs.com/package/nepdate-core"
+      },
+      "package": "nepdate-core",
+      "packages": ["nepdate-core", "nepdate-patro", "nepdate-datepicker"],
+      "managers": ["npm", "pnpm", "yarn", "yarn-pnp", "bun"],
+      "install": "npm install nepdate-core@0.1.0-beta.1"
+    },
+    {
+      "id": "python",
+      "name": "Python",
+      "repository": "sanamhub/nepdate-python",
+      "workflow": "verify-published.yml",
+      "registry": {
+        "name": "PyPI",
+        "url": "https://pypi.org/project/nepdate-core/"
+      },
+      "package": "nepdate-core",
+      "packages": ["nepdate-core", "nepdate-patro"],
+      "managers": ["pip", "uv", "poetry"],
+      "install": "pip install nepdate-core==0.1.0b1"
+    },
+    {
+      "id": "swift",
+      "name": "Swift",
+      "repository": "sanamhub/nepdate-swift",
+      "workflow": "verify-published.yml",
+      "registry": {
+        "name": "Swift Package Index",
+        "url": "https://swiftpackageindex.com/sanamhub/nepdate-swift"
+      },
+      "package": "nepdate-swift",
+      "packages": ["NepDate", "NepDatePatro"],
+      "managers": ["swiftpm"],
+      "install": ".package(url: \"https://github.com/sanamhub/nepdate-swift\", exact: \"0.1.0-beta.1\")"
+    },
+    {
+      "id": "kotlin",
+      "name": "Kotlin",
+      "repository": "sanamhub/nepdate-kotlin",
+      "workflow": "verify-published.yml",
+      "registry": {
+        "name": "Maven Central",
+        "url": "https://central.sonatype.com/artifact/io.github.sanamhub/nepdate"
+      },
+      "package": "io.github.sanamhub:nepdate",
+      "packages": ["io.github.sanamhub:nepdate", "io.github.sanamhub:nepdate-patro"],
+      "managers": ["gradle", "maven"],
+      "install": "implementation(\"io.github.sanamhub:nepdate:0.1.0-beta.1\")"
+    },
+    {
+      "id": "cpp",
+      "name": "C++",
+      "repository": "sanamhub/nepdate-cpp",
+      "workflow": "verify-published.yml",
+      "registry": {
+        "name": "GitHub Releases",
+        "url": "https://github.com/sanamhub/nepdate-cpp/releases"
+      },
+      "package": "nepdate-cpp",
+      "packages": ["nepdate-cpp"],
+      "managers": ["cmake"],
+      "install": "FetchContent_Declare(nepdate GIT_REPOSITORY https://github.com/sanamhub/nepdate-cpp.git GIT_TAG v0.1.0-beta.1)"
+    },
+    {
+      "id": "c",
+      "name": "C",
+      "repository": "sanamhub/nepdate-c",
+      "workflow": "verify-published.yml",
+      "registry": {
+        "name": "GitHub Releases",
+        "url": "https://github.com/sanamhub/nepdate-c/releases"
+      },
+      "package": "nepdate-c",
+      "packages": ["nepdate-c"],
+      "managers": ["cmake", "amalgamation"],
+      "install": "FetchContent_Declare(nepdate-c GIT_REPOSITORY https://github.com/sanamhub/nepdate-c.git GIT_TAG v0.1.0-beta.1)"
+    }
+  ]
+}

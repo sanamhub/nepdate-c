@@ -35,11 +35,16 @@ nepdate_c_add_test_program(time_test time_test.c)
 target_include_directories(time_test PRIVATE "${PROJECT_SOURCE_DIR}/src")
 
 if(TARGET nepdate-c::patro)
-    nepdate_c_add_test_program(patro_test patro_test.c)
+    nepdate_c_add_test_program(patro_test patro_test.c summary.c)
     target_link_libraries(patro_test PRIVATE nepdate-c::patro)
-    nepdate_c_add_test_program(cs_phase4 cs_phase4.c)
+    target_include_directories(patro_test PRIVATE "${PROJECT_SOURCE_DIR}/src")
+    target_compile_definitions(patro_test PRIVATE
+        NEPDATE_C_SHARED_DIR="${PROJECT_SOURCE_DIR}/shared")
+    nepdate_c_add_test_program(cs_phase4 cs_phase4.c summary.c)
     target_link_libraries(cs_phase4 PRIVATE nepdate-c::patro)
     target_include_directories(cs_phase4 PRIVATE "${PROJECT_SOURCE_DIR}/src")
+    target_compile_definitions(cs_phase4 PRIVATE
+        NEPDATE_C_SHARED_DIR="${PROJECT_SOURCE_DIR}/shared")
 endif()
 
 # The sample of the 2^32 date values the property test checks on a normal CI job. Valgrind and

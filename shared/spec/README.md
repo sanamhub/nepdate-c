@@ -14,6 +14,7 @@ directory and `data/` into its own `shared/` (ADR-0001).
 | `BENCHMARK.md` | yes | benchmark protocol: reference machine, the 64 dates, operations B1–B8, targets |
 | `vectors/csharp-tests/catalog.tsv` | yes | every test case of C# NepDate's own test suite, tagged with the phase that covers it |
 | `vectors/month-boundaries.csv` | yes | first and last day of every BS month (7176 rows) |
+| `vectors/patro-summary.json` | yes | patro counts every port reads: coverage, tithi, holidays, events, names |
 | `vectors/parse.tsv` | yes | strict + lenient parser expectations |
 | `vectors/csharp-golden/*.tsv` | parity | recorded output of C# NepDate 2.0.7 (`PARITY.md`) |
 | `reference/verify_vectors.py` | reference | executable version of the specs; run it after any spec/data change |
@@ -33,6 +34,7 @@ idiomatic names; the results must be the same.
    serial round-trip (0..=109211).
 5. Implement FORMATTING and PARSING, and pass `parse.tsv` and the golden columns, skipping
    only the rows `PARITY.md` lists.
-6. PATRO (the separate patro package, ADR-0004).
+6. PATRO (the separate patro package, ADR-0004), with its counts read from
+   `shared/spec/vectors/patro-summary.json`.
 7. Add the port to the table in the hub `README.md`.
 8. No port-local deviations. If one seems necessary, open a PR to this hub.

@@ -1,6 +1,6 @@
 # ADR-0001: Language, toolchain and generated tables
 
-- Status: Accepted
+- Status: Accepted (amended by ADR-0011)
 - Date: 2026-10-25
 - Deciders: Sanam Pakuwal
 

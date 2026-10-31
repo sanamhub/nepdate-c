@@ -14,7 +14,7 @@
 #define NEPDATE_PATRO_HOLIDAYS 294U
 #define NEPDATE_PATRO_EVENT_DAYS 1671U
 #define NEPDATE_PATRO_EVENTS 3032U
-#define NEPDATE_PATRO_NAMES 753U
+#define NEPDATE_PATRO_NAMES 754U
 
 /* The calendar fingerprint the tables were built from; patro.c asserts it equals
  * NEPDATE_CAL_FINGERPRINT. */
@@ -497,7 +497,7 @@ static const uint16_t nepdate_patro_event_names[3032] = {
     466, 342, 338, 341, 464, 467, 343, 594, 344, 536, 345, 468, 477, 709, 349, 350,
     664, 469, 351, 352, 594, 375, 355, 514, 539, 540, 470, 668, 471, 353, 359, 360,
     541, 354, 542, 375, 594, 362, 365, 546, 477, 751, 369, 675, 551, 373, 372, 752,
-    677, 721, 195, 477, 443, 477, 706, 477,
+    677, 753, 195, 477, 443, 477, 706, 477,
 };
 
 /* The public holiday dates, ascending, as nepdate_date.value. */
@@ -800,7 +800,7 @@ static const int32_t nepdate_patro_holiday_values[294] = {
 
 /* Every distinct name, np then en per pair, concatenated. The 32 tithi names
  * come first (PATRO.md section 3). */
-static const char nepdate_patro_name_blob[59800] = {
+static const char nepdate_patro_name_blob[59851] = {
     /* 0: Tritiya */
     '\340','\244','\244','\340','\245','\203','\340','\244','\244','\340','\244','\277','\340','\244','\257','\340',
     '\244','\276',
@@ -5975,11 +5975,16 @@ static const char nepdate_patro_name_blob[59800] = {
     '\244','\277','\340','\244','\265','\340','\244','\270',
     '\127','\157','\162','\154','\144','\040','\101','\163','\164','\162','\157','\154','\157','\147','\171','\040',
     '\104','\141','\171',
+    /* 753: New Year 2084 */
+    '\340','\244','\250','\340','\244','\257','\340','\244','\276','\340','\244','\201','\040','\340','\244','\265',
+    '\340','\244','\260','\340','\245','\215','\340','\244','\267','\040','\340','\245','\250','\340','\245','\246',
+    '\340','\245','\256','\340','\245','\252',
+    '\116','\145','\167','\040','\131','\145','\141','\162','\040','\062','\060','\070','\064',
 };
 
 /* Name k in language l (0 = np, 1 = en) is blob[off[2k + l] .. off[2k + l + 1]).
  */
-static const uint32_t nepdate_patro_name_offsets[1507] = {
+static const uint32_t nepdate_patro_name_offsets[1509] = {
     0, 18, /* 0: Tritiya */
     25, 46, /* 1: Chaturthi */
     55, 73, /* 2: Panchami */
@@ -6733,7 +6738,8 @@ static const uint32_t nepdate_patro_name_offsets[1507] = {
     59531, 59565, /* 750: Saraswati Puja */
     59579, 59671, /* 751: Ghode Jatra (Kathmandu Valley Holiday) */
     59709, 59781, /* 752: World Astrology Day */
-    59800,
+    59800, 59838, /* 753: New Year 2084 */
+    59851,
 };
 
 #endif /* NEPDATE_GENERATED_PATRO_TABLES_H */

@@ -58,8 +58,26 @@ static codegen_calendar *shared_calendar(void) {
     return calendar;
 }
 
-static bool load_patro(codegen_patro_input *input) {
-    for (int year = CODEGEN_PATRO_FIRST_YEAR; year <= CODEGEN_PATRO_LAST_YEAR; year++) {
+static codegen_patro_summary *shared_summary(void) {
+    size_t length = 0;
+    char *text = read_file(NEPDATE_C_SHARED_DIR "/spec/vectors/patro-summary.json", &length);
+    codegen_patro_summary *summary = malloc(sizeof *summary);
+    char json_error[128] = "";
+    char error[256] = "";
+    json_value *doc = text == NULL ? NULL : json_parse(text, length, json_error, sizeof json_error);
+    free(text);
+    const bool ok = doc != NULL && summary != NULL &&
+                    codegen_patro_summary_parse(doc, summary, error, sizeof error);
+    json_free(doc);
+    if (!ok) {
+        free(summary);
+        return NULL;
+    }
+    return summary;
+}
+
+static bool load_patro(const codegen_patro_summary *summary, codegen_patro_input *input) {
+    for (int year = summary->first_year; year <= summary->last_year; year++) {
         char path[128];
         (void)snprintf(path, sizeof path, NEPDATE_C_SHARED_DIR "/data/patro/%d.json", year);
         size_t length = 0;
@@ -90,54 +108,140 @@ static uint32_t serial_of(const codegen_calendar *calendar, int year, int month,
     return (uint32_t)(calendar->month_start[index] + (long)day - 1L);
 }
 
+/* The year, month and day of a "YYYY-MM-DD" text, read digit by digit: sscanf reports no
+ * conversion errors and MSVC rejects it. False when text has another shape. */
+static bool day_parts(const char *text, int *year, int *month, int *day) {
+    static const int widths[3] = {4, 2, 2};
+    int *const parts[3] = {year, month, day};
+    if (text == NULL) {
+        return false;
+    }
+    for (int part = 0; part < 3; part++) {
+        int value = 0;
+        for (int i = 0; i < widths[part]; i++, text++) {
+            if (*text < '0' || *text > '9') {
+                return false;
+            }
+            value = value * 10 + (*text - '0');
+        }
+        *parts[part] = value;
+        if (*text != (part < 2 ? '-' : '\0')) {
+            return false;
+        }
+        text++;
+    }
+    return true;
+}
+
+/* True when every event of day has a name that another day carries too. Removing such a day's
+ * events changes the event-day count without changing the name table. */
+static bool events_are_shared(const codegen_patro_input *input, size_t index) {
+    for (size_t k = 0; k < input->days[index].event_count; k++) {
+        const codegen_patro_name *name = &input->days[index].events[k];
+        bool found = false;
+        for (size_t i = 0; i < input->count && !found; i++) {
+            if (i == index) {
+                continue;
+            }
+            for (size_t n = 0; n < input->days[i].event_count && !found; n++) {
+                found = strcmp(input->days[i].events[n].np, name->np) == 0 &&
+                        strcmp(input->days[i].events[n].en, name->en) == 0;
+            }
+        }
+        if (!found) {
+            return false;
+        }
+    }
+    return true;
+}
+
+static bool drop_one_shared_event_day(codegen_patro_input *input) {
+    for (size_t i = 0; i < input->count; i++) {
+        if (input->days[i].event_count > 0 && events_are_shared(input, i)) {
+            codegen_patro_day *day = &input->days[i];
+            for (size_t k = 0; k < day->event_count; k++) {
+                free(day->events[k].np);
+                free(day->events[k].en);
+            }
+            free(day->events);
+            day->events = NULL;
+            day->event_count = 0;
+            day->event_capacity = 0;
+            return true;
+        }
+    }
+    return false;
+}
+
 TEST(shared_patro_builds) {
     codegen_calendar *calendar = shared_calendar();
+    codegen_patro_summary *summary = shared_summary();
     codegen_patro_input input = {0};
     CHECK(calendar != NULL);
-    if (calendar == NULL || !load_patro(&input)) {
+    CHECK(summary != NULL);
+    if (calendar == NULL || summary == NULL || !load_patro(summary, &input)) {
         codegen_patro_input_free(&input);
+        free(summary);
         free(calendar);
         return;
     }
     codegen_patro_tables tables;
     char error[256] = "";
-    CHECK(codegen_build_patro_tables(&input, calendar, &tables, error, sizeof error));
+    CHECK(codegen_build_patro_tables(&input, calendar, summary, &tables, error, sizeof error));
     CHECK_EQ_STR(error, "");
-    CHECK_EQ_INT(tables.first, 64285);
-    CHECK_EQ_INT(tables.days, 2793);
-    CHECK_EQ_INT(tables.name_count, 753);
-    CHECK_EQ_INT(tables.name_blob_size, 59800);
-    CHECK_EQ_INT(tables.holiday_count, 294);
-    CHECK_EQ_INT(tables.event_count, 3032);
-    CHECK_EQ_INT(tables.day_tithi[0], 0xFF);
-    const uint32_t first_tithi = serial_of(calendar, 2078, 1, 2) - tables.first;
-    const uint32_t last_tithi = serial_of(calendar, 2083, 12, 30) - tables.first;
+    CHECK_EQ_INT(tables.first, summary->first_serial);
+    CHECK_EQ_INT(tables.days, summary->days);
+    CHECK_EQ_INT(tables.name_count, summary->names);
+    CHECK_EQ_INT(tables.name_blob_size, summary->name_bytes);
+    CHECK_EQ_INT(tables.holiday_count, summary->holidays);
+    CHECK_EQ_INT(tables.event_count, summary->events);
+
+    int ty = 0;
+    int tm = 0;
+    int td = 0;
+    CHECK(day_parts(summary->tithi_first_day, &ty, &tm, &td));
+    const uint32_t first_tithi = serial_of(calendar, ty, tm, td) - tables.first;
+    CHECK(day_parts(summary->tithi_last_day, &ty, &tm, &td));
+    const uint32_t last_tithi = serial_of(calendar, ty, tm, td) - tables.first;
     CHECK(tables.day_tithi[first_tithi] != 0xFF);
     CHECK(tables.day_tithi[last_tithi] != 0xFF);
-    CHECK(tables.day_tithi[first_tithi - 1U] == 0xFF);
+    CHECK(first_tithi == 0 || tables.day_tithi[first_tithi - 1U] == 0xFF);
     CHECK(tables.name_offsets[0] == 0);
 
-    char *header = codegen_render_patro_tables(&tables, calendar);
+    char *header = codegen_render_patro_tables(&tables, calendar, summary);
     CHECK(header != NULL);
     if (header != NULL) {
-        CHECK(strstr(header, "#define NEPDATE_PATRO_FIRST_SERIAL 64285U\n") != NULL);
-        CHECK(strstr(header, "#define NEPDATE_PATRO_DAYS 2793U\n") != NULL);
-        CHECK(strstr(header, "#define NEPDATE_PATRO_HOLIDAYS 294U\n") != NULL);
-        CHECK(strstr(header, "static const char nepdate_patro_name_blob[59800]") != NULL);
+        char expected[128];
+        (void)snprintf(expected, sizeof expected, "#define NEPDATE_PATRO_FIRST_SERIAL %uU\n",
+                       (unsigned)summary->first_serial);
+        CHECK(strstr(header, expected) != NULL);
+        (void)snprintf(expected, sizeof expected, "#define NEPDATE_PATRO_DAYS %uU\n",
+                       (unsigned)summary->days);
+        CHECK(strstr(header, expected) != NULL);
+        (void)snprintf(expected, sizeof expected, "#define NEPDATE_PATRO_HOLIDAYS %uU\n",
+                       (unsigned)summary->holidays);
+        CHECK(strstr(header, expected) != NULL);
+        (void)snprintf(expected, sizeof expected, "static const char nepdate_patro_name_blob[%zu]",
+                       tables.name_blob_size);
+        CHECK(strstr(header, expected) != NULL);
         CHECK(strchr(header, '\r') == NULL);
         free(header);
     }
     codegen_patro_tables_free(&tables);
     codegen_patro_input_free(&input);
+    free(summary);
     free(calendar);
 }
 
 TEST(tithi_count_is_checked) {
     codegen_calendar *calendar = shared_calendar();
+    codegen_patro_summary *summary = shared_summary();
     codegen_patro_input input = {0};
     CHECK(calendar != NULL);
-    if (calendar == NULL || !load_patro(&input)) {
+    CHECK(summary != NULL);
+    if (calendar == NULL || summary == NULL || !load_patro(summary, &input)) {
         codegen_patro_input_free(&input);
+        free(summary);
         free(calendar);
         return;
     }
@@ -149,19 +253,26 @@ TEST(tithi_count_is_checked) {
     }
     codegen_patro_tables tables;
     char error[256] = "";
-    CHECK(!codegen_build_patro_tables(&input, calendar, &tables, error, sizeof error));
-    CHECK_EQ_STR(error, "patro data: T = 2189, spec says 2190");
+    CHECK(!codegen_build_patro_tables(&input, calendar, summary, &tables, error, sizeof error));
+    char expected[128];
+    (void)snprintf(expected, sizeof expected, "patro data: T = %u, summary says %u",
+                   (unsigned)(summary->tithi_days - 1U), (unsigned)summary->tithi_days);
+    CHECK_EQ_STR(error, expected);
     codegen_patro_tables_free(&tables);
     codegen_patro_input_free(&input);
+    free(summary);
     free(calendar);
 }
 
 TEST(holiday_count_is_checked) {
     codegen_calendar *calendar = shared_calendar();
+    codegen_patro_summary *summary = shared_summary();
     codegen_patro_input input = {0};
     CHECK(calendar != NULL);
-    if (calendar == NULL || !load_patro(&input)) {
+    CHECK(summary != NULL);
+    if (calendar == NULL || summary == NULL || !load_patro(summary, &input)) {
         codegen_patro_input_free(&input);
+        free(summary);
         free(calendar);
         return;
     }
@@ -173,44 +284,68 @@ TEST(holiday_count_is_checked) {
     }
     codegen_patro_tables tables;
     char error[256] = "";
-    CHECK(!codegen_build_patro_tables(&input, calendar, &tables, error, sizeof error));
-    CHECK_EQ_STR(error, "patro data: H = 293, spec says 294");
+    CHECK(!codegen_build_patro_tables(&input, calendar, summary, &tables, error, sizeof error));
+    char expected[128];
+    (void)snprintf(expected, sizeof expected, "patro data: H = %u, summary says %u",
+                   (unsigned)(summary->holidays - 1U), (unsigned)summary->holidays);
+    CHECK_EQ_STR(error, expected);
     codegen_patro_tables_free(&tables);
     codegen_patro_input_free(&input);
+    free(summary);
     free(calendar);
 }
 
 TEST(event_day_count_is_checked) {
     codegen_calendar *calendar = shared_calendar();
+    codegen_patro_summary *summary = shared_summary();
     codegen_patro_input input = {0};
     CHECK(calendar != NULL);
-    if (calendar == NULL || !load_patro(&input)) {
+    CHECK(summary != NULL);
+    if (calendar == NULL || summary == NULL || !load_patro(summary, &input)) {
         codegen_patro_input_free(&input);
+        free(summary);
         free(calendar);
         return;
     }
-    for (size_t i = 0; i < input.count; i++) {
-        codegen_patro_day *day = &input.days[i];
-        /* Its only event name appears on other days too, so the name table stays complete. */
-        if (day->year != 2077 || day->month != 1 || day->day != 3) {
-            continue;
-        }
-        for (size_t k = 0; k < day->event_count; k++) {
-            free(day->events[k].np);
-            free(day->events[k].en);
-        }
-        free(day->events);
-        day->events = NULL;
-        day->event_count = 0;
-        day->event_capacity = 0;
-        break;
-    }
+    CHECK(drop_one_shared_event_day(&input));
     codegen_patro_tables tables;
     char error[256] = "";
-    CHECK(!codegen_build_patro_tables(&input, calendar, &tables, error, sizeof error));
-    CHECK_EQ_STR(error, "patro data: E = 1670, spec says 1671");
+    CHECK(!codegen_build_patro_tables(&input, calendar, summary, &tables, error, sizeof error));
+    char expected[128];
+    (void)snprintf(expected, sizeof expected, "patro data: E = %u, summary says %u",
+                   (unsigned)(summary->event_days - 1U), (unsigned)summary->event_days);
+    CHECK_EQ_STR(error, expected);
     codegen_patro_tables_free(&tables);
     codegen_patro_input_free(&input);
+    free(summary);
+    free(calendar);
+}
+
+/* The summary is the port's only source of counts, so a summary that disagrees with the data is a
+ * failed build even when every value in it is well formed. */
+TEST(summary_mismatch_is_rejected) {
+    codegen_calendar *calendar = shared_calendar();
+    codegen_patro_summary *summary = shared_summary();
+    codegen_patro_input input = {0};
+    CHECK(calendar != NULL);
+    CHECK(summary != NULL);
+    if (calendar == NULL || summary == NULL || !load_patro(summary, &input)) {
+        codegen_patro_input_free(&input);
+        free(summary);
+        free(calendar);
+        return;
+    }
+    summary->names++;
+    codegen_patro_tables tables;
+    char error[256] = "";
+    CHECK(!codegen_build_patro_tables(&input, calendar, summary, &tables, error, sizeof error));
+    char expected[128];
+    (void)snprintf(expected, sizeof expected, "patro data: %u names, summary says %u",
+                   (unsigned)(summary->names - 1U), (unsigned)summary->names);
+    CHECK_EQ_STR(error, expected);
+    codegen_patro_tables_free(&tables);
+    codegen_patro_input_free(&input);
+    free(summary);
     free(calendar);
 }
 
@@ -253,6 +388,7 @@ int main(void) {
     RUN_TEST(tithi_count_is_checked);
     RUN_TEST(holiday_count_is_checked);
     RUN_TEST(event_day_count_is_checked);
+    RUN_TEST(summary_mismatch_is_rejected);
     RUN_TEST(malformed_year_is_rejected);
     RUN_TEST(year_mismatch_is_rejected);
     return harness_finish();

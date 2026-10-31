@@ -10,7 +10,7 @@ pub fn main() !void {
     if (c.nepdate_to_bs(date, &bs) != c.NEPDATE_OK) {
         return error.NepdateConversionFailed;
     }
-    if (c.nepdate_patro_public_holidays(null, 0) != 294) {
+    if (c.nepdate_patro_public_holidays(null, 0) == 0) {
         return error.NepdatePatroMissing;
     }
     const year: u32 = @intCast(bs.year);

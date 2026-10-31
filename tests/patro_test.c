@@ -1,9 +1,13 @@
 /* The patro queries of PATRO.md section 2: tithi, public holidays, events and coverage. */
 #include "harness.h"
+#include "summary.h"
+
+#include "generated/patro_tables.h"
 
 #include <nepdate.h>
 #include <nepdate_patro.h>
 
+#include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
 #include <string.h>
@@ -20,6 +24,31 @@ static void expect(nepdate_date date, int year, int month, int day) {
     CHECK_EQ_INT(ymd.year, year);
     CHECK_EQ_INT(ymd.month, month);
     CHECK_EQ_INT(ymd.day, day);
+}
+
+/* The year, month and day of a "YYYY-MM-DD" text, read digit by digit: sscanf reports no
+ * conversion errors and MSVC rejects it. False when text has another shape. */
+static bool day_parts(const char *text, int *year, int *month, int *day) {
+    static const int widths[3] = {4, 2, 2};
+    int *const parts[3] = {year, month, day};
+    if (text == NULL) {
+        return false;
+    }
+    for (int part = 0; part < 3; part++) {
+        int value = 0;
+        for (int i = 0; i < widths[part]; i++, text++) {
+            if (*text < '0' || *text > '9') {
+                return false;
+            }
+            value = value * 10 + (*text - '0');
+        }
+        *parts[part] = value;
+        if (*text != (part < 2 ? '-' : '\0')) {
+            return false;
+        }
+        text++;
+    }
+    return true;
 }
 
 static bool name_is(nepdate_patro_name name, const char *np, const char *en) {
@@ -143,31 +172,46 @@ TEST(events_honour_capacity) {
     CHECK(name_is_same(one, before));
 }
 
-TEST(coverage_is_the_documented_range) {
+TEST(coverage_is_the_summary_range) {
+    char first[11];
+    char last[11];
+    summary_day("first_day", first, sizeof first);
+    summary_day("last_day", last, sizeof last);
+    int fy = 0;
+    int fm = 0;
+    int fd = 0;
+    int ly = 0;
+    int lm = 0;
+    int ld = 0;
+    CHECK(day_parts(first, &fy, &fm, &fd));
+    CHECK(day_parts(last, &ly, &lm, &ld));
     const nepdate_range range = nepdate_patro_coverage();
-    expect(range.start, 2077, 1, 1);
-    expect(range.end, 2084, 8, 20);
+    expect(range.start, fy, fm, fd);
+    expect(range.end, ly, lm, ld);
 }
 
 TEST(public_holidays_are_ascending) {
-    nepdate_date holidays[294];
-    CHECK_EQ_INT(nepdate_patro_public_holidays(holidays, 294), 294);
+    nepdate_date holidays[NEPDATE_PATRO_HOLIDAYS];
+    const size_t count = (size_t)summary_number("holidays");
+    CHECK_EQ_INT(count, (size_t)NEPDATE_PATRO_HOLIDAYS);
+    CHECK_EQ_INT(nepdate_patro_public_holidays(holidays, count), count);
     int32_t previous = 0;
-    for (size_t i = 0; i < 294; i++) {
+    for (size_t i = 0; i < count; i++) {
         CHECK(holidays[i].value > previous);
         previous = holidays[i].value;
         nepdate_patro_day_info info;
         CHECK_EQ_INT(nepdate_patro_info(holidays[i], &info), NEPDATE_OK);
         CHECK(info.is_public_holiday);
     }
-    CHECK_EQ_INT(nepdate_patro_public_holidays(NULL, 294), 294);
-    CHECK_EQ_INT(nepdate_patro_public_holidays(holidays, 0), 294);
+    CHECK_EQ_INT(nepdate_patro_public_holidays(NULL, count), count);
+    CHECK_EQ_INT(nepdate_patro_public_holidays(holidays, 0), count);
 }
 
 TEST(public_holidays_honour_capacity) {
     nepdate_date holidays[3];
+    const size_t count = (size_t)summary_number("holidays");
     memset(holidays, 0xA5, sizeof holidays);
-    CHECK_EQ_INT(nepdate_patro_public_holidays(holidays, 2), 294);
+    CHECK_EQ_INT(nepdate_patro_public_holidays(holidays, 2), count);
     CHECK_EQ_INT(holidays[2].value, (int32_t)0xA5A5A5A5U);
 }
 
@@ -180,7 +224,7 @@ int main(void) {
     RUN_TEST(info_outside_coverage_is_empty);
     RUN_TEST(info_invalid_date_leaves_the_output_alone);
     RUN_TEST(events_honour_capacity);
-    RUN_TEST(coverage_is_the_documented_range);
+    RUN_TEST(coverage_is_the_summary_range);
     RUN_TEST(public_holidays_are_ascending);
     RUN_TEST(public_holidays_honour_capacity);
     return harness_finish();

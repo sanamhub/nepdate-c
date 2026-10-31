@@ -121,6 +121,63 @@ static int emit(const options *opts, const char *relative, const char *content) 
     return status;
 }
 
+/* Reads and parses relative under shared/ as JSON. Returns NULL after printing why when the file
+ * is missing or malformed; what names the file in the message. */
+static json_value *read_json(const char *shared, const char *relative, const char *what) {
+    char *path = join(shared, relative);
+    size_t length = 0;
+    char *text = path == NULL ? NULL : read_file(path, &length);
+    if (text == NULL) {
+        (void)fprintf(stderr, "cannot read %s\n", path == NULL ? relative : path);
+        free(path);
+        return NULL;
+    }
+    free(path);
+    char error[160];
+    json_value *doc = json_parse(text, length, error, sizeof error);
+    free(text);
+    if (doc == NULL) {
+        (void)fprintf(stderr, "%s: %s\n", what, error);
+    }
+    return doc;
+}
+
+/* Reads spec/vectors/patro-summary.json, the counts the hub derives from the same data. */
+static bool read_summary(const char *shared, codegen_patro_summary *summary) {
+    json_value *doc = read_json(shared, "spec/vectors/patro-summary.json", "patro summary");
+    if (doc == NULL) {
+        return false;
+    }
+    char error[256];
+    const bool parsed = codegen_patro_summary_parse(doc, summary, error, sizeof error);
+    json_free(doc);
+    if (!parsed) {
+        (void)fprintf(stderr, "%s\n", error);
+    }
+    return parsed;
+}
+
+/* Appends data/patro/<year>.json for every year the summary covers to input. */
+static bool read_patro_years(const char *shared, const codegen_patro_summary *summary,
+                             codegen_patro_input *input) {
+    for (int year = summary->first_year; year <= summary->last_year; year++) {
+        char relative[32];
+        (void)snprintf(relative, sizeof relative, "data/patro/%d.json", year);
+        json_value *doc = read_json(shared, relative, "patro data");
+        if (doc == NULL) {
+            return false;
+        }
+        char error[256];
+        const bool added = codegen_patro_add_year(doc, year, input, error, sizeof error);
+        json_free(doc);
+        if (!added) {
+            (void)fprintf(stderr, "%s\n", error);
+            return false;
+        }
+    }
+    return true;
+}
+
 int main(int argc, char **argv) {
     options opts = {NULL, NULL, false};
     if (!parse_args(argc, argv, &opts)) {
@@ -147,40 +204,19 @@ int main(int argc, char **argv) {
         return 2;
     }
 
+    codegen_patro_summary summary;
+    if (!read_summary(opts.shared, &summary)) {
+        return 2;
+    }
     codegen_patro_input patro_input = {0};
-    for (int year = CODEGEN_PATRO_FIRST_YEAR; year <= CODEGEN_PATRO_LAST_YEAR; year++) {
-        char relative[32];
-        (void)snprintf(relative, sizeof relative, "data/patro/%d.json", year);
-        char *patro_path = join(opts.shared, relative);
-        size_t patro_length = 0;
-        char *patro_text = patro_path == NULL ? NULL : read_file(patro_path, &patro_length);
-        if (patro_text == NULL) {
-            (void)fprintf(stderr, "cannot read %s\n", patro_path == NULL ? "" : patro_path);
-            free(patro_path);
-            codegen_patro_input_free(&patro_input);
-            return 2;
-        }
-        char json_error[160];
-        json_value *patro_doc = json_parse(patro_text, patro_length, json_error, sizeof json_error);
-        free(patro_text);
-        free(patro_path);
-        if (patro_doc == NULL) {
-            (void)fprintf(stderr, "patro data: %s\n", json_error);
-            codegen_patro_input_free(&patro_input);
-            return 2;
-        }
-        const bool added =
-            codegen_patro_add_year(patro_doc, year, &patro_input, error, sizeof error);
-        json_free(patro_doc);
-        if (!added) {
-            (void)fprintf(stderr, "%s\n", error);
-            codegen_patro_input_free(&patro_input);
-            return 2;
-        }
+    if (!read_patro_years(opts.shared, &summary, &patro_input)) {
+        codegen_patro_input_free(&patro_input);
+        return 2;
     }
 
     codegen_patro_tables patro_tables;
-    if (!codegen_build_patro_tables(&patro_input, &calendar, &patro_tables, error, sizeof error)) {
+    if (!codegen_build_patro_tables(&patro_input, &calendar, &summary, &patro_tables, error,
+                                    sizeof error)) {
         (void)fprintf(stderr, "%s\n", error);
         codegen_patro_input_free(&patro_input);
         codegen_patro_tables_free(&patro_tables);
@@ -189,7 +225,7 @@ int main(int argc, char **argv) {
     codegen_patro_input_free(&patro_input);
 
     char *calendar_header = codegen_render_calendar_tables(&calendar);
-    char *patro_header = codegen_render_patro_tables(&patro_tables, &calendar);
+    char *patro_header = codegen_render_patro_tables(&patro_tables, &calendar, &summary);
     codegen_patro_tables_free(&patro_tables);
     if (calendar_header == NULL || patro_header == NULL) {
         (void)fprintf(stderr, "out of memory\n");

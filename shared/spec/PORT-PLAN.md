@@ -71,7 +71,9 @@ marker that names it.
   If the clock is outside the supported range (before AD 1844-04-11 or after 2143-04-15), "today"
   returns the out-of-range error where the port's "today" can fail, and otherwise returns `MIN` or
   `MAX`, documented on the function.
-- AC: T = 2190, H = 294, E = 1671; every PATRO §4 anchor; coverage 2077-01-01..2084-08-20; the core
+- AC: the tables report the `tithi_days`, `holidays` and `event_days` of
+  `spec/vectors/patro-summary.json`, and their coverage is its `first_day` to `last_day`; every
+  PATRO §4 anchor; the core
   package's manifest has no dependency on `nepdate-patro`, and its built artefact doesn't contain
   the string `World Day Against Human Trafficking` (CI checks it; the artefact is the release binary
   of a small program that uses only the core for Rust, Go and Swift, the core jar for Kotlin, the
@@ -88,3 +90,29 @@ marker that names it.
 - AC: every BENCHMARK §6 target met, or the miss reported to the maintainer with the numbers.
 - Release workflow with preflight (version, tag and changelog agree), approval gate, notes from the
   changelog; the maintainer tags version 0.1.0.
+
+## Scheduled published check
+
+A port is not released until it has a scheduled `verify-published.yml` in the shape below and an
+entry in `spec/packages.json`. A version can be yanked, a registry can stop serving a file, or a
+deleted tag can leave a package URL broken; without a schedule the first person to notice is a
+user. Before a language's first release:
+
+- [ ] `verify-published.yml` with a weekly `schedule` cron, one port per hour, and a daily metadata
+      cron; `latest` as the default version; a `resolve` job so every job of a run checks the same
+      version; a Linux-only weekly matrix with one entry per package manager, and the full
+      three-OS matrix for releases and manual runs.
+- [ ] A script that resolves `latest` the way a plain install does (`--resolve`), checks the
+      registry metadata with HEAD requests and no download (`--metadata`), prints the resolved
+      version, and installs once per manager.
+- [ ] `scripts/published-issue.sh` with its fake-`gh` test; only the report job has `issues:
+      write`, and the check jobs have `contents: read`.
+- [ ] An entry in `spec/packages.json`: the repository, the registry, the package names, the
+      install command a user types, and the workflow file name.
+- [ ] The release runbook names the weekly and daily runs and the `published-check` label, and the
+      changelog has a line under Unreleased.
+
+`tools/package_status.py` reads `spec/packages.json` and reports each port's newest scheduled
+install check and newest scheduled registry check;
+`.github/workflows/package-status.yml` runs it after the last port's weekly check.
+

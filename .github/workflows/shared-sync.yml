@@ -1,7 +1,8 @@
-# Weekly: replaces shared/ with the hub's main, regenerates src/generated and opens one PR on
-# bot/shared-sync (ADR-0001, hub ADR-0001 decision 3).
+# Weekly: replaces shared/ with the hub's main, regenerates src/generated and dist and opens one PR
+# on bot/shared-sync (ADR-0001, hub ADR-0001 decision 3).
 #
-# regenerate builds only tools/codegen (tests off) and runs the codegen target.
+# regenerate builds only tools/codegen (tests off), runs the codegen target, and rewrites the
+# amalgamation in dist/, which embeds the generated tables; gate 15 checks both.
 name: shared-sync
 
 on:
@@ -22,6 +23,7 @@ jobs:
     with:
       regenerate: >-
         cmake -S . -B build/codegen -DNEPDATE_C_BUILD_TOOLS=ON -DNEPDATE_C_BUILD_TESTS=OFF &&
-        cmake --build build/codegen --target codegen
+        cmake --build build/codegen --target codegen &&
+        cmake -P tools/amalgamate.cmake
     secrets:
       SYNC_APP_PRIVATE_KEY: ${{ secrets.SYNC_APP_PRIVATE_KEY }}

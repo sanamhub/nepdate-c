@@ -13,7 +13,7 @@ int main(void) {
         return 1;
     }
 #ifdef CONSUMER_PATRO
-    if (nepdate_patro_public_holidays(NULL, 0) != 294) {
+    if (nepdate_patro_public_holidays(NULL, 0) == 0) {
         (void)fprintf(stderr, "the patro library is missing its holidays\n");
         return 1;
     }

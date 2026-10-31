@@ -1,0 +1,21 @@
+{
+  "schema": 1,
+  "first_year": 2077,
+  "last_year": 2084,
+  "first_day": "2077-01-01",
+  "last_day": "2084-08-20",
+  "first_serial": 64285,
+  "last_serial": 67077,
+  "days": 2793,
+  "tithi_first_day": "2078-01-02",
+  "tithi_last_day": "2083-12-30",
+  "tithi_first_serial": 64652,
+  "tithi_days": 2190,
+  "tithi_names": 32,
+  "holidays": 294,
+  "event_days": 1671,
+  "events": 3032,
+  "event_names": 722,
+  "names": 754,
+  "name_bytes": 59851
+}

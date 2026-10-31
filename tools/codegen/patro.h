@@ -1,6 +1,6 @@
-/* Reads and checks the JSON files under shared/data/patro and builds the dense per-day tables of
- * PATRO.md section 3 (the layout the C++ port uses). The generator never includes or links the
- * library. */
+/* Reads and checks the JSON files under shared/data/patro against the counts in
+ * shared/spec/vectors/patro-summary.json and builds the dense per-day tables of PATRO.md section 3
+ * (the layout the C++ port uses). The generator never includes or links the library. */
 #ifndef NEPDATE_CODEGEN_PATRO_H
 #define NEPDATE_CODEGEN_PATRO_H
 
@@ -11,19 +11,29 @@
 #include <stddef.h>
 #include <stdint.h>
 
-enum {
-    CODEGEN_PATRO_FIRST_YEAR = 2077,
-    CODEGEN_PATRO_LAST_YEAR = 2084,
-    CODEGEN_PATRO_FIRST_SERIAL = 64285,
-    CODEGEN_PATRO_DAYS = 2793,
-    CODEGEN_PATRO_TITHI_DAYS = 2190,
-    CODEGEN_PATRO_TITHI_NAMES = 32,
-    CODEGEN_PATRO_HOLIDAYS = 294,
-    CODEGEN_PATRO_EVENT_DAYS = 1671,
-    CODEGEN_PATRO_EVENTS = 3032,
-    CODEGEN_PATRO_NAMES = 753,
-    CODEGEN_PATRO_NAME_BYTES = 59800
-};
+/* The counts every port reads from spec/vectors/patro-summary.json, which the hub writes from
+ * data/patro/ (tools/make_vectors.py). The generator validates the data against it and writes the
+ * values into the generated header; nothing here is a count of the day. */
+typedef struct {
+    int first_year;
+    int last_year;
+    char first_day[11];
+    char last_day[11];
+    uint32_t first_serial;
+    uint32_t last_serial;
+    uint32_t days;
+    char tithi_first_day[11];
+    char tithi_last_day[11];
+    uint32_t tithi_first_serial;
+    uint32_t tithi_days;
+    uint32_t tithi_names;
+    uint32_t holidays;
+    uint32_t event_days;
+    uint32_t events;
+    uint32_t event_names;
+    uint32_t names;
+    uint32_t name_bytes;
+} codegen_patro_summary;
 
 typedef struct {
     char *np;
@@ -67,20 +77,27 @@ typedef struct {
     size_t name_offset_count;
 } codegen_patro_tables;
 
+/* Parses spec/vectors/patro-summary.json into out. Returns false with a message in error (always
+ * NUL-terminated when error_size is not 0) when a key is missing or has the wrong shape. */
+bool codegen_patro_summary_parse(const json_value *doc, codegen_patro_summary *out, char *error,
+                                 size_t error_size);
+
 /* Appends the days of one year file to input. Returns false with a message in error (always
  * NUL-terminated when error_size is not 0) when the file is malformed. */
 bool codegen_patro_add_year(const json_value *doc, int expected_year, codegen_patro_input *input,
                             char *error, size_t error_size);
 
-/* Builds the tables of PATRO.md section 3 from input and the calendar. Returns false with a
- * message in error when the data is not the exact coverage, has a tithi gap, or is not T = 2190,
- * H = 294 and E = 1671. */
+/* Builds the tables of PATRO.md section 3 from input and the calendar, checking every count
+ * against summary. Returns false with a message in error when the data does not match the
+ * summary, has a tithi gap, or is malformed. */
 bool codegen_build_patro_tables(codegen_patro_input *input, const codegen_calendar *calendar,
-                                codegen_patro_tables *tables, char *error, size_t error_size);
+                                const codegen_patro_summary *summary, codegen_patro_tables *tables,
+                                char *error, size_t error_size);
 
 /* Renders src/generated/patro_tables.h. Returns a malloc'd string, or NULL when out of memory. */
 char *codegen_render_patro_tables(const codegen_patro_tables *tables,
-                                  const codegen_calendar *calendar);
+                                  const codegen_calendar *calendar,
+                                  const codegen_patro_summary *summary);
 
 void codegen_patro_input_free(codegen_patro_input *input);
 void codegen_patro_tables_free(codegen_patro_tables *tables);
