@@ -196,7 +196,9 @@ TEST(shared_patro_builds) {
     CHECK_EQ_INT(tables.holiday_count, summary->holidays);
     CHECK_EQ_INT(tables.event_count, summary->events);
 
-    int ty = 0, tm = 0, td = 0;
+    int ty = 0;
+    int tm = 0;
+    int td = 0;
     CHECK(day_parts(summary->tithi_first_day, &ty, &tm, &td));
     const uint32_t first_tithi = serial_of(calendar, ty, tm, td) - tables.first;
     CHECK(day_parts(summary->tithi_last_day, &ty, &tm, &td));
