@@ -147,8 +147,33 @@ int main(int argc, char **argv) {
         return 2;
     }
 
+    codegen_patro_summary summary;
+    char *summary_path = join(opts.shared, "spec/vectors/patro-summary.json");
+    size_t summary_length = 0;
+    char *summary_text = summary_path == NULL ? NULL : read_file(summary_path, &summary_length);
+    if (summary_text == NULL) {
+        (void)fprintf(stderr, "cannot read %s\n", summary_path == NULL ? "" : summary_path);
+        free(summary_path);
+        return 2;
+    }
+    free(summary_path);
+    char summary_error[160];
+    json_value *summary_doc =
+        json_parse(summary_text, summary_length, summary_error, sizeof summary_error);
+    free(summary_text);
+    if (summary_doc == NULL) {
+        (void)fprintf(stderr, "patro summary: %s\n", summary_error);
+        return 2;
+    }
+    const bool summary_ok = codegen_patro_summary_parse(summary_doc, &summary, error, sizeof error);
+    json_free(summary_doc);
+    if (!summary_ok) {
+        (void)fprintf(stderr, "%s\n", error);
+        return 2;
+    }
+
     codegen_patro_input patro_input = {0};
-    for (int year = CODEGEN_PATRO_FIRST_YEAR; year <= CODEGEN_PATRO_LAST_YEAR; year++) {
+    for (int year = summary.first_year; year <= summary.last_year; year++) {
         char relative[32];
         (void)snprintf(relative, sizeof relative, "data/patro/%d.json", year);
         char *patro_path = join(opts.shared, relative);
@@ -180,7 +205,8 @@ int main(int argc, char **argv) {
     }
 
     codegen_patro_tables patro_tables;
-    if (!codegen_build_patro_tables(&patro_input, &calendar, &patro_tables, error, sizeof error)) {
+    if (!codegen_build_patro_tables(&patro_input, &calendar, &summary, &patro_tables, error,
+                                    sizeof error)) {
         (void)fprintf(stderr, "%s\n", error);
         codegen_patro_input_free(&patro_input);
         codegen_patro_tables_free(&patro_tables);
@@ -189,7 +215,7 @@ int main(int argc, char **argv) {
     codegen_patro_input_free(&patro_input);
 
     char *calendar_header = codegen_render_calendar_tables(&calendar);
-    char *patro_header = codegen_render_patro_tables(&patro_tables, &calendar);
+    char *patro_header = codegen_render_patro_tables(&patro_tables, &calendar, &summary);
     codegen_patro_tables_free(&patro_tables);
     if (calendar_header == NULL || patro_header == NULL) {
         (void)fprintf(stderr, "out of memory\n");

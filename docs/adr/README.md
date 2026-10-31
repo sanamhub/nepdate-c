@@ -16,3 +16,4 @@ Immutable once Accepted; supersede with a new ADR.
 | [0008](0008-bs-to-ad-by-ad-month-table.md) | BS to AD reads the AD month table | Accepted |
 | [0009](0009-fuzzing-in-actions.md) | Fuzzing with libFuzzer in GitHub Actions | Accepted |
 | [0010](0010-patro-standalone-package.md) | The patro has a standalone package for package managers | Proposed, would amend 0003 |
+| [0011](0011-patro-counts-from-summary.md) | The patro counts come from the hub's generated summary | Accepted, amends 0001 |

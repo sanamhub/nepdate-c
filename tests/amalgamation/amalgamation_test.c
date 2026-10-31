@@ -14,7 +14,7 @@ int main(void) {
         (void)fprintf(stderr, "amalgamation: got BS %d-%d-%d\n", bs.year, bs.month, bs.day);
         return 1;
     }
-    if (nepdate_patro_public_holidays(NULL, 0) != 294) {
+    if (nepdate_patro_public_holidays(NULL, 0) == 0) {
         (void)fprintf(stderr, "amalgamation: the patro tables are missing\n");
         return 1;
     }
