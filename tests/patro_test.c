@@ -7,9 +7,9 @@
 #include <nepdate.h>
 #include <nepdate_patro.h>
 
+#include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
-#include <stdio.h>
 #include <string.h>
 
 static nepdate_date bs(int year, int month, int day) {
@@ -24,6 +24,31 @@ static void expect(nepdate_date date, int year, int month, int day) {
     CHECK_EQ_INT(ymd.year, year);
     CHECK_EQ_INT(ymd.month, month);
     CHECK_EQ_INT(ymd.day, day);
+}
+
+/* The year, month and day of a "YYYY-MM-DD" text, read digit by digit: sscanf reports no
+ * conversion errors and MSVC rejects it. False when text has another shape. */
+static bool day_parts(const char *text, int *year, int *month, int *day) {
+    static const int widths[3] = {4, 2, 2};
+    int *const parts[3] = {year, month, day};
+    if (text == NULL) {
+        return false;
+    }
+    for (int part = 0; part < 3; part++) {
+        int value = 0;
+        for (int i = 0; i < widths[part]; i++, text++) {
+            if (*text < '0' || *text > '9') {
+                return false;
+            }
+            value = value * 10 + (*text - '0');
+        }
+        *parts[part] = value;
+        if (*text != (part < 2 ? '-' : '\0')) {
+            return false;
+        }
+        text++;
+    }
+    return true;
 }
 
 static bool name_is(nepdate_patro_name name, const char *np, const char *en) {
@@ -152,9 +177,14 @@ TEST(coverage_is_the_summary_range) {
     char last[11];
     summary_day("first_day", first, sizeof first);
     summary_day("last_day", last, sizeof last);
-    int fy = 0, fm = 0, fd = 0, ly = 0, lm = 0, ld = 0;
-    CHECK_EQ_INT(sscanf(first, "%d-%d-%d", &fy, &fm, &fd), 3);
-    CHECK_EQ_INT(sscanf(last, "%d-%d-%d", &ly, &lm, &ld), 3);
+    int fy = 0;
+    int fm = 0;
+    int fd = 0;
+    int ly = 0;
+    int lm = 0;
+    int ld = 0;
+    CHECK(day_parts(first, &fy, &fm, &fd));
+    CHECK(day_parts(last, &ly, &lm, &ld));
     const nepdate_range range = nepdate_patro_coverage();
     expect(range.start, fy, fm, fd);
     expect(range.end, ly, lm, ld);

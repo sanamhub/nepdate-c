@@ -108,8 +108,29 @@ static uint32_t serial_of(const codegen_calendar *calendar, int year, int month,
     return (uint32_t)(calendar->month_start[index] + (long)day - 1L);
 }
 
+/* The year, month and day of a "YYYY-MM-DD" text, read digit by digit: sscanf reports no
+ * conversion errors and MSVC rejects it. False when text has another shape. */
 static bool day_parts(const char *text, int *year, int *month, int *day) {
-    return text != NULL && sscanf(text, "%d-%d-%d", year, month, day) == 3;
+    static const int widths[3] = {4, 2, 2};
+    int *const parts[3] = {year, month, day};
+    if (text == NULL) {
+        return false;
+    }
+    for (int part = 0; part < 3; part++) {
+        int value = 0;
+        for (int i = 0; i < widths[part]; i++, text++) {
+            if (*text < '0' || *text > '9') {
+                return false;
+            }
+            value = value * 10 + (*text - '0');
+        }
+        *parts[part] = value;
+        if (*text != (part < 2 ? '-' : '\0')) {
+            return false;
+        }
+        text++;
+    }
+    return true;
 }
 
 /* True when every event of day has a name that another day carries too. Removing such a day's
