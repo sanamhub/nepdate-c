@@ -1,6 +1,6 @@
 The calendar data in this directory (data/calendar/, data/patro/) was extracted from
-NepDate (https://github.com/RajuPrasai/NepDate, commit cb05cb65c7d3cb570c76992a8e83ed1e73213346)
-by tools/extract_from_csharp.py on 2026-09-24, and is used under the MIT License:
+NepDate (https://github.com/RajuPrasai/NepDate, commit c6fff4f2f60ac01e31c086568320649627422ba1)
+by tools/extract_from_csharp.py on 2026-10-30, and is used under the MIT License:
 
 MIT License
 

@@ -2,9 +2,9 @@
   "schema": 1,
   "source": {
     "repo": "https://github.com/RajuPrasai/NepDate",
-    "commit": "cb05cb65c7d3cb570c76992a8e83ed1e73213346",
+    "commit": "c6fff4f2f60ac01e31c086568320649627422ba1",
     "license": "MIT",
-    "imported": "2026-09-24"
+    "imported": "2026-10-30"
   },
   "year": 2084,
   "days": {
@@ -12,8 +12,8 @@
       "holiday": true,
       "events": [
         {
-          "np": "नयाँ वर्ष २०८३",
-          "en": "New Year 2083"
+          "np": "नयाँ वर्ष २०८४",
+          "en": "New Year 2084"
         }
       ]
     },

@@ -3,9 +3,9 @@
 The patro (पात्रो, the Nepali almanac): tithi (lunar day), gazetted public holidays and events per
 BS day. Every port ships it in a separate package that depends on the core package; package names
 per language are in ADR-0004. Source:
-`data/patro/<year>.json` (ADR-0002). Currently covers **BS 2077–2084** (tithi 2078-01-02 …
-2083-12-30, holidays 2077-01-01 … 2084-08-18, events 2077-01-01 … 2084-08-20).
-Days without data are absent from the files.
+`data/patro/<year>.json` (ADR-0002). The covered years and the first and last day of every kind are
+in `spec/vectors/patro-summary.json`, derived from the data. Days without data are absent from the
+files.
 
 ## 1. JSON shape (input)
 
@@ -33,9 +33,9 @@ info(date) -> CalendarInfo {
 ```
 
 - `info` never fails. Dates without data return `{None, false, []}`.
-- `coverage()` returns the smallest BS range containing every day that has any metadata
-  (`2077-01-01 ..= 2084-08-20` today). The widget uses it to decide whether to show
-  "no data for this year".
+- `coverage()` returns the smallest BS range containing every day that has any metadata, the
+  `first_day` to `last_day` range in `spec/vectors/patro-summary.json`. The widget uses it to
+  decide whether to show "no data for this year".
 - `public_holidays()` returns an ascending iterator of all holiday dates.
 - `name(lang)` on tithi/event returns `np` for `Lang::Ne` and `en` for `Lang::En`.
 
@@ -45,14 +45,19 @@ The tables live only in the patro package; the core package has none of them and
 the patro package. Ports compile `data/patro/` into constant tables. JSON is never read at runtime. The layout is
 each port's choice, but these facts should shape it:
 
-- Tithi data is **contiguous**: one entry for every day from 2078-01-02 to 2083-12-30
-  (T = 2190). Store the first serial and one small index per day into a table of 32 tithi
-  names, so a lookup is one subtraction and one array read. The generator must fail if a gap
-  appears inside the tithi range.
-- Holidays (H = 294) and event days (E = 1671, 3032 events) are sparse. Store sorted serials
+- The counts are in `spec/vectors/patro-summary.json`, written by `tools/make_vectors.py` from
+  `data/patro/`. A port's generator reads that file and never pins a count of its own, so a data
+  update changes the generated tables and nothing else. The generator still checks the data
+  against the summary, and fails on a disagreement.
+- Tithi data is **contiguous**: one entry for every day from `tithi_first_day` to `tithi_last_day`
+  (`tithi_days`). Store the first serial and one small index per day into a table of
+  `tithi_names`, so a lookup is one subtraction and one array read. The generator must fail if a
+  gap appears inside the tithi range.
+- Holidays and event days are sparse (`holidays`, `event_days`, `events`). Store sorted serials
   and binary search them (ALGORITHM §4), at most 11 comparisons.
-- Event and tithi names repeat. Deduplicate the (np, en) pairs: 753 distinct pairs today.
-- 152 of the 2190 tithi days (all in BS 2078 to 2081) have a name whose `np` ends in `*` and
+- Event and tithi names repeat. Deduplicate the (np, en) pairs; `names` counts them and
+  `name_bytes` is the size of the name pool the C and C++ ports build.
+- Some tithi days (all in BS 2078 to 2081) have a name whose `np` ends in `*` and
   whose `en` ends in ` (K)`, for example `तृतिया*` / `Tritiya (K)`. Upstream does not say what the
   marker means, and it does not match skipped or repeated tithis in the data (U-09). Ports show
   the name exactly as in the data: no stripping, no tooltip, no meaning of their own.

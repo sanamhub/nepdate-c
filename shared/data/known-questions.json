@@ -1,5 +1,4 @@
 [
   {"check": "year-length", "years": [2087, 2090]},
-  {"check": "new-year", "years": [2088]},
-  {"check": "new-year-name", "years": [2084]}
+  {"check": "new-year", "years": [2088]}
 ]
