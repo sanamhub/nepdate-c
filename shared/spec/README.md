@@ -12,6 +12,7 @@ directory and `data/` into its own `shared/` (ADR-0001).
 | `PARITY.md` | yes | C# golden vectors and the deliberate deviations D-01 … D-15 |
 | `PORT-PLAN.md` | yes | phases and acceptance criteria every port meets |
 | `BENCHMARK.md` | yes | benchmark protocol: reference machine, the 64 dates, operations B1–B8, targets |
+| `versions.json` | yes | the `MAJOR.MINOR` line every SDK shares and each SDK's released version (ADR-0007) |
 | `vectors/csharp-tests/catalog.tsv` | yes | every test case of C# NepDate's own test suite, tagged with the phase that covers it |
 | `vectors/month-boundaries.csv` | yes | first and last day of every BS month (7176 rows) |
 | `vectors/patro-summary.json` | yes | patro counts every port reads: coverage, tithi, holidays, events, names |
@@ -37,4 +38,6 @@ idiomatic names; the results must be the same.
 6. PATRO (the separate patro package, ADR-0004), with its counts read from
    `shared/spec/vectors/patro-summary.json`.
 7. Add the port to the table in the hub `README.md`.
-8. No port-local deviations. If one seems necessary, open a PR to this hub.
+8. Before the first release, add the port to `spec/versions.json` with the version it will release,
+   and to `spec/packages.json`. The port's `shared-check` call passes that name and version.
+9. No port-local deviations. If one seems necessary, open a PR to this hub.
