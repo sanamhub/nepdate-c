@@ -1,0 +1,36 @@
+load before: 42, 36, 28
+bench: golden vectors agree
+B1 5.506 ns/op
+B2 6.840 ns/op
+B3 8.164 ns/op
+B4 9.870 ns/op
+B5 44.290 ns/op
+B6 25.893 ns/op
+B7 17.509 ns/op
+B8 611.719 ns/op
+load after: 18, 6, 10
+exit: 0
+rerun load before: 3, 8, 6
+bench: golden vectors agree
+B1 5.043 ns/op
+B2 6.205 ns/op
+B3 7.579 ns/op
+B4 9.170 ns/op
+B5 40.801 ns/op
+B6 41.959 ns/op
+B7 30.926 ns/op
+B8 1000.260 ns/op
+rerun load after: 20, 4, 9
+rerun exit: 0
+third load before: 12, 10, 9
+bench: golden vectors agree
+B1 4.942 ns/op
+B2 6.054 ns/op
+B3 7.468 ns/op
+B4 9.143 ns/op
+B5 40.758 ns/op
+B6 23.701 ns/op
+B7 16.546 ns/op
+B8 577.096 ns/op
+third load after: 15, 11, 18
+third exit: 0

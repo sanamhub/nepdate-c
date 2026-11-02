@@ -11,7 +11,6 @@
 #endif
 
 #include "bench.h"
-#include "bench_competitors.h"
 
 #include <nepdate.h>
 #include <nepdate_patro.h>
@@ -566,81 +565,6 @@ static double measure(operation op, unsigned runs) {
     return total / ((double)BENCH_INPUTS * (double)passes);
 }
 
-static double rival_ns(const bench_rival *rival, bool to_ad, unsigned runs) {
-    const uint64_t passes = 10;
-    uint64_t *samples = (uint64_t *)calloc(runs, sizeof *samples);
-    if (samples == NULL) {
-        fail("calloc failed");
-    }
-    for (unsigned i = 0; i < BENCH_WARMUP; ++i) {
-        uint64_t hash = 0;
-        for (size_t j = 0; j < BENCH_INPUTS; ++j) {
-            int y = 0;
-            int m = 0;
-            int d = 0;
-            const bench_ymd in = to_ad ? bench_golden_data[j].bs : bench_golden_data[j].ad;
-            const bool ok = to_ad ? rival->to_ad(in.year, in.month, in.day, &y, &m, &d)
-                                  : rival->to_bs(in.year, in.month, in.day, &y, &m, &d);
-            hash = mix(hash, ok ? UINT64_C(1) : UINT64_C(0));
-            hash = mix(hash, (uint64_t)(uint32_t)y);
-            hash = mix(hash, (uint64_t)(uint32_t)m);
-            hash = mix(hash, (uint64_t)(uint32_t)d);
-        }
-        consume(hash);
-    }
-    for (unsigned i = 0; i < runs; ++i) {
-        const uint64_t start = now_ns();
-        uint64_t hash = 0;
-        for (uint64_t p = 0; p < passes; ++p) {
-            for (size_t j = 0; j < BENCH_INPUTS; ++j) {
-                int y = 0;
-                int m = 0;
-                int d = 0;
-                const bench_ymd in = to_ad ? bench_golden_data[j].bs : bench_golden_data[j].ad;
-                const bool ok = to_ad ? rival->to_ad(in.year, in.month, in.day, &y, &m, &d)
-                                      : rival->to_bs(in.year, in.month, in.day, &y, &m, &d);
-                hash = mix(hash, ok ? UINT64_C(1) : UINT64_C(0));
-                hash = mix(hash, (uint64_t)(uint32_t)y);
-                hash = mix(hash, (uint64_t)(uint32_t)m);
-                hash = mix(hash, (uint64_t)(uint32_t)d);
-            }
-            BENCH_BARRIER();
-        }
-        consume(hash);
-        samples[i] = now_ns() - start;
-    }
-    const double total = median(samples, runs);
-    free(samples);
-    return total / ((double)BENCH_INPUTS * (double)passes);
-}
-
-static void agrees(const bench_rival *rival) {
-    unsigned b1 = 0;
-    unsigned b1_no_answer = 0;
-    unsigned b2 = 0;
-    unsigned b2_no_answer = 0;
-    for (size_t i = 0; i < BENCH_INPUTS; ++i) {
-        int y = 0;
-        int m = 0;
-        int d = 0;
-        const bench_ymd bs = bench_golden_data[i].bs;
-        if (!rival->to_ad(bs.year, bs.month, bs.day, &y, &m, &d)) {
-            ++b1_no_answer;
-        } else if (y == bench_golden_data[i].ad.year && m == bench_golden_data[i].ad.month &&
-                   d == bench_golden_data[i].ad.day) {
-            ++b1;
-        }
-        const bench_ymd ad = bench_golden_data[i].ad;
-        if (!rival->to_bs(ad.year, ad.month, ad.day, &y, &m, &d)) {
-            ++b2_no_answer;
-        } else if (y == bs.year && m == bs.month && d == bs.day) {
-            ++b2;
-        }
-    }
-    (void)printf("%s: B1 agrees %u/64 (no answer %u), B2 agrees %u/64 (no answer %u)\n",
-                 rival->name, b1, b1_no_answer, b2, b2_no_answer);
-}
-
 static void json_string(FILE *file, const char *text) {
     (void)fputc('"', file);
     for (const unsigned char *p = (const unsigned char *)text; *p != 0; ++p) {
@@ -702,19 +626,6 @@ int main(int argc, char **argv) {
         (void)printf("%s %.3f ns/op\n", ids[i], ns[i]);
     }
 
-    double rival_b1[8];
-    double rival_b2[8];
-    unsigned rivals = (unsigned)bench_rival_count;
-    if (rivals > 8U) {
-        rivals = 8U;
-    }
-    for (unsigned i = 0; i < rivals; ++i) {
-        agrees(&bench_rivals[i]);
-        rival_b1[i] = rival_ns(&bench_rivals[i], true, runs);
-        rival_b2[i] = rival_ns(&bench_rivals[i], false, runs);
-        (void)printf("%s %.3f %.3f ns/op\n", bench_rivals[i].name, rival_b1[i], rival_b2[i]);
-    }
-
     if (json_path != NULL) {
         FILE *file = fopen(json_path, "wb");
         if (file == NULL) {
@@ -727,14 +638,7 @@ int main(int argc, char **argv) {
         for (size_t i = 0; i < 8; ++i) {
             (void)fprintf(file, "%s%.3f", i == 0 ? "" : ", ", ns[i]);
         }
-        (void)fputs("],\n  \"competitors\": [", file);
-        for (unsigned i = 0; i < rivals; ++i) {
-            (void)fputs(i == 0 ? "\n    " : ",\n    ", file);
-            (void)fputs("{\"name\": ", file);
-            json_string(file, bench_rivals[i].name);
-            (void)fprintf(file, ", \"b1\": %.3f, \"b2\": %.3f}", rival_b1[i], rival_b2[i]);
-        }
-        (void)fputs(rivals == 0 ? "],\n" : "\n  ],\n", file);
+        (void)fputs("],\n  \"competitors\": [],\n", file);
         (void)fputs("  \"source\": "
                     "\"https://github.com/sanamhub/nepdate-c/blob/main/docs/benchmarks.md\"\n}\n",
                     file);

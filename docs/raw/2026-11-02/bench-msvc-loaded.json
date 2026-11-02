@@ -1,0 +1,8 @@
+{
+  "id": "c",
+  "name": "C",
+  "machine": "Intel Core i5-12500H laptop",
+  "ops": [5.506, 6.840, 8.164, 9.870, 44.290, 25.893, 17.509, 611.719],
+  "competitors": [],
+  "source": "https://github.com/sanamhub/nepdate-c/blob/main/docs/benchmarks.md"
+}
