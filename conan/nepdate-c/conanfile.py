@@ -7,7 +7,7 @@ from conan.tools.files import copy, get
 
 class NepdateCConan(ConanFile):
     name = "nepdate-c"
-    version = "0.1.0-beta.1"
+    version = "0.1.0-rc.1"
     license = "MIT"
     description = "Bikram Sambat (Nepali calendar) dates for C11: BS to AD and back, arithmetic, formatting, parsing and time interop."
     homepage = "https://github.com/sanamhub/nepdate-c"

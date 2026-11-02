@@ -10,14 +10,14 @@ library's export table with the functions on this page.
 #define NEPDATE_VERSION_MAJOR 0
 #define NEPDATE_VERSION_MINOR 1
 #define NEPDATE_VERSION_PATCH 0
-#define NEPDATE_VERSION_PRERELEASE "beta.1"
-#define NEPDATE_VERSION_STRING "0.1.0-beta.1"
+#define NEPDATE_VERSION_PRERELEASE "rc.1"
+#define NEPDATE_VERSION_STRING "0.1.0-rc.1"
 
 const char *nepdate_version(void);
 ```
 
 The macros give the version of the header. `NEPDATE_VERSION_PRERELEASE` is the part after `-` in
-a pre-release such as `0.1.0-beta.1`, and empty for a stable version.
+a pre-release such as `0.1.0-rc.1`, and empty for a stable version.
 
 `nepdate_version` returns the version of the compiled library as a static string, equal to
 `NEPDATE_VERSION_STRING` when the header and the library come from the same release. It can't
