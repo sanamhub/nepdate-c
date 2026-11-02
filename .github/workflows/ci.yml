@@ -291,7 +291,7 @@ jobs:
           conan create conan/nepdate-c-patro --build=missing
 
   version:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 5
     outputs:
       version: ${{ steps.version.outputs.version }}
@@ -303,7 +303,12 @@ jobs:
         id: version
         run: |
           set -euo pipefail
-          echo "version=$(bash scripts/version.sh)" >> "$GITHUB_OUTPUT"
+          # Assigned first: a failing command inside echo's argument would not stop the step.
+          if ! version="$(bash scripts/version.sh)"; then
+            echo "$version" >&2
+            exit 1
+          fi
+          echo "version=$version" >> "$GITHUB_OUTPUT"
 
   # Fails when shared/ differs from the hub at the commit in shared/VERSION, and when the
   # libraries' version is on another MAJOR.MINOR line (ADR-0007).
