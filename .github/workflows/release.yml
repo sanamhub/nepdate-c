@@ -136,6 +136,8 @@ jobs:
         with:
           name: "v${{ steps.archive.outputs.version }}"
           body_path: release-notes.md
+          # A tag with a pre-release part lands as a pre-release, never as the latest version.
+          prerelease: ${{ contains(steps.archive.outputs.version, '-') }}
           files: |
             ${{ steps.archive.outputs.source }}
             ${{ steps.archive.outputs.amalgamation }}
