@@ -5,6 +5,8 @@ Versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [0.1.0-rc.1] - 2026-11-03
+
 ### Added
 
 - `verify-published.yml`: the release workflow now checks the GitHub release the way a user gets

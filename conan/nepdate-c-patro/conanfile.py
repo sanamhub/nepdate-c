@@ -7,7 +7,7 @@ from conan.tools.files import copy, get
 
 class NepdateCPatroConan(ConanFile):
     name = "nepdate-c-patro"
-    version = "0.1.0-beta.1"
+    version = "0.1.0-rc.1"
     license = "MIT"
     description = "The patro (Nepali almanac) companion to nepdate-c: tithi, public holidays and events, BS 2077 to 2084."
     homepage = "https://github.com/sanamhub/nepdate-c"
@@ -30,7 +30,7 @@ class NepdateCPatroConan(ConanFile):
         self.settings.rm_safe("compiler.cppstd")
 
     def requirements(self):
-        self.requires("nepdate-c/0.1.0-beta.1", transitive_headers=True)
+        self.requires("nepdate-c/0.1.0-rc.1", transitive_headers=True)
 
     def layout(self):
         cmake_layout(self)

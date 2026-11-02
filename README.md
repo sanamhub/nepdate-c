@@ -17,7 +17,7 @@ hub [`sanamhub/nepdate`](https://github.com/sanamhub/nepdate); the C# original i
 Plain ISO C11 with no allocation, no global state and no dependencies, so it also builds into Zig
 projects and into extensions for languages that call C.
 
-> **Status:** `0.1.0-beta.1`, a pre-release. The API can still change before `0.1.0`; the other
+> **Status:** `0.1.0-rc.1`, a release candidate. The API can still change before `0.1.0`; the other
 > [released languages](https://github.com/sanamhub/nepdate#packages) follow the same versions.
 
 ## Build
