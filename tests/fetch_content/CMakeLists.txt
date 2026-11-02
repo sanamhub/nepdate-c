@@ -19,7 +19,7 @@ set(CMAKE_C_EXTENSIONS OFF)
 include(FetchContent)
 FetchContent_Declare(nepdate-c
     GIT_REPOSITORY https://github.com/sanamhub/nepdate-c.git
-    GIT_TAG v0.1.0-beta.1
+    GIT_TAG v0.1.0-rc.1
 )
 set(fetched nepdate-c)
 if(CONSUMER_WITH_CPP)
@@ -30,7 +30,7 @@ if(CONSUMER_WITH_CPP)
     set(CMAKE_CXX_SCAN_FOR_MODULES OFF)
     FetchContent_Declare(nepdate
         GIT_REPOSITORY https://github.com/sanamhub/nepdate-cpp.git
-        GIT_TAG v0.1.0-beta.1
+        GIT_TAG v0.1.0-rc.1
     )
     list(APPEND fetched nepdate)
 endif()
