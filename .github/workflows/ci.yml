@@ -290,7 +290,33 @@ jobs:
           conan create conan/nepdate-c --build=missing
           conan create conan/nepdate-c-patro --build=missing
 
+  version:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Read the version from build.zig.zon
+        id: version
+        run: |
+          set -euo pipefail
+          # Assigned first: a failing command inside echo's argument would not stop the step.
+          if ! version="$(bash scripts/version.sh)"; then
+            echo "$version" >&2
+            exit 1
+          fi
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+
+  # Fails when shared/ differs from the hub at the commit in shared/VERSION, and when the
+  # libraries' version is on another MAJOR.MINOR line (ADR-0007).
   shared-check:
+    needs: version
     permissions:
       contents: read
-    uses: sanamhub/nepdate/.github/workflows/shared-check.yml@94946acd87bf4775c481811c0cdd63a7aaef2c84 # main 2026-10-09
+    uses: sanamhub/nepdate/.github/workflows/shared-check.yml@f636b7d476bc5959eb5689a950b73c8943860eef # main 2026-11-01
+    with:
+      sdk: c
+      version: ${{ needs.version.outputs.version }}

@@ -93,10 +93,10 @@ marker that names it.
 
 ## Scheduled published check
 
-A port is not released until it has a scheduled `verify-published.yml` in the shape below and an
-entry in `spec/packages.json`. A version can be yanked, a registry can stop serving a file, or a
-deleted tag can leave a package URL broken; without a schedule the first person to notice is a
-user. Before a language's first release:
+A port is not released until it has a scheduled `verify-published.yml` in the shape below, an
+entry in `spec/packages.json` and an entry in `spec/versions.json`. A version can be yanked, a
+registry can stop serving a file, or a deleted tag can leave a package URL broken; without a
+schedule the first person to notice is a user. Before a language's first release:
 
 - [ ] `verify-published.yml` with a weekly `schedule` cron, one port per hour, and a daily metadata
       cron; `latest` as the default version; a `resolve` job so every job of a run checks the same
@@ -109,6 +109,8 @@ user. Before a language's first release:
       write`, and the check jobs have `contents: read`.
 - [ ] An entry in `spec/packages.json`: the repository, the registry, the package names, the
       install command a user types, and the workflow file name.
+- [ ] An entry in `spec/versions.json` with the port's version, and a `version` job whose output the
+      port's `shared-check` call passes as `sdk` and `version` (ADR-0007 decision 3).
 - [ ] The release runbook names the weekly and daily runs and the `published-check` label, and the
       changelog has a line under Unreleased.
 
