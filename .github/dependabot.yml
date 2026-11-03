@@ -1,7 +1,7 @@
 version: 2
 updates:
-  # Keeps the pinned action SHAs current (ADR-0004). The cooldown gives a bad release a week to be
-  # pulled. The hub workflows are pinned by commit, not by tag, so they move with shared-sync
+  # Keeps the pinned action SHAs current (ADR-0004). The cooldown gives a bad release two weeks to
+  # be pulled. The hub workflows are pinned by commit, not by tag, so they move with shared-sync
   # reviews instead.
   - package-ecosystem: github-actions
     directory: /
@@ -9,4 +9,4 @@ updates:
       interval: weekly
     open-pull-requests-limit: 5
     cooldown:
-      default-days: 7
+      default-days: 14
