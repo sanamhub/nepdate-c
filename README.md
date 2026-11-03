@@ -57,9 +57,9 @@ int main(void) {
 
 Every function that can fail returns a `nepdate_status` and writes its result through a pointer,
 which it leaves unchanged on error. Nothing allocates and nothing reads the clock, so every call is
-thread-safe and every clock-dependent call takes the instant from you. The full list of names, with
-signatures and an example each, is
-[docs/API.md](https://github.com/sanamhub/nepdate-c/blob/main/docs/API.md).
+thread-safe and every clock-dependent call takes the instant from you. `nepdate_version` gives the
+version of the library, for a log or a bug report. The full list of names, with signatures and an
+example each, is [docs/API.md](https://github.com/sanamhub/nepdate-c/blob/main/docs/API.md).
 
 ## Dates
 
@@ -112,7 +112,10 @@ nepdate_bulk_to_bs(ad, 2, bs, 2, &written); /* 2081-04-15 and 1901-01-01, in inp
 ```
 
 A JSON, database or text hook is this pair: format to a string, parse from a string. There is no
-object form and no converter type, which is the native-hook rule the family follows.
+object form and no converter type, which is the native-hook rule the family follows. The other
+conversion forms take the platform date: `nepdate_from_unix` takes a Unix instant and a UTC offset,
+`nepdate_today_nepal` knows Nepal's own offset at that instant, and `nepdate_from_tm` and
+`nepdate_to_tm` bridge to `struct tm` when the build keeps that part.
 
 ## Arithmetic
 
