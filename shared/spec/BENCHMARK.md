@@ -86,3 +86,62 @@ Research on why C# NepDate is fast and where it allocates: `docs/research/dotnet
 
 A port that misses its target reports the numbers to the maintainer before release; it doesn't drop
 features to get there.
+
+## 7. Choosing competitors
+
+A port is compared only with Bikram Sambat libraries that people use in that language, and only
+with libraries old and maintained enough to be a fair comparison. The rule is the same for every
+language, including languages added after this section was written.
+
+### Candidates
+
+Search the language's main package registry and GitHub for every library that converts between
+Bikram Sambat and Gregorian dates. The registries are nuget.org, crates.io, pkg.go.dev, npm, PyPI,
+Swift Package Index, Maven Central, vcpkg and Conan. Leave out the NepDate family itself, and forks
+or copies of another candidate.
+
+### Usage
+
+Usage ranks the candidates that pass the maturity bar. Record the number and the date it was read.
+Each ecosystem exposes a different measure, so each has its own minimum. The minimum is a floor for
+"people use this", not a target, and it is fixed before the candidate list is ranked.
+
+| Ecosystem | Usage measure | Minimum |
+|---|---|---|
+| nuget.org | total downloads, and downloads in the last 6 weeks from the nuget.org statistics report | 10,000 total and 250 in the last 6 weeks |
+| crates.io | recent downloads (90 days) | 1,000 |
+| npm | weekly downloads, and dependents from deps.dev | 1,000 weekly and 5 dependents |
+| PyPI | last month from pypistats | 1,000 |
+| Go | "Imported by" on pkg.go.dev | 3 importing packages |
+| Maven | dependents on deps.dev | 1 dependent |
+| Swift | GitHub stars and dependents, and whether the package is in the Swift Package Index | 10 stars, or listed in the Swift Package Index |
+| C, C++ | GitHub stars and dependents, and whether the library is in vcpkg or Conan | 25 stars, or a vcpkg or Conan port |
+
+### Maturity bar
+
+A candidate must pass all of these before usage is considered:
+
+- first release at least 12 months ago;
+- a release or a commit in the last 36 months;
+- a license;
+- not archived or marked deprecated;
+- it builds and runs on the current toolchain;
+- the minimum usage for its ecosystem in the table above.
+
+### Selection
+
+Take the top three passing candidates by usage. If fewer than three pass, list fewer. If none pass,
+the language has no competitor row and the docs say "no mature library to compare". Never pad the
+list with a library that fails the bar.
+
+### Correctness stays separate
+
+Agreement on the 64 dates is still measured and shown for every selected library. It never
+qualifies or disqualifies a library from being compared. A fast library with wrong dates is listed
+but is never ranked first, as section 4 already requires.
+
+### Evidence
+
+Each port keeps one table in `docs/competitors.md` with every candidate found, its usage, the bar it
+fails if any, and whether it was selected. The table records the date the usage numbers were read
+and links the registry or repository it came from.

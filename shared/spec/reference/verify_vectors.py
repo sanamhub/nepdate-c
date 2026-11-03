@@ -42,7 +42,12 @@ def last(y,m): return (y,m,ml(y,m)) if MIN<=y<=2199 else (y,m,99)
 QSTART={1:(0,4),2:(0,7),3:(0,10),4:(1,1)}
 def q_of(t): return {4:1,5:1,6:1,7:2,8:2,9:2,10:3,11:3,12:3}.get(t[1],4)
 G=ROOT/'spec/vectors/csharp-golden'
-rd=lambda f: csv.DictReader(open(G/f,encoding='utf-8'),delimiter='\t')
+def tsv(path):
+    """Rows of a vector file, ignoring blank lines and lines that start with '#'."""
+    lines=[line for line in Path(path).read_text(encoding='utf-8').splitlines()
+           if line and not line.startswith('#')]
+    return list(csv.DictReader(lines,delimiter='\t',quoting=csv.QUOTE_NONE))
+rd=lambda f: tsv(G/f)
 n=0
 for r in rd('dates.tsv'):
     t=parse(r['bs']); fy=fy_of(t); q=q_of(t); dy,qm=QSTART[q]
@@ -78,8 +83,8 @@ def pattern(t,p,ne=False):
     out=[]; i=0
     while i<len(p):
         c=p[i]
-        if c=='\\':   # FORMATTING §5: escapes the next char; a trailing backslash writes nothing
-            out.append(p[i+1:i+2]); i+=2; continue
+        if c=='\\':   # FORMATTING §5: escapes the next char; a trailing backslash writes itself
+            out.append(p[i+1] if i + 1 < len(p) else '\\'); i+=2; continue
         if c=="'":
             j=p.find("'",i+1); j=len(p) if j<0 else j; out.append(p[i+1:j]); i=j+1; continue
         if c in 'yMd':
@@ -195,3 +200,380 @@ for r in csv.DictReader(open(PARSE_FILE, encoding='utf-8'), delimiter=TAB, quoti
     assert lenient(r['input']) == r['lenient'], r
     n += 1
 print('parsing OK', n, 'rows')
+
+# ---- New API vectors (spec/API.md "Rows that need vectors") ------------------
+MAX_S = 109211
+SEPCHAR = {'Slash': '/', 'Backslash': '\\', 'Dot': '.', 'Underscore': '_', 'Dash': '-', 'Space': ' '}
+
+
+def short(t, order, separator, pad, ne=False):
+    """FORMATTING section 3: order is Ymd, Ydm, Myd, Mdy, Dym or Dmy."""
+    y, m, d = t
+    parts = {'Y': f'{y:04}' if pad else str(y), 'M': f'{m:02}' if pad else str(m),
+             'D': f'{d:02}' if pad else str(d)}
+    return dig(separator.join(parts[c.upper()] for c in order), ne)
+
+
+def range_text(start, end):
+    return f'{fmt(start)}..{fmt(end)}'
+
+
+def range_list_text(items):
+    return 'none' if not items else ';'.join(range_text(a, b) for a, b in items)
+
+
+def date_list_text(items):
+    return 'none' if not items else ';'.join(fmt(t) for t in items)
+
+
+def argument_range(text):
+    a, b = text.split('..')
+    return parse(a), parse(b)
+
+
+# year-length.tsv is a reference vector: C# has no year-length API (D-12).
+n = 0
+for r in tsv(ROOT / 'spec/vectors/year-length.tsv'):
+    y = int(r['bs_year'])
+    length = YS[y - MIN + 1] - YS[y - MIN]
+    assert MIN <= y <= 2199, r
+    assert 364 <= length <= 367, r
+    assert r['year_length'] == str(length), (r, length)
+    n += 1
+assert n == 299, n
+print('year length OK', n, 'years (reference vector, D-12)')
+
+# day-diff.tsv (NA04, NA05; D-07).
+n = 0
+for r in tsv(G / 'day-diff.tsv'):
+    a, b = parse(r['a']), parse(r['b'])
+    assert int(r['days_until']) == ts(*b) - ts(*a), r
+    assert int(r['operator_minus']) == ts(*a) - ts(*b), r
+    n += 1
+print('day difference OK', n, 'rows (D-07)')
+
+
+# ymd-int.tsv (NC09; D-11).
+def cdiv(a, b):
+    """C# integer division truncates toward zero."""
+    q = abs(a) // abs(b)
+    return -q if (a < 0) != (b < 0) else q
+
+
+def crem(a, b):
+    return a - cdiv(a, b) * b
+
+
+n = 0
+for r in tsv(G / 'ymd-int.tsv'):
+    if r['kind'] == 'date':
+        t = parse(r['input'])
+        assert valid(*t), r
+        assert int(r['ymd']) == t[0] * 10000 + t[1] * 100 + t[2], r
+        assert r['result'] == r['input'], r
+    elif r['kind'] == 'int':
+        value = int(r['ymd'])
+        y = cdiv(value, 10000)
+        m = crem(cdiv(value, 100), 100)
+        d = crem(value, 100)
+        expected = fmt((y, m, d)) if valid(y, m, d) else 'ERR'
+        assert r['result'] == expected, (r, expected)
+    else:
+        raise AssertionError(r)
+    n += 1
+print('YYYYMMDD integer OK', n, 'rows (D-11)')
+
+
+# bulk.tsv (NC04-NC08). The output must be in input order; the inputs are deliberately unsorted.
+def date_text(t):
+    return f'{t[0]:04}-{t[1]:02}-{t[2]:02}'
+
+
+n = 0
+for r in tsv(G / 'bulk.tsv'):
+    inputs = r['input'].split(';')
+    out = []
+    failed = False
+    for item in inputs:
+        if r['operation'] in ('to_nepali_dates', 'batch_to_nepali_dates'):
+            try:
+                t = CAL.from_ad(*parse(item))
+            except (ValueError, IndexError):
+                failed = True
+                break
+            if not valid(*t):
+                failed = True
+                break
+            out.append(fmt(t))
+        elif r['operation'] == 'to_english_dates_from_strings':
+            try:
+                t = parse(item)
+            except ValueError:
+                failed = True
+                break
+            if not valid(*t):
+                failed = True
+                break
+            out.append(date_text(CAL.to_ad(*t)))
+        elif r['operation'] in ('to_english_dates_from_dates', 'batch_to_english_dates'):
+            t = parse(item)
+            if not valid(*t):
+                failed = True
+                break
+            out.append(date_text(CAL.to_ad(*t)))
+        else:
+            raise AssertionError(r)
+    expected = 'ERR' if failed else ';'.join(out)
+    assert r['output'] == expected, (r, expected)
+    if not failed:
+        assert len(out) == len(inputs), r
+        # The whole point of the row: element i of the output belongs to element i of the input.
+        for item, converted in zip(inputs, out):
+            assert converted != '' and item != '', r
+    n += 1
+print('bulk conversion OK', n, 'rows, input order asserted')
+
+# serialization.tsv (NC10; D-01, D-11).
+n = 0
+for r in tsv(G / 'serialization.tsv'):
+    if r['kind'] == 'write':
+        t = parse(r['input'])
+        assert r['json'] == '"' + fmt(t) + '"', r
+        assert r['result'] == '-', r
+    elif r['kind'] == 'roundtrip':
+        t = parse(r['input'])
+        assert r['json'] == '"' + fmt(t) + '"', r
+        assert r['result'] == r['input'], r
+    elif r['kind'] == 'read':
+        if r['input'] == 'null':
+            assert r['result'] == 'ERR', r  # D-01
+        else:
+            assert r['input'].startswith('"') and r['input'].endswith('"'), r
+            try:
+                t = parse(r['input'][1:-1])
+            except ValueError:
+                expected = 'ERR'
+            else:
+                expected = fmt(t) if valid(*t) else 'ERR'
+            assert r['result'] == expected, (r, expected)
+    else:
+        raise AssertionError(r)
+    n += 1
+print('serialization OK', n, 'rows (D-01, D-11)')
+
+# format-matrix.tsv (NF02, NF07; D-15).
+n = 0
+for r in tsv(G / 'format-matrix.tsv'):
+    t = parse(r['bs'])
+    if r['kind'] == 'short':
+        pad = r['pad'] == 'true'
+        expected = short(t, r['order'], SEPCHAR[r['separator']], pad, r['lang'] == 'ne')
+    elif r['kind'] == 'try_format':
+        text = pattern(t, '') if r['format'] == 'default' else pattern(t, r['format'])
+        expected = text if len(text) <= int(r['capacity']) else 'ERR'
+    else:
+        raise AssertionError(r)
+    assert r['result'] == expected, (r, expected)
+    n += 1
+print('format matrix OK', n, 'rows (D-15)')
+
+# ranges.tsv (NR01-NR04, NR06, NR15-NR21, NR27, NR30; D-01, D-16). D-16: IsAdjacentTo is
+# false when the day after this range would pass 2199-12-30, and Intersect of disjoint ranges
+# is none even when the receiver starts at 1901-01-01.
+n = 0
+for r in tsv(G / 'ranges.tsv'):
+    operation = r['operation']
+    if operation == 'construct':
+        try:
+            a, b = parse(r['start']), parse(r['end'])
+        except ValueError:
+            expected = 'ERR'
+        else:
+            expected = range_text(a, b) if valid(*a) and valid(*b) and ts(*a) <= ts(*b) else 'ERR'
+    else:
+        a, b = parse(r['start']), parse(r['end'])
+        assert valid(*a) and valid(*b) and ts(*a) <= ts(*b), r
+        sa, sb = ts(*a), ts(*b)
+        if operation == 'length':
+            expected = str(sb - sa + 1)
+        elif operation == 'contains_date':
+            d = ts(*parse(r['argument']))
+            expected = 'true' if sa <= d <= sb else 'false'
+        elif operation == 'contains_range':
+            x, y = argument_range(r['argument'])
+            expected = 'true' if sa <= ts(*x) and ts(*y) <= sb else 'false'
+        elif operation == 'overlaps':
+            x, y = argument_range(r['argument'])
+            expected = 'true' if sa <= ts(*y) and sb >= ts(*x) else 'false'
+        elif operation == 'is_adjacent_to':
+            x, y = argument_range(r['argument'])
+            # D-16: a day outside 1901-01-01..2199-12-30 is no adjacency, not an error.
+            after = sb + 1 if sb < MAX_S else None
+            before = sa - 1 if sa > 0 else None
+            expected = 'true' if (after is not None and after == ts(*x)) or \
+                (before is not None and before == ts(*y)) else 'false'
+        elif operation == 'intersect':
+            x, y = argument_range(r['argument'])
+            sx, sy = ts(*x), ts(*y)
+            expected = range_text(fs(max(sa, sx)), fs(min(sb, sy))) if sa <= sy and sb >= sx else 'none'
+        elif operation == 'union':
+            x, y = argument_range(r['argument'])
+            expected = range_text(fs(min(sa, ts(*x))), fs(max(sb, ts(*y))))
+        elif operation == 'except':
+            x, y = argument_range(r['argument'])
+            sx, sy = ts(*x), ts(*y)
+            if not (sa <= sy and sb >= sx):
+                expected = range_text(a, b)
+            elif sx <= sa and sb <= sy:
+                expected = 'none'
+            else:
+                parts = []
+                if sa < sx:
+                    parts.append((fs(sa), fs(sx - 1)))
+                if sb > sy:
+                    parts.append((fs(sy + 1), fs(sb)))
+                expected = range_list_text(parts)
+        elif operation == 'equals':
+            x, y = argument_range(r['argument'])
+            expected = 'true' if (sa, sb) == (ts(*x), ts(*y)) else 'false'
+        elif operation == 'to_string':
+            expected = f'{fmt(a).replace("-", "/")} - {fmt(b).replace("-", "/")}'
+        elif operation == 'enumerate':
+            expected = date_list_text([fs(s) for s in range(sa, sb + 1)])
+        else:
+            raise AssertionError(operation)
+    assert r['result'] == expected, (r, expected)
+    n += 1
+print('ranges OK', n, 'rows')
+
+# range-factories.tsv (NR07-NR11; D-01).
+n = 0
+for r in tsv(G / 'range-factories.tsv'):
+    factory, argument = r['factory'], r['argument']
+    if factory == 'construct':
+        start, end = argument.split(',')
+        try:
+            a, b = parse(start), parse(end)
+        except ValueError:
+            expected = 'ERR'
+        else:
+            expected = range_text(a, b) if valid(*a) and valid(*b) and ts(*a) <= ts(*b) else 'ERR'
+    elif factory == 'single_day':
+        try:
+            a = parse(argument)
+        except ValueError:
+            expected = 'ERR'
+        else:
+            expected = range_text(a, a) if valid(*a) else 'ERR'
+    elif factory == 'from_day_count':
+        start, days = argument.split(',')
+        a, days = parse(start), int(days)
+        if not valid(*a) or days < 1 or ts(*a) + days - 1 > MAX_S:
+            expected = 'ERR'
+        else:
+            expected = range_text(a, fs(ts(*a) + days - 1))
+    elif factory == 'for_month':
+        y, m = map(int, argument.split(','))
+        expected = range_text((y, m, 1), (y, m, ml(y, m))) if MIN <= y <= 2199 and 1 <= m <= 12 else 'ERR'
+    elif factory == 'for_calendar_year':
+        y = int(argument)
+        expected = range_text((y, 1, 1), (y, 12, ml(y, 12))) if MIN <= y <= 2199 else 'ERR'
+    elif factory == 'for_fiscal_year':
+        y = int(argument)
+        expected = range_text((y, 4, 1), (y + 1, 3, ml(y + 1, 3))) if MIN <= y and y + 1 <= 2199 else 'ERR'
+    else:
+        raise AssertionError(factory)
+    assert r['result'] == expected, (r, expected)
+    n += 1
+print('range factories OK', n, 'rows')
+
+# range-splits.tsv (NR22, NR23; D-16). A port never throws at the data end: every piece is
+# returned and the last one ends at the range end. C# advances to the next month or quarter
+# after the last piece and throws when that would pass 2199-12-30; those rows are D-16.
+n = 0
+for r in tsv(G / 'range-splits.tsv'):
+    a, b = parse(r['start']), parse(r['end'])
+    assert valid(*a) and valid(*b) and ts(*a) <= ts(*b), r
+    sa, sb = ts(*a), ts(*b)
+    pieces = []
+    s = sa
+    if r['operation'] == 'split_by_month':
+        while s <= sb:
+            y, m, _ = fs(s)
+            piece_end = min(ts(y, m, ml(y, m)), sb)
+            pieces.append((fs(s), fs(piece_end)))
+            if piece_end >= sb:
+                break
+            s = piece_end + 1
+    elif r['operation'] == 'split_by_fiscal_quarter':
+        while s <= sb:
+            y, m, _ = fs(s)
+            end_month = 3 if m <= 3 else 6 if m <= 6 else 9 if m <= 9 else 12
+            piece_end = min(ts(y, end_month, ml(y, end_month)), sb)
+            pieces.append((fs(s), fs(piece_end)))
+            if piece_end >= sb:
+                break
+            s = ts(y + 1, 1, 1) if end_month == 12 else ts(y, end_month + 1, 1)
+    else:
+        raise AssertionError(r)
+    expected = range_list_text(pieces)
+    assert r['result'] == expected, (r, expected)
+    n += 1
+print('range splits OK', n, 'rows')
+
+# range-days.tsv (NR24-NR27; D-16). A port never throws at the data end: every date up to and
+# including 2199-12-30 is returned. C# advances one day (or one interval) after the last item
+# and throws there; those rows are D-16. ERR is only a rejected argument, interval below 1.
+n = 0
+for r in tsv(G / 'range-days.tsv'):
+    a, b = parse(r['start']), parse(r['end'])
+    assert valid(*a) and valid(*b) and ts(*a) <= ts(*b), r
+    sa, sb = ts(*a), ts(*b)
+    items = []
+    failed = False
+    if r['operation'] == 'dates_with_interval':
+        interval = int(r['argument'])
+        if interval < 1:
+            failed = True
+        else:
+            s = sa
+            while s <= sb:
+                items.append(fs(s))
+                if s + interval > sb:
+                    break
+                s += interval
+    elif r['operation'] in ('working_days', 'weekend_days'):
+        flag = r['argument'] == 'true'
+        for s in range(sa, sb + 1):
+            weekday = (s + 4) % 7
+            if r['operation'] == 'working_days':
+                if weekday != 6 and (not flag or weekday != 0):
+                    items.append(fs(s))
+            elif weekday == 6 or (flag and weekday == 0):
+                items.append(fs(s))
+    elif r['operation'] == 'enumerate':
+        items = [fs(s) for s in range(sa, sb + 1)]
+    else:
+        raise AssertionError(r)
+    expected = 'ERR' if failed else date_list_text(items)
+    assert r['result'] == expected, (r, expected)
+    n += 1
+print('range day helpers OK', n, 'rows')
+
+# range-format.tsv (NR28, NR29; D-01, D-15).
+n = 0
+for r in tsv(G / 'range-format.tsv'):
+    a, b = parse(r['start']), parse(r['end'])
+    if ts(*a) > ts(*b):
+        expected = 'ERR'
+    elif r['kind'] == 'default':
+        expected = f'{fmt(a).replace("-", "/")} - {fmt(b).replace("-", "/")}'
+    elif r['kind'] == 'short':
+        separator = SEPCHAR[r['separator']]
+        ne = r['lang'] == 'ne'
+        expected = f'{short(a, r["order"], separator, True, ne)} - {short(b, r["order"], separator, True, ne)}'
+    else:
+        raise AssertionError(r)
+    assert r['result'] == expected, (r, expected)
+    n += 1
+print('range strings OK', n, 'rows (D-15)')

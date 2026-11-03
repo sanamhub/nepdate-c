@@ -2,13 +2,13 @@
   "schema": 1,
   "line": "0.1",
   "sdks": {
-    "rust": "0.1.0-beta.1",
-    "go": "0.1.0-beta.1",
-    "typescript": "0.1.0-beta.1",
-    "python": "0.1.0-beta.1",
-    "swift": "0.1.0-beta.1",
-    "kotlin": "0.1.0-beta.1",
-    "cpp": "0.1.0-beta.1",
-    "c": "0.1.0-beta.1"
+    "rust": "0.1.0-rc.1",
+    "go": "0.1.0-rc.1",
+    "typescript": "0.1.0-rc.1",
+    "python": "0.1.0-rc.1",
+    "swift": "0.1.0-rc.1",
+    "kotlin": "0.1.0-rc.1",
+    "cpp": "0.1.0-rc.1",
+    "c": "0.1.0-rc.1"
   }
 }
