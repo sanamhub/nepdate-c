@@ -1,4 +1,7 @@
 sources:
+  "0.2.0-rc.1":
+    url: "https://github.com/sanamhub/nepdate-c/archive/refs/tags/v0.2.0-rc.1.tar.gz"
+    sha256: "81bd05b6eea0a4ee6f11aec2cc823d4fd6b9ebc659764a330e3c773b00110baf"
   "0.1.0-rc.1":
     url: "https://github.com/sanamhub/nepdate-c/archive/refs/tags/v0.1.0-rc.1.tar.gz"
     sha256: "a8999a6609f48e0997a2833fde816554cb859d61fe2dd93d33d45ed54bc91d18"
