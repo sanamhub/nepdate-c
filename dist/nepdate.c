@@ -3178,14 +3178,13 @@ nepdate_status nepdate_from_ymd_int(int64_t ymd, nepdate_date *out) {
     if (out == NULL) {
         return NEPDATE_E_NULL;
     }
-    /* Truncating division, the split the C# converter uses. A negative or over-long number ends in
-     * a part that fails validation instead of a wrapped one, and no part is truncated to int until
-     * it is known to fit. */
+    /* Truncating division, the split the C# converter uses. Month and day are within -99 to 99; the
+     * year is checked before the cast, so an over-long number fails instead of wrapping into a
+     * supported year. */
     const int64_t year = ymd / INT64_C(10000);
     const int64_t month = (ymd / INT64_C(100)) % INT64_C(100);
     const int64_t day = ymd % INT64_C(100);
-    if (year < INT_MIN || year > INT_MAX || month < INT_MIN || month > INT_MAX || day < INT_MIN ||
-        day > INT_MAX) {
+    if (year < INT_MIN || year > INT_MAX) {
         return NEPDATE_E_OUT_OF_RANGE;
     }
     return nepdate_from_bs((int)year, (int)month, (int)day, out);
@@ -3479,13 +3478,8 @@ nepdate_status nepdate_range_current_fiscal_year(int32_t utc_offset_minutes, int
     if (out == NULL) {
         return NEPDATE_E_NULL;
     }
-    nepdate_ymd ymd = {0, 0, 0};
-    nepdate_status status = current_ymd(utc_offset_minutes, unix_seconds, &ymd);
-    if (status != NEPDATE_OK) {
-        return status;
-    }
     nepdate_date today = {0};
-    status = nepdate_from_bs(ymd.year, ymd.month, ymd.day, &today);
+    nepdate_status status = nepdate_from_unix(unix_seconds, utc_offset_minutes, &today);
     if (status != NEPDATE_OK) {
         return status;
     }
