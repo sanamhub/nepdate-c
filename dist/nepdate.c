@@ -1792,18 +1792,21 @@ static int32_t day_count(nepdate_date date) {
 }
 
 /* Month index (year - 1901) * 12 + month - 1 of day count s: an estimate that the generator
- * proves is at most one month off, then one correction. Precondition: s is a valid day count. */
+ * proves is at most one month off, then one correction. Precondition: s is a valid day count.
+ * The clamps are the identity on every valid one and keep an invalid one inside the table, so a
+ * skipped check cannot become an out-of-bounds read. */
 /* NOLINTBEGIN(clang-analyzer-core.UndefinedBinaryOperatorResult,
- * clang-analyzer-core.uninitialized.Assign): the generator proves the estimate is in range, and
- * month 0 starts at day count 0, so i never steps below 0. */
+ * clang-analyzer-core.uninitialized.Assign): the estimate is clamped into range, and month 0
+ * starts at day count 0, so i never steps below 0. */
 static uint32_t month_index_of(uint32_t s) {
     uint32_t i = (uint32_t)(((uint64_t)s * NEPDATE_CAL_ESTIMATE_MUL) >> NEPDATE_CAL_ESTIMATE_SHIFT);
+    i = i < (uint32_t)MONTHS ? i : (uint32_t)MONTHS - 1U;
     if (nepdate_cal_month_start[i] > s) {
         i--;
     } else if (nepdate_cal_month_start[i + 1] <= s) {
         i++;
     }
-    return i;
+    return i < (uint32_t)MONTHS ? i : (uint32_t)MONTHS - 1U;
 }
 /* NOLINTEND(clang-analyzer-core.UndefinedBinaryOperatorResult,
  * clang-analyzer-core.uninitialized.Assign) */
