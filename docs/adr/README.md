@@ -12,8 +12,9 @@ Immutable once Accepted; supersede with a new ADR.
 | [0004](0004-gates.md) | Quality gates and CI | Accepted, gate 13 amended by 0007, CI jobs by 0009 |
 | [0005](0005-packaging.md) | Packaging | Accepted |
 | [0006](0006-date-layout.md) | The date holds a day number | Accepted, BS to AD amended by 0008 |
-| [0007](0007-no-libc-linker-symbols.md) | The no-libc gate allows linker symbols | Accepted |
+| [0007](0007-no-libc-linker-symbols.md) | The no-libc gate allows linker symbols | Accepted, amended by 0012 |
 | [0008](0008-bs-to-ad-by-ad-month-table.md) | BS to AD reads the AD month table | Accepted |
 | [0009](0009-fuzzing-in-actions.md) | Fuzzing with libFuzzer in GitHub Actions | Accepted |
 | [0010](0010-patro-standalone-package.md) | The patro has a standalone package for package managers | Proposed, would amend 0003 |
 | [0011](0011-patro-counts-from-summary.md) | The patro counts come from the hub's generated summary | Accepted, amends 0001 |
+| [0012](0012-no-libc-stack-protector-symbols.md) | The no-libc gate allows the stack protector's symbols | Accepted, amends 0007 |

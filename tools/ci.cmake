@@ -457,11 +457,13 @@ if("no-libc" IN_LIST gates)
             set(no_tool ON)
             break()
         endif()
-        # Compilers may emit calls to memcpy and memset for struct copies and zeroing, and MSVC
-        # refers to the linker-provided __ImageBase (ADR-0007). The struct tm bridge is a separate
-        # object and calls these three functions of the core object, which is not a libc import.
-        list(REMOVE_ITEM ci_symbols memcpy memset __ImageBase nepdate_from_ad nepdate_to_ad
-            nepdate_weekday_of)
+        # Compilers may emit calls to memcpy and memset for struct copies and zeroing, MSVC
+        # refers to the linker-provided __ImageBase (ADR-0007), and a toolchain's default stack
+        # protector adds __stack_chk_fail and __stack_chk_guard (ADR-0012). The struct tm bridge is
+        # a separate object and calls these three functions of the core object, which is not a libc
+        # import.
+        list(REMOVE_ITEM ci_symbols memcpy memset __ImageBase __stack_chk_fail __stack_chk_guard
+            nepdate_from_ad nepdate_to_ad nepdate_weekday_of)
         if(ci_symbols)
             file(RELATIVE_PATH relative "${root}" "${object}")
             ci_fail(no-libc "${relative} needs ${ci_symbols}")
@@ -489,8 +491,8 @@ if("no-libc" IN_LIST gates)
             if(NOT ci_tool)
                 ci_fail(no-libc "neither nm nor dumpbin found for the OFF build")
             endif()
-            list(REMOVE_ITEM ci_symbols memcpy memset __ImageBase nepdate_from_ad nepdate_to_ad
-                nepdate_weekday_of)
+            list(REMOVE_ITEM ci_symbols memcpy memset __ImageBase __stack_chk_fail
+                __stack_chk_guard nepdate_from_ad nepdate_to_ad nepdate_weekday_of)
             if(ci_symbols)
                 file(RELATIVE_PATH relative "${root}" "${object}")
                 ci_fail(no-libc "${relative} (NEPDATE_C_WITH_TM=OFF) needs ${ci_symbols}")
