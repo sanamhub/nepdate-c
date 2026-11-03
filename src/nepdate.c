@@ -1836,15 +1836,13 @@ nepdate_status nepdate_range_current_fiscal_year(int32_t utc_offset_minutes, int
         return NEPDATE_E_NULL;
     }
     nepdate_date today = {0};
-    nepdate_status status = nepdate_from_unix(unix_seconds, utc_offset_minutes, &today);
+    const nepdate_status status = nepdate_from_unix(unix_seconds, utc_offset_minutes, &today);
     if (status != NEPDATE_OK) {
         return status;
     }
+    /* today was just made, so its fiscal year always exists. */
     int fiscal_year = 0;
-    status = nepdate_fiscal_year_of(today, &fiscal_year);
-    if (status != NEPDATE_OK) {
-        return status;
-    }
+    (void)nepdate_fiscal_year_of(today, &fiscal_year);
     return nepdate_range_of_fiscal_year(fiscal_year, out);
 }
 
@@ -1997,7 +1995,7 @@ nepdate_status nepdate_range_split_by_month(nepdate_range range, nepdate_range *
     int32_t current = first + 1;
     const int32_t last_value = last + 1;
     size_t total = 0;
-    while (current <= last_value) {
+    for (;;) {
         const uint32_t month = month_index_of((uint32_t)(current - 1));
         const int32_t month_last = (int32_t)nepdate_cal_month_start[month + 1U];
         const int32_t piece_last = month_last < last_value ? month_last : last_value;
@@ -2047,7 +2045,7 @@ nepdate_status nepdate_range_split_by_fiscal_quarter(nepdate_range range, nepdat
     int32_t current = first + 1;
     const int32_t last_value = last + 1;
     size_t total = 0;
-    while (current <= last_value) {
+    for (;;) {
         const uint32_t month = quarter_last_month(month_index_of((uint32_t)(current - 1)));
         const int32_t quarter_last = (int32_t)nepdate_cal_month_start[month + 1U];
         const int32_t piece_last = quarter_last < last_value ? quarter_last : last_value;

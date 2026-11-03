@@ -68,7 +68,7 @@ static int parse_text_list(char *field, nepdate_text *out) {
 }
 
 /* One row whose output is a list of dates, checked element by element in input order. */
-static void check_bulk_dates(char *operation, char *input, char *expected) {
+static void check_bulk_dates(const char *operation, char *input, char *expected) {
     size_t written = 0;
     char *expected_items[MAX_BATCH];
     if (strcmp(operation, "to_nepali_dates") == 0 ||

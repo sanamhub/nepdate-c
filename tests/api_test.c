@@ -133,7 +133,7 @@ TEST(day_differences) {
 }
 
 /* One "date" row: the packed number of the date, and the number read back as the date. */
-static void check_ymd_row_as_date(char *input, char *packed_text) {
+static void check_ymd_row_as_date(const char *input, const char *packed_text) {
     nepdate_date date = {0};
     CHECK(vector_parse_date(input, &date));
     int64_t packed = 0;
@@ -147,7 +147,7 @@ static void check_ymd_row_as_date(char *input, char *packed_text) {
 }
 
 /* One "int" row: the packed number read as a date, or refused. Returns 1 for a refused row. */
-static int check_ymd_row_as_int(char *packed_text, const char *result) {
+static int check_ymd_row_as_int(const char *packed_text, const char *result) {
     int64_t input = 0;
     CHECK(vector_read_int64(packed_text, &input));
     nepdate_date actual = {0};

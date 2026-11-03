@@ -371,10 +371,8 @@ static void append_cursor_days(nepdate_range_day_cursor cursor, text_builder *bu
 
 /* One day-helper row: the argument is the interval or the Sunday flag, and ERR is a refused
  * argument. Returns false for a refused argument. */
-static bool check_range_day_row(char *fields[], nepdate_range range, text_builder *builder) {
-    const char *operation = fields[2];
-    const char *argument = fields[3];
-    const char *expected = fields[4];
+static bool check_range_day_row(const char *operation, const char *argument, const char *expected,
+                                nepdate_range range, text_builder *builder) {
     nepdate_range_day_cursor cursor = {0, 0, 0, 0};
     nepdate_status status = NEPDATE_OK;
     if (strcmp(operation, "dates_with_interval") == 0) {
@@ -419,7 +417,7 @@ TEST(golden_range_days) {
             rows++;
             continue;
         }
-        if (check_range_day_row(fields, range, &builder)) {
+        if (check_range_day_row(fields[2], fields[3], fields[4], range, &builder)) {
             CHECK_EQ_STR(list_text(&builder), fields[4]);
         }
         rows++;
@@ -540,6 +538,23 @@ TEST(set_operation_buffers) {
     const nepdate_range forged = {{0}, {10}};
     CHECK_EQ_INT(nepdate_range_except(forged, other, pieces, &written), NEPDATE_E_INVALID_DATE);
     CHECK_EQ_INT(nepdate_range_except(range, forged, pieces, &written), NEPDATE_E_INVALID_DATE);
+
+    /* A range before or after this one takes nothing away. */
+    CHECK(vector_parse_range("2081-05-01..2081-05-10", &other));
+    CHECK_EQ_INT(nepdate_range_except(range, other, pieces, &written), NEPDATE_OK);
+    CHECK_EQ_INT(written, 1);
+    vector_format_range(pieces[0], text, sizeof text);
+    CHECK_EQ_STR(text, "2081-04-10..2081-04-20");
+    CHECK(vector_parse_range("2081-03-01..2081-03-10", &other));
+    written = 0;
+    CHECK_EQ_INT(nepdate_range_except(range, other, pieces, &written), NEPDATE_OK);
+    CHECK_EQ_INT(written, 1);
+
+    /* The second operand is validated as well as the first. */
+    nepdate_range intersection = {{0}, {0}};
+    bool equal = false;
+    CHECK_EQ_INT(nepdate_range_intersect(range, forged, &intersection), NEPDATE_E_INVALID_DATE);
+    CHECK_EQ_INT(nepdate_range_equal(range, forged, &equal), NEPDATE_E_INVALID_DATE);
 }
 
 TEST(split_buffers_and_the_data_end) {
@@ -568,6 +583,22 @@ TEST(split_buffers_and_the_data_end) {
     CHECK_EQ_INT(written, 2);
 
     CHECK_EQ_INT(nepdate_range_split_by_month(range, pieces, 8, NULL), NEPDATE_E_NULL);
+
+    /* The fiscal-quarter split follows the same buffer rules. */
+    CHECK(vector_parse_date("2199-01-15", &first));
+    CHECK_EQ_INT(nepdate_range_make(first, last, &range), NEPDATE_OK);
+    written = 0;
+    CHECK_EQ_INT(nepdate_range_split_by_fiscal_quarter(range, pieces, 8, &written), NEPDATE_OK);
+    CHECK_EQ_INT(written, 4);
+    vector_format_range(pieces[3], text, sizeof text);
+    CHECK_EQ_STR(text, "2199-10-01..2199-12-30");
+    written = 0;
+    CHECK_EQ_INT(nepdate_range_split_by_fiscal_quarter(range, pieces, 1, &written), NEPDATE_OK);
+    CHECK_EQ_INT(written, 4);
+    written = 0;
+    CHECK_EQ_INT(nepdate_range_split_by_fiscal_quarter(range, NULL, 0, &written), NEPDATE_OK);
+    CHECK_EQ_INT(written, 4);
+    CHECK_EQ_INT(nepdate_range_split_by_fiscal_quarter(range, pieces, 8, NULL), NEPDATE_E_NULL);
     const nepdate_range forged = {{0}, {10}};
     CHECK_EQ_INT(nepdate_range_split_by_month(forged, pieces, 8, &written), NEPDATE_E_INVALID_DATE);
     CHECK_EQ_INT(nepdate_range_split_by_fiscal_quarter(forged, pieces, 8, &written),
@@ -627,6 +658,8 @@ TEST(day_cursor_boundaries) {
     CHECK(!nepdate_range_day_next(&negative, &unchanged));
     nepdate_range_day_cursor beyond = {109213, 109212, 1, 0};
     CHECK(!nepdate_range_day_next(&beyond, &unchanged));
+    nepdate_range_day_cursor past_end = {10, 200000, 1, 0};
+    CHECK(!nepdate_range_day_next(&past_end, &unchanged));
     nepdate_range_day_cursor no_step = {10, 109212, 0, 0};
     CHECK(!nepdate_range_day_next(&no_step, &unchanged));
     CHECK(!nepdate_range_day_next(NULL, &unchanged));
