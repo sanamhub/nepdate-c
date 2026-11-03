@@ -50,6 +50,11 @@ extern "C" {
 #define NEPDATE_MIN_YEAR 1901
 #define NEPDATE_MAX_YEAR 2199
 
+/* The first and last supported dates. Both expand to a call of nepdate_min or nepdate_max, so they
+ * can be used wherever an expression is. */
+#define NEPDATE_MIN nepdate_min()
+#define NEPDATE_MAX nepdate_max()
+
 /* What a function returns: NEPDATE_OK, or why it failed. The values are fixed; new kinds are only
  * ever added at the end. */
 typedef enum nepdate_status {
@@ -73,14 +78,17 @@ typedef enum nepdate_status {
     /* A nepdate_date no function of this library made, such as a zero-initialised one. */
     NEPDATE_E_INVALID_DATE = 10,
     /* A required pointer argument is NULL, including the text of a parsing function. */
-    NEPDATE_E_NULL = 11
+    NEPDATE_E_NULL = 11,
+    /* Two ranges share no day, so an intersection has no value. This is a result, not a mistake:
+     * the out object is left unchanged. */
+    NEPDATE_E_NO_OVERLAP = 12
 } nepdate_status;
 
 /* A Bikram Sambat date, 4 bytes, passed by value. Make one with nepdate_from_bs or
- * nepdate_from_ad and read it with nepdate_to_bs. `value` is private: it is 1 plus the number of
- * days since BS 1901-01-01 (ADR-0006), so a zero-initialised nepdate_date is not a date. Every
- * function that takes a nepdate_date accepts any value and returns NEPDATE_E_INVALID_DATE for one
- * it can't have made. */
+ * nepdate_from_ad and read it with nepdate_to_bs. `value` is reserved: do not read or write it,
+ * and do not build a date from it. It is 1 plus the number of days since BS 1901-01-01
+ * (ADR-0006), so a zero-initialised nepdate_date is not a date. Every function that takes a
+ * nepdate_date accepts any value and returns NEPDATE_E_INVALID_DATE for one it can't have made. */
 typedef struct nepdate_date {
     int32_t value;
 } nepdate_date;
@@ -91,6 +99,12 @@ typedef struct nepdate_ymd {
     int month;
     int day;
 } nepdate_ymd;
+
+/* Text to parse: its first `length` bytes, which need no terminator. */
+typedef struct nepdate_text {
+    const char *text;
+    size_t length;
+} nepdate_text;
 
 /* The twelve Bikram Sambat months, Baishakh = 1. */
 typedef enum nepdate_month {
@@ -175,8 +189,9 @@ typedef struct nepdate_date_diff {
     int days;
 } nepdate_date_diff;
 
-/* Every day from start to end, both included. Make one with nepdate_range_make or one of the
- * range_of functions; a range holds two valid dates with start not after end. */
+/* Every day from start to end, both included. Make one with nepdate_range_make, one of the
+ * nepdate_range_of functions or one of the nepdate_range_current functions; a range holds two
+ * valid dates with start not after end. */
 typedef struct nepdate_range {
     nepdate_date start;
     nepdate_date end;
@@ -189,10 +204,26 @@ typedef struct nepdate_range_iterator {
     int32_t last;
 } nepdate_range_iterator;
 
+/* A cursor over some of the days of a range, in date order. Make one with
+ * nepdate_range_dates_with_interval, nepdate_range_working_days or nepdate_range_weekend_days and
+ * step it with nepdate_range_day_next. The fields are private. */
+typedef struct nepdate_range_day_cursor {
+    int32_t current;
+    int32_t last;
+    int32_t step;
+    uint32_t skip;
+} nepdate_range_day_cursor;
+
 /* Returns the version of the compiled library as "MAJOR.MINOR.PATCH" or
  * "MAJOR.MINOR.PATCH-PRERELEASE", a static string. It equals NEPDATE_VERSION_STRING when the header
  * and the library come from the same release. */
 NEPDATE_API const char *nepdate_version(void);
+
+/* Returns the first supported date, 1901-01-01 (AD 1844-04-11). It can't fail. */
+NEPDATE_API nepdate_date nepdate_min(void);
+
+/* Returns the last supported date, 2199-12-30 (AD 2143-04-15). It can't fail. */
+NEPDATE_API nepdate_date nepdate_max(void);
 
 /* Returns the name of status as a static string, for example "NEPDATE_E_INVALID_DAY", or
  * "unknown" for a value that is not a nepdate_status. */
@@ -235,6 +266,11 @@ NEPDATE_API nepdate_status nepdate_day_of_year(nepdate_date date, int *out);
  * out is NULL and NEPDATE_E_INVALID_DATE for a date no function made; *out is unchanged on error.
  */
 NEPDATE_API nepdate_status nepdate_month_length(nepdate_date date, int *out);
+
+/* Stores the length in days of the BS year of date in *out, 364 to 367: the sum of its twelve month
+ * lengths. Returns NEPDATE_E_NULL when out is NULL and NEPDATE_E_INVALID_DATE for a date no
+ * function made; *out is unchanged on error. */
+NEPDATE_API nepdate_status nepdate_year_length(nepdate_date date, int *out);
 
 /* Stores the first day of the BS month of date in *out. Returns NEPDATE_E_NULL when out is NULL and
  * NEPDATE_E_INVALID_DATE for a date no function made; *out is unchanged on error. */
@@ -334,6 +370,12 @@ NEPDATE_API size_t nepdate_fiscal_year_label(int fiscal_year, nepdate_lang lang,
 NEPDATE_API size_t nepdate_format(nepdate_date date, const char *pattern, nepdate_lang lang,
                                   char *buffer, size_t size);
 
+/* Writes the interchange form of date, "YYYY-MM-DD", in ASCII digits, and returns the length the
+ * full text needs: 10 for a date. It is the text of nepdate_format with the pattern "s" and
+ * NEPDATE_ENGLISH, named so a caller never has to know the pattern. The truncation,
+ * NUL-termination and invalid-date rules are those of nepdate_format. */
+NEPDATE_API size_t nepdate_format_iso(nepdate_date date, char *buffer, size_t size);
+
 /* Writes the short format of date (FORMATTING section 3): the three fields in order, separated by
  * separator, with a 4-digit year and 2-digit month and day when pad is true. The truncation,
  * NUL-termination and invalid-date rules are those of nepdate_format. */
@@ -362,6 +404,31 @@ NEPDATE_API nepdate_status nepdate_from_unix(int64_t unix_seconds, int32_t utc_o
  * Returns NEPDATE_E_NULL when out is NULL and NEPDATE_E_OUT_OF_RANGE when the date is outside the
  * supported range. Any int64_t is accepted; *out is unchanged on error. */
 NEPDATE_API nepdate_status nepdate_today_nepal(int64_t unix_seconds, nepdate_date *out);
+
+/* Stores in *out today's BS date for the instant unix_seconds after 1970-01-01 00:00 UTC, read at
+ * utc_offset_minutes east of UTC (Nepal is 345). The caller supplies the clock reading and the
+ * zone, so the call is deterministic and never reads the machine clock. Returns NEPDATE_E_NULL
+ * when out is NULL and NEPDATE_E_OUT_OF_RANGE when that day is outside the supported range. Any
+ * int64_t seconds and int32_t offset are accepted; *out is unchanged on error. */
+NEPDATE_API nepdate_status nepdate_today(int32_t utc_offset_minutes, int64_t unix_seconds,
+                                         nepdate_date *out);
+
+/* Stores in *out true when date is today at utc_offset_minutes for the instant unix_seconds, the
+ * same date nepdate_today returns. Returns NEPDATE_E_NULL when out is NULL and
+ * NEPDATE_E_INVALID_DATE for a date no function made; NEPDATE_E_OUT_OF_RANGE when the clock
+ * reading is outside the supported range. *out is unchanged on error. */
+NEPDATE_API nepdate_status nepdate_is_today(nepdate_date date, int32_t utc_offset_minutes,
+                                            int64_t unix_seconds, bool *out);
+
+/* Stores in *out true when date is the day before today at utc_offset_minutes for the instant
+ * unix_seconds. The other statuses are those of nepdate_is_today. */
+NEPDATE_API nepdate_status nepdate_is_yesterday(nepdate_date date, int32_t utc_offset_minutes,
+                                                int64_t unix_seconds, bool *out);
+
+/* Stores in *out true when date is the day after today at utc_offset_minutes for the instant
+ * unix_seconds. The other statuses are those of nepdate_is_today. */
+NEPDATE_API nepdate_status nepdate_is_tomorrow(nepdate_date date, int32_t utc_offset_minutes,
+                                               int64_t unix_seconds, bool *out);
 
 #if NEPDATE_C_WITH_TM
 /* The C library's broken-down time. Only the year, month and day fields are read or written by
@@ -394,6 +461,42 @@ NEPDATE_API nepdate_status nepdate_parse(const char *text, size_t len, nepdate_d
  * terminator. Besides the strict errors it returns NEPDATE_E_AMBIGUOUS or NEPDATE_E_UNRECOGNIZED,
  * and NEPDATE_E_NULL for a NULL argument. *out is unchanged on error. */
 NEPDATE_API nepdate_status nepdate_parse_lenient(const char *text, size_t len, nepdate_date *out);
+
+/* Stores in *out the BS date of the packed number ymd, the year in the top decimal places, then
+ * the month, then the day: 20810415 is 2081-04-15. The digits are split with truncating division
+ * and the three parts are validated as nepdate_from_bs validates them, so the statuses are the
+ * same, with NEPDATE_E_NULL for a NULL out. Any int64_t is accepted and no part is truncated.
+ * *out is unchanged on error. */
+NEPDATE_API nepdate_status nepdate_from_ymd_int(int64_t ymd, nepdate_date *out);
+
+/* Stores in *out the packed number of date, the form nepdate_from_ymd_int reads: 2081-04-15 is
+ * 20810415. Returns NEPDATE_E_NULL when out is NULL and NEPDATE_E_INVALID_DATE for a date no
+ * function made; *out is unchanged on error. */
+NEPDATE_API nepdate_status nepdate_to_ymd_int(nepdate_date date, int64_t *out);
+
+/* Converts count AD (proleptic Gregorian) dates into out, in input order, and stores in *written
+ * the number of results the call made, which is count. Writes at most capacity dates, so a
+ * capacity below count truncates the output while *written still reports count. The call is all
+ * or nothing: it validates every input first, so on error nothing is written, *written keeps its
+ * value, and the status is the one nepdate_from_ad would return, NEPDATE_E_INVALID_GREGORIAN or
+ * NEPDATE_E_OUT_OF_RANGE. out may be NULL only when capacity is 0. A NULL out with capacity above
+ * 0, a NULL ad with a count above 0, or a NULL written returns NEPDATE_E_NULL. */
+NEPDATE_API nepdate_status nepdate_bulk_to_bs(const nepdate_ymd *ad, size_t count,
+                                              nepdate_date *out, size_t capacity, size_t *written);
+
+/* Parses count texts exactly as nepdate_parse does and stores the AD date of each in out, in input
+ * order, with the *written and capacity rules of nepdate_bulk_to_bs. As there, the call is all or
+ * nothing: one text that fails stops the call before any result is written and its status is the
+ * one nepdate_parse returns. */
+NEPDATE_API nepdate_status nepdate_bulk_parse_to_ad(const nepdate_text *texts, size_t count,
+                                                    nepdate_ymd *out, size_t capacity,
+                                                    size_t *written);
+
+/* Stores the AD date of count BS dates in out, in input order, with the *written and capacity
+ * rules of nepdate_bulk_to_bs. A date no function made stops the call with
+ * NEPDATE_E_INVALID_DATE before any result is written. */
+NEPDATE_API nepdate_status nepdate_bulk_to_ad(const nepdate_date *dates, size_t count,
+                                              nepdate_ymd *out, size_t capacity, size_t *written);
 
 /* Stores in *out the range from start to end, both included. Returns NEPDATE_E_NULL when out is
  * NULL, NEPDATE_E_INVALID_DATE when either date is not one this library made, and
@@ -432,6 +535,130 @@ NEPDATE_API nepdate_status nepdate_range_begin(nepdate_range range, nepdate_rang
 /* Stores the next day in *out and advances the cursor. Returns false at the end of the range, or
  * when iterator or out is NULL; *out is unchanged when it returns false. */
 NEPDATE_API bool nepdate_range_next(nepdate_range_iterator *iterator, nepdate_date *out);
+
+/* Stores in *out the range of `days` days that starts at start: start to start + days - 1. Returns
+ * NEPDATE_E_NULL when out is NULL, NEPDATE_E_INVALID_DATE for a start no function made, and
+ * NEPDATE_E_OUT_OF_RANGE when days is below 1 or the last day is outside the supported range. Any
+ * int32_t is accepted. *out is unchanged on error. */
+NEPDATE_API nepdate_status nepdate_range_from_day_count(nepdate_date start, int32_t days,
+                                                        nepdate_range *out);
+
+/* Stores in *out every day of the BS month that contains today at utc_offset_minutes for the
+ * instant unix_seconds. The clock reading and the zone come from the caller, as with nepdate_today.
+ * Returns NEPDATE_E_NULL when out is NULL and NEPDATE_E_OUT_OF_RANGE when that day is outside the
+ * supported range. *out is unchanged on error. */
+NEPDATE_API nepdate_status nepdate_range_current_month(int32_t utc_offset_minutes,
+                                                       int64_t unix_seconds, nepdate_range *out);
+
+/* Stores in *out every day of the fiscal year that contains today at utc_offset_minutes for the
+ * instant unix_seconds. The statuses are those of nepdate_range_current_month. */
+NEPDATE_API nepdate_status nepdate_range_current_fiscal_year(int32_t utc_offset_minutes,
+                                                             int64_t unix_seconds,
+                                                             nepdate_range *out);
+
+/* Stores in *out every day of the BS year that contains today at utc_offset_minutes for the
+ * instant unix_seconds. The statuses are those of nepdate_range_current_month. */
+NEPDATE_API nepdate_status nepdate_range_current_calendar_year(int32_t utc_offset_minutes,
+                                                               int64_t unix_seconds,
+                                                               nepdate_range *out);
+
+/* Stores in *out true when every day of other is a day of range, endpoints included. A range with
+ * one day is contained by any range that holds that day. Returns NEPDATE_E_NULL when out is NULL
+ * and NEPDATE_E_INVALID_DATE for a range no function made; *out is unchanged on error. */
+NEPDATE_API nepdate_status nepdate_range_contains_range(nepdate_range range, nepdate_range other,
+                                                        bool *out);
+
+/* Stores in *out true when range and other share at least one day. Returns NEPDATE_E_NULL when out
+ * is NULL and NEPDATE_E_INVALID_DATE for a range no function made; *out is unchanged on error. */
+NEPDATE_API nepdate_status nepdate_range_overlaps(nepdate_range range, nepdate_range other,
+                                                  bool *out);
+
+/* Stores in *out true when one range starts the day after the other ends. Returns false when the
+ * day after the earlier range is past the last supported date, or the day before the later range
+ * is before the first, so a valid range never fails here. Returns NEPDATE_E_NULL when out is NULL
+ * and NEPDATE_E_INVALID_DATE for a range no function made; *out is unchanged on error. */
+NEPDATE_API nepdate_status nepdate_range_is_adjacent_to(nepdate_range range, nepdate_range other,
+                                                        bool *out);
+
+/* Stores in *out the days that are in both range and other, or returns NEPDATE_E_NO_OVERLAP and
+ * writes nothing when they share no day: this library has no empty range. Returns
+ * NEPDATE_E_NULL when out is NULL and NEPDATE_E_INVALID_DATE for a range no function made; *out is
+ * unchanged on error. */
+NEPDATE_API nepdate_status nepdate_range_intersect(nepdate_range range, nepdate_range other,
+                                                   nepdate_range *out);
+
+/* Stores in *out the smallest range that holds every day of range and of other. It is the union of
+ * a set only in name: a gap between the two is inside the result. Returns NEPDATE_E_NULL when out
+ * is NULL and NEPDATE_E_INVALID_DATE for a range no function made; *out is unchanged on error. */
+NEPDATE_API nepdate_status nepdate_range_union(nepdate_range range, nepdate_range other,
+                                               nepdate_range *out);
+
+/* Stores in out the days of range that are not in other, in date order. out must have room for two
+ * ranges; *written is how many were stored, 0 when other holds every day of range, 1 when other
+ * clips one end or does not overlap, and 2 when other is inside range. Returns NEPDATE_E_NULL when
+ * out or written is NULL and NEPDATE_E_INVALID_DATE for a range no function made; out and *written
+ * are unchanged on error. */
+NEPDATE_API nepdate_status nepdate_range_except(nepdate_range range, nepdate_range other,
+                                                nepdate_range *out, size_t *written);
+
+/* Stores in out the pieces of range, one per BS month touched, in date order, and stores in
+ * *written how many pieces there are. The first and last piece are clipped to the range ends, so
+ * the pieces are contiguous and together are range. Writes at most capacity pieces, so a capacity
+ * below *written truncates the output; capacity 0 or out NULL writes nothing. Returns
+ * NEPDATE_E_NULL when written is NULL and NEPDATE_E_INVALID_DATE for a range no function made;
+ * out and *written are unchanged on error. */
+NEPDATE_API nepdate_status nepdate_range_split_by_month(nepdate_range range, nepdate_range *out,
+                                                        size_t capacity, size_t *written);
+
+/* Stores in out the pieces of range, one per fiscal quarter touched, in date order, and stores in
+ * *written how many pieces there are, with the clipping and capacity rules of
+ * nepdate_range_split_by_month. A range that crosses a fiscal year boundary is cut there too, so
+ * 2081-03-30 to 2081-07-02 is Q4 of 2080, Q1 of 2081 and Q2 of 2081. Returns NEPDATE_E_NULL when
+ * written is NULL and NEPDATE_E_INVALID_DATE for a range no function made; out and *written are
+ * unchanged on error. */
+NEPDATE_API nepdate_status nepdate_range_split_by_fiscal_quarter(nepdate_range range,
+                                                                 nepdate_range *out,
+                                                                 size_t capacity, size_t *written);
+
+/* Stores in *out a cursor on every `interval` days of range, starting at range.start. interval
+ * must be at least 1, and any int32_t above it is accepted: a step larger than the range yields
+ * the start day only, and the step never overflows even at INT32_MAX. Returns NEPDATE_E_NULL when
+ * out is NULL, NEPDATE_E_INVALID_DATE for a range no function made, and NEPDATE_E_OUT_OF_RANGE
+ * when interval is below 1. *out is unchanged on error. */
+NEPDATE_API nepdate_status nepdate_range_dates_with_interval(nepdate_range range, int32_t interval,
+                                                             nepdate_range_day_cursor *out);
+
+/* Stores in *out a cursor on the working days of range: every day except Saturday, and except
+ * Sunday too when exclude_sunday is true. The statuses are those of
+ * nepdate_range_dates_with_interval. */
+NEPDATE_API nepdate_status nepdate_range_working_days(nepdate_range range, bool exclude_sunday,
+                                                      nepdate_range_day_cursor *out);
+
+/* Stores in *out a cursor on the weekend days of range: every Saturday, and Sunday too when
+ * include_sunday is true. A range with no such day yields nothing. The statuses are those of
+ * nepdate_range_dates_with_interval. */
+NEPDATE_API nepdate_status nepdate_range_weekend_days(nepdate_range range, bool include_sunday,
+                                                      nepdate_range_day_cursor *out);
+
+/* Stores the next day of a cursor in *out and advances it. Returns false when the cursor has no
+ * more days, or when cursor or out is NULL; *out is unchanged when it returns false. */
+NEPDATE_API bool nepdate_range_day_next(nepdate_range_day_cursor *cursor, nepdate_date *out);
+
+/* Writes the two ends of range in the default display, "YYYY/MM/DD - YYYY/MM/DD", and returns the
+ * length the full text needs. The truncation, NUL-termination and invalid-range rules are those of
+ * nepdate_format: a range no function made returns 0 and writes nothing. */
+NEPDATE_API size_t nepdate_range_format(nepdate_range range, char *buffer, size_t size);
+
+/* Writes the two ends of range in the short format of nepdate_format_short, separated by " - ", in
+ * the given order, separator and language, and returns the length the full text needs. The
+ * truncation, NUL-termination and invalid-range rules are those of nepdate_range_format. */
+NEPDATE_API size_t nepdate_range_format_short(nepdate_range range, nepdate_order order,
+                                              nepdate_separator separator, nepdate_lang lang,
+                                              char *buffer, size_t size);
+
+/* Stores in *out true when a and b hold the same two dates. Returns NEPDATE_E_NULL when out is
+ * NULL and NEPDATE_E_INVALID_DATE for a range no function made; *out is unchanged on error. */
+NEPDATE_API nepdate_status nepdate_range_equal(nepdate_range a, nepdate_range b, bool *out);
 
 #ifdef __cplusplus
 }
@@ -1418,6 +1645,7 @@ static const int32_t nepdate_cal_ad_month_start[3589] = {
 
 
 
+#include <limits.h>
 #include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
@@ -1507,7 +1735,20 @@ static const text_span weekday_names[7][2] = {
 /* ", " between the parts of the long format. */
 static const text_span comma_space = TEXT(", ");
 
+/* " - " between the two dates of a range. */
+static const text_span dash_space = TEXT(" - ");
+
 const char *nepdate_version(void) { return NEPDATE_VERSION_STRING; }
+
+nepdate_date nepdate_min(void) {
+    const nepdate_date date = {1};
+    return date;
+}
+
+nepdate_date nepdate_max(void) {
+    const nepdate_date date = {LAST_VALUE};
+    return date;
+}
 
 const char *nepdate_status_name(nepdate_status status) {
     switch (status) {
@@ -1535,6 +1776,8 @@ const char *nepdate_status_name(nepdate_status status) {
         return "NEPDATE_E_INVALID_DATE";
     case NEPDATE_E_NULL:
         return "NEPDATE_E_NULL";
+    case NEPDATE_E_NO_OVERLAP:
+        return "NEPDATE_E_NO_OVERLAP";
     default:
         return "unknown";
     }
@@ -1715,6 +1958,20 @@ nepdate_status nepdate_month_length(nepdate_date date, int *out) {
     }
     const uint32_t i = month_index_of((uint32_t)s);
     *out = (int)nepdate_cal_month_length[i];
+    return NEPDATE_OK;
+}
+
+nepdate_status nepdate_year_length(nepdate_date date, int *out) {
+    if (out == NULL) {
+        return NEPDATE_E_NULL;
+    }
+    const int32_t s = day_count(date);
+    if (s < 0) {
+        return NEPDATE_E_INVALID_DATE;
+    }
+    const uint32_t i = month_index_of((uint32_t)s);
+    const uint32_t year = i / 12U;
+    *out = (int)(nepdate_cal_year_start[year + 1U] - nepdate_cal_year_start[year]);
     return NEPDATE_OK;
 }
 
@@ -2199,7 +2456,11 @@ static size_t write_pattern(char *buffer, size_t size, size_t position, nepdate_
     while (pattern[i] != '\0') {
         const char c = pattern[i];
         if (c == '\\') {
+            /* A backslash escapes the next character; one at the very end writes itself
+             * (FORMATTING section 5). */
             if (pattern[i + 1] == '\0') {
+                put_byte(buffer, size, position, c);
+                position++;
                 break;
             }
             put_byte(buffer, size, position, pattern[i + 1]);
@@ -2275,6 +2536,15 @@ size_t nepdate_format_short(nepdate_date date, nepdate_order order, nepdate_sepa
                        write_short(buffer, size, 0, date, order, separator, pad, lang));
 }
 
+size_t nepdate_format_iso(nepdate_date date, char *buffer, size_t size) {
+    if (day_count(date) < 0) {
+        return 0;
+    }
+    return finish_text(
+        buffer, size,
+        write_short(buffer, size, 0, date, NEPDATE_YMD, NEPDATE_SEP_DASH, true, NEPDATE_ENGLISH));
+}
+
 size_t nepdate_format_long(nepdate_date date, nepdate_long_options options, nepdate_lang lang,
                            char *buffer, size_t size) {
     if (day_count(date) < 0) {
@@ -2323,6 +2593,47 @@ nepdate_status nepdate_today_nepal(int64_t unix_seconds, nepdate_date *out) {
     }
     const int32_t offset = unix_seconds >= nepal_1986_transition ? 345 : 330;
     return nepdate_from_unix(unix_seconds, offset, out);
+}
+
+nepdate_status nepdate_today(int32_t utc_offset_minutes, int64_t unix_seconds, nepdate_date *out) {
+    if (out == NULL) {
+        return NEPDATE_E_NULL;
+    }
+    return nepdate_from_unix(unix_seconds, utc_offset_minutes, out);
+}
+
+/* The three relative predicates differ only in how far the day is from today. */
+static nepdate_status relative_day(nepdate_date date, int32_t utc_offset_minutes,
+                                   int64_t unix_seconds, int32_t shift, bool *out) {
+    if (out == NULL) {
+        return NEPDATE_E_NULL;
+    }
+    const int32_t serial = day_count(date);
+    if (serial < 0) {
+        return NEPDATE_E_INVALID_DATE;
+    }
+    nepdate_date today = {0};
+    const nepdate_status status = nepdate_from_unix(unix_seconds, utc_offset_minutes, &today);
+    if (status != NEPDATE_OK) {
+        return status;
+    }
+    *out = serial == day_count(today) + shift;
+    return NEPDATE_OK;
+}
+
+nepdate_status nepdate_is_today(nepdate_date date, int32_t utc_offset_minutes, int64_t unix_seconds,
+                                bool *out) {
+    return relative_day(date, utc_offset_minutes, unix_seconds, 0, out);
+}
+
+nepdate_status nepdate_is_yesterday(nepdate_date date, int32_t utc_offset_minutes,
+                                    int64_t unix_seconds, bool *out) {
+    return relative_day(date, utc_offset_minutes, unix_seconds, -1, out);
+}
+
+nepdate_status nepdate_is_tomorrow(nepdate_date date, int32_t utc_offset_minutes,
+                                   int64_t unix_seconds, bool *out) {
+    return relative_day(date, utc_offset_minutes, unix_seconds, 1, out);
 }
 
 /* A label is at most '-', ten digits of three bytes, '/', two digits of three bytes: 38 bytes. */
@@ -2863,6 +3174,125 @@ nepdate_status nepdate_parse_lenient(const char *text, size_t len, nepdate_date 
     return assemble(state, out);
 }
 
+nepdate_status nepdate_from_ymd_int(int64_t ymd, nepdate_date *out) {
+    if (out == NULL) {
+        return NEPDATE_E_NULL;
+    }
+    /* Truncating division, the split the C# converter uses. A negative or over-long number ends in
+     * a part that fails validation instead of a wrapped one, and no part is truncated to int until
+     * it is known to fit. */
+    const int64_t year = ymd / INT64_C(10000);
+    const int64_t month = (ymd / INT64_C(100)) % INT64_C(100);
+    const int64_t day = ymd % INT64_C(100);
+    if (year < INT_MIN || year > INT_MAX || month < INT_MIN || month > INT_MAX || day < INT_MIN ||
+        day > INT_MAX) {
+        return NEPDATE_E_OUT_OF_RANGE;
+    }
+    return nepdate_from_bs((int)year, (int)month, (int)day, out);
+}
+
+nepdate_status nepdate_to_ymd_int(nepdate_date date, int64_t *out) {
+    if (out == NULL) {
+        return NEPDATE_E_NULL;
+    }
+    nepdate_ymd ymd = {0, 0, 0};
+    const nepdate_status status = nepdate_to_bs(date, &ymd);
+    if (status != NEPDATE_OK) {
+        return status;
+    }
+    *out =
+        (int64_t)ymd.year * INT64_C(10000) + (int64_t)ymd.month * INT64_C(100) + (int64_t)ymd.day;
+    return NEPDATE_OK;
+}
+
+/* The checks every batch conversion makes before it writes anything: written is required, and the
+ * two arrays are only required when the call moves at least one element. */
+static nepdate_status bulk_arguments(size_t count, const void *input, const void *out,
+                                     size_t capacity, const size_t *written) {
+    if (written == NULL) {
+        return NEPDATE_E_NULL;
+    }
+    if (count > 0 && input == NULL) {
+        return NEPDATE_E_NULL;
+    }
+    if (capacity > 0 && out == NULL) {
+        return NEPDATE_E_NULL;
+    }
+    return NEPDATE_OK;
+}
+
+nepdate_status nepdate_bulk_to_bs(const nepdate_ymd *ad, size_t count, nepdate_date *out,
+                                  size_t capacity, size_t *written) {
+    const nepdate_status arguments = bulk_arguments(count, ad, out, capacity, written);
+    if (arguments != NEPDATE_OK) {
+        return arguments;
+    }
+    /* Two passes, so a call that fails writes nothing: the first proves every input converts, the
+     * second repeats that conversion into the caller's buffer. */
+    for (size_t i = 0; i < count; i++) {
+        nepdate_date converted = {0};
+        const nepdate_status status =
+            nepdate_from_ad(ad[i].year, ad[i].month, ad[i].day, &converted);
+        if (status != NEPDATE_OK) {
+            return status;
+        }
+    }
+    const size_t stored = count < capacity ? count : capacity;
+    for (size_t i = 0; i < stored; i++) {
+        nepdate_date converted = {0};
+        (void)nepdate_from_ad(ad[i].year, ad[i].month, ad[i].day, &converted);
+        out[i] = converted;
+    }
+    *written = count;
+    return NEPDATE_OK;
+}
+
+nepdate_status nepdate_bulk_parse_to_ad(const nepdate_text *texts, size_t count, nepdate_ymd *out,
+                                        size_t capacity, size_t *written) {
+    const nepdate_status arguments = bulk_arguments(count, texts, out, capacity, written);
+    if (arguments != NEPDATE_OK) {
+        return arguments;
+    }
+    for (size_t i = 0; i < count; i++) {
+        nepdate_date parsed = {0};
+        const nepdate_status status = nepdate_parse(texts[i].text, texts[i].length, &parsed);
+        if (status != NEPDATE_OK) {
+            return status;
+        }
+    }
+    const size_t stored = count < capacity ? count : capacity;
+    for (size_t i = 0; i < stored; i++) {
+        nepdate_date parsed = {0};
+        nepdate_ymd ad_date = {0, 0, 0};
+        (void)nepdate_parse(texts[i].text, texts[i].length, &parsed);
+        (void)nepdate_to_ad(parsed, &ad_date);
+        out[i] = ad_date;
+    }
+    *written = count;
+    return NEPDATE_OK;
+}
+
+nepdate_status nepdate_bulk_to_ad(const nepdate_date *dates, size_t count, nepdate_ymd *out,
+                                  size_t capacity, size_t *written) {
+    const nepdate_status arguments = bulk_arguments(count, dates, out, capacity, written);
+    if (arguments != NEPDATE_OK) {
+        return arguments;
+    }
+    for (size_t i = 0; i < count; i++) {
+        if (day_count(dates[i]) < 0) {
+            return NEPDATE_E_INVALID_DATE;
+        }
+    }
+    const size_t stored = count < capacity ? count : capacity;
+    for (size_t i = 0; i < stored; i++) {
+        nepdate_ymd ad_date = {0, 0, 0};
+        (void)nepdate_to_ad(dates[i], &ad_date);
+        out[i] = ad_date;
+    }
+    *written = count;
+    return NEPDATE_OK;
+}
+
 /* True when range holds two dates this library made, with start not after end. */
 static bool range_serials(nepdate_range range, int32_t *first, int32_t *last) {
     const int32_t start = day_count(range.start);
@@ -2997,6 +3427,420 @@ bool nepdate_range_next(nepdate_range_iterator *iterator, nepdate_date *out) {
     out->value = iterator->current;
     iterator->current++;
     return true;
+}
+
+nepdate_status nepdate_range_from_day_count(nepdate_date start, int32_t days, nepdate_range *out) {
+    if (out == NULL) {
+        return NEPDATE_E_NULL;
+    }
+    const int32_t first = day_count(start);
+    if (first < 0) {
+        return NEPDATE_E_INVALID_DATE;
+    }
+    if (days < 1) {
+        return NEPDATE_E_OUT_OF_RANGE;
+    }
+    /* 64 bits, so a day count near INT32_MAX can't wrap the sum into a date. */
+    const int64_t last = (int64_t)first + (int64_t)days - 1;
+    if (last >= NEPDATE_CAL_DAYS) {
+        return NEPDATE_E_OUT_OF_RANGE;
+    }
+    out->start = start;
+    out->end.value = (int32_t)last + 1;
+    return NEPDATE_OK;
+}
+
+/* The BS year and month of the local day of an instant, the base of the three current factories. */
+static nepdate_status current_ymd(int32_t utc_offset_minutes, int64_t unix_seconds,
+                                  nepdate_ymd *out) {
+    nepdate_date today = {0};
+    const nepdate_status status = nepdate_from_unix(unix_seconds, utc_offset_minutes, &today);
+    if (status != NEPDATE_OK) {
+        return status;
+    }
+    return nepdate_to_bs(today, out);
+}
+
+nepdate_status nepdate_range_current_month(int32_t utc_offset_minutes, int64_t unix_seconds,
+                                           nepdate_range *out) {
+    if (out == NULL) {
+        return NEPDATE_E_NULL;
+    }
+    nepdate_ymd ymd = {0, 0, 0};
+    const nepdate_status status = current_ymd(utc_offset_minutes, unix_seconds, &ymd);
+    if (status != NEPDATE_OK) {
+        return status;
+    }
+    return nepdate_range_of_month(ymd.year, ymd.month, out);
+}
+
+nepdate_status nepdate_range_current_fiscal_year(int32_t utc_offset_minutes, int64_t unix_seconds,
+                                                 nepdate_range *out) {
+    if (out == NULL) {
+        return NEPDATE_E_NULL;
+    }
+    nepdate_ymd ymd = {0, 0, 0};
+    nepdate_status status = current_ymd(utc_offset_minutes, unix_seconds, &ymd);
+    if (status != NEPDATE_OK) {
+        return status;
+    }
+    nepdate_date today = {0};
+    status = nepdate_from_bs(ymd.year, ymd.month, ymd.day, &today);
+    if (status != NEPDATE_OK) {
+        return status;
+    }
+    int fiscal_year = 0;
+    status = nepdate_fiscal_year_of(today, &fiscal_year);
+    if (status != NEPDATE_OK) {
+        return status;
+    }
+    return nepdate_range_of_fiscal_year(fiscal_year, out);
+}
+
+nepdate_status nepdate_range_current_calendar_year(int32_t utc_offset_minutes, int64_t unix_seconds,
+                                                   nepdate_range *out) {
+    if (out == NULL) {
+        return NEPDATE_E_NULL;
+    }
+    nepdate_ymd ymd = {0, 0, 0};
+    const nepdate_status status = current_ymd(utc_offset_minutes, unix_seconds, &ymd);
+    if (status != NEPDATE_OK) {
+        return status;
+    }
+    return nepdate_range_of_year(ymd.year, out);
+}
+
+nepdate_status nepdate_range_contains_range(nepdate_range range, nepdate_range other, bool *out) {
+    if (out == NULL) {
+        return NEPDATE_E_NULL;
+    }
+    int32_t first = 0;
+    int32_t last = 0;
+    int32_t other_first = 0;
+    int32_t other_last = 0;
+    if (!range_serials(range, &first, &last) || !range_serials(other, &other_first, &other_last)) {
+        return NEPDATE_E_INVALID_DATE;
+    }
+    *out = other_first >= first && other_last <= last;
+    return NEPDATE_OK;
+}
+
+nepdate_status nepdate_range_overlaps(nepdate_range range, nepdate_range other, bool *out) {
+    if (out == NULL) {
+        return NEPDATE_E_NULL;
+    }
+    int32_t first = 0;
+    int32_t last = 0;
+    int32_t other_first = 0;
+    int32_t other_last = 0;
+    if (!range_serials(range, &first, &last) || !range_serials(other, &other_first, &other_last)) {
+        return NEPDATE_E_INVALID_DATE;
+    }
+    *out = other_first <= last && first <= other_last;
+    return NEPDATE_OK;
+}
+
+nepdate_status nepdate_range_is_adjacent_to(nepdate_range range, nepdate_range other, bool *out) {
+    if (out == NULL) {
+        return NEPDATE_E_NULL;
+    }
+    int32_t first = 0;
+    int32_t last = 0;
+    int32_t other_first = 0;
+    int32_t other_last = 0;
+    if (!range_serials(range, &first, &last) || !range_serials(other, &other_first, &other_last)) {
+        return NEPDATE_E_INVALID_DATE;
+    }
+    /* The day after an end is a real day only when the end is not the last supported day. A range
+     * that reaches the data end is therefore never adjacent to a range after it, as the parity
+     * decision D-16 requires, and the same holds at the other end of the span. */
+    const bool range_then_other = last < (int32_t)LAST_VALUE - 1 && last + 1 == other_first;
+    const bool other_then_range = other_last < (int32_t)LAST_VALUE - 1 && other_last + 1 == first;
+    *out = range_then_other || other_then_range;
+    return NEPDATE_OK;
+}
+
+nepdate_status nepdate_range_intersect(nepdate_range range, nepdate_range other,
+                                       nepdate_range *out) {
+    if (out == NULL) {
+        return NEPDATE_E_NULL;
+    }
+    int32_t first = 0;
+    int32_t last = 0;
+    int32_t other_first = 0;
+    int32_t other_last = 0;
+    if (!range_serials(range, &first, &last) || !range_serials(other, &other_first, &other_last)) {
+        return NEPDATE_E_INVALID_DATE;
+    }
+    const int32_t start = first > other_first ? first : other_first;
+    const int32_t end = last < other_last ? last : other_last;
+    if (start > end) {
+        return NEPDATE_E_NO_OVERLAP;
+    }
+    out->start.value = start + 1;
+    out->end.value = end + 1;
+    return NEPDATE_OK;
+}
+
+nepdate_status nepdate_range_union(nepdate_range range, nepdate_range other, nepdate_range *out) {
+    if (out == NULL) {
+        return NEPDATE_E_NULL;
+    }
+    int32_t first = 0;
+    int32_t last = 0;
+    int32_t other_first = 0;
+    int32_t other_last = 0;
+    if (!range_serials(range, &first, &last) || !range_serials(other, &other_first, &other_last)) {
+        return NEPDATE_E_INVALID_DATE;
+    }
+    out->start.value = (first < other_first ? first : other_first) + 1;
+    out->end.value = (last > other_last ? last : other_last) + 1;
+    return NEPDATE_OK;
+}
+
+nepdate_status nepdate_range_except(nepdate_range range, nepdate_range other, nepdate_range *out,
+                                    size_t *written) {
+    if (out == NULL || written == NULL) {
+        return NEPDATE_E_NULL;
+    }
+    int32_t first = 0;
+    int32_t last = 0;
+    int32_t other_first = 0;
+    int32_t other_last = 0;
+    if (!range_serials(range, &first, &last) || !range_serials(other, &other_first, &other_last)) {
+        return NEPDATE_E_INVALID_DATE;
+    }
+    size_t count = 0;
+    if (other_last < first || other_first > last) {
+        out[count].start.value = first + 1;
+        out[count].end.value = last + 1;
+        count = 1;
+    } else {
+        if (other_first > first) {
+            out[count].start.value = first + 1;
+            out[count].end.value = other_first;
+            count++;
+        }
+        if (other_last < last) {
+            out[count].start.value = other_last + 2;
+            out[count].end.value = last + 1;
+            count++;
+        }
+    }
+    *written = count;
+    return NEPDATE_OK;
+}
+
+nepdate_status nepdate_range_split_by_month(nepdate_range range, nepdate_range *out,
+                                            size_t capacity, size_t *written) {
+    if (written == NULL) {
+        return NEPDATE_E_NULL;
+    }
+    int32_t first = 0;
+    int32_t last = 0;
+    if (!range_serials(range, &first, &last)) {
+        return NEPDATE_E_INVALID_DATE;
+    }
+    /* The loop counts values, the packed number a nepdate_date carries, so the last day of a month
+     * is the month start of the next one, as in nepdate_last_day_of_month. */
+    int32_t current = first + 1;
+    const int32_t last_value = last + 1;
+    size_t total = 0;
+    while (current <= last_value) {
+        const uint32_t month = month_index_of((uint32_t)(current - 1));
+        const int32_t month_last = (int32_t)nepdate_cal_month_start[month + 1U];
+        const int32_t piece_last = month_last < last_value ? month_last : last_value;
+        if (out != NULL && total < capacity) {
+            out[total].start.value = current;
+            out[total].end.value = piece_last;
+        }
+        total++;
+        /* The last piece ends at the range end, so a range that reaches the data end stops here
+         * instead of stepping into a month that does not exist (D-16). */
+        if (piece_last >= last_value) {
+            break;
+        }
+        current = piece_last + 1;
+    }
+    *written = total;
+    return NEPDATE_OK;
+}
+
+/* The last month index of the fiscal quarter that holds month index i: Shrawan to Ashoj, Kartik to
+ * Poush, Magh to Chaitra, and Baishakh to Ashad of the following BS year's fiscal year. */
+static uint32_t quarter_last_month(uint32_t i) {
+    const uint32_t month = i % 12U;
+    const uint32_t year = i / 12U;
+    if (month >= 3U && month <= 5U) {
+        return year * 12U + 5U;
+    }
+    if (month >= 6U && month <= 8U) {
+        return year * 12U + 8U;
+    }
+    if (month >= 9U) {
+        return year * 12U + 11U;
+    }
+    return year * 12U + 2U;
+}
+
+nepdate_status nepdate_range_split_by_fiscal_quarter(nepdate_range range, nepdate_range *out,
+                                                     size_t capacity, size_t *written) {
+    if (written == NULL) {
+        return NEPDATE_E_NULL;
+    }
+    int32_t first = 0;
+    int32_t last = 0;
+    if (!range_serials(range, &first, &last)) {
+        return NEPDATE_E_INVALID_DATE;
+    }
+    int32_t current = first + 1;
+    const int32_t last_value = last + 1;
+    size_t total = 0;
+    while (current <= last_value) {
+        const uint32_t month = quarter_last_month(month_index_of((uint32_t)(current - 1)));
+        const int32_t quarter_last = (int32_t)nepdate_cal_month_start[month + 1U];
+        const int32_t piece_last = quarter_last < last_value ? quarter_last : last_value;
+        if (out != NULL && total < capacity) {
+            out[total].start.value = current;
+            out[total].end.value = piece_last;
+        }
+        total++;
+        if (piece_last >= last_value) {
+            break;
+        }
+        current = piece_last + 1;
+    }
+    *written = total;
+    return NEPDATE_OK;
+}
+
+nepdate_status nepdate_range_dates_with_interval(nepdate_range range, int32_t interval,
+                                                 nepdate_range_day_cursor *out) {
+    if (out == NULL) {
+        return NEPDATE_E_NULL;
+    }
+    int32_t first = 0;
+    int32_t last = 0;
+    if (!range_serials(range, &first, &last)) {
+        return NEPDATE_E_INVALID_DATE;
+    }
+    if (interval < 1) {
+        return NEPDATE_E_OUT_OF_RANGE;
+    }
+    out->current = first + 1;
+    out->last = last + 1;
+    out->step = interval;
+    out->skip = 0U;
+    return NEPDATE_OK;
+}
+
+nepdate_status nepdate_range_working_days(nepdate_range range, bool exclude_sunday,
+                                          nepdate_range_day_cursor *out) {
+    if (out == NULL) {
+        return NEPDATE_E_NULL;
+    }
+    int32_t first = 0;
+    int32_t last = 0;
+    if (!range_serials(range, &first, &last)) {
+        return NEPDATE_E_INVALID_DATE;
+    }
+    /* Nepal's weekend is Saturday. Bit i of skip is set when weekday i is not wanted. */
+    out->current = first + 1;
+    out->last = last + 1;
+    out->step = 1;
+    out->skip = 1U << NEPDATE_SATURDAY;
+    if (exclude_sunday) {
+        out->skip |= 1U << NEPDATE_SUNDAY;
+    }
+    return NEPDATE_OK;
+}
+
+nepdate_status nepdate_range_weekend_days(nepdate_range range, bool include_sunday,
+                                          nepdate_range_day_cursor *out) {
+    if (out == NULL) {
+        return NEPDATE_E_NULL;
+    }
+    int32_t first = 0;
+    int32_t last = 0;
+    if (!range_serials(range, &first, &last)) {
+        return NEPDATE_E_INVALID_DATE;
+    }
+    /* Every weekday is skipped except Saturday, and except Sunday too when it is wanted. */
+    const uint32_t saturday = 1U << NEPDATE_SATURDAY;
+    out->current = first + 1;
+    out->last = last + 1;
+    out->step = 1;
+    out->skip = ~(saturday | (include_sunday ? 1U << NEPDATE_SUNDAY : 0U));
+    return NEPDATE_OK;
+}
+
+bool nepdate_range_day_next(nepdate_range_day_cursor *cursor, nepdate_date *out) {
+    if (cursor == NULL || out == NULL) {
+        return false;
+    }
+    const uint32_t current = (uint32_t)cursor->current - 1U;
+    const uint32_t last = (uint32_t)cursor->last - 1U;
+    if (current > (uint32_t)LAST_VALUE - 1U || last > (uint32_t)LAST_VALUE - 1U || current > last ||
+        cursor->step < 1) {
+        return false;
+    }
+    uint32_t position = current;
+    while (position <= last && (cursor->skip & (1U << (((position + 4U) % 7U)))) != 0U) {
+        position++;
+    }
+    if (position > last) {
+        /* Exhausted: current 0 is not a day count, so the next call stops at the first check. */
+        cursor->current = 0;
+        return false;
+    }
+    out->value = (int32_t)position + 1;
+    /* 64 bits: a step up to INT32_MAX would wrap a 32-bit sum. */
+    const int64_t next = (int64_t)position + (int64_t)cursor->step;
+    cursor->current = next > (int64_t)last ? 0 : (int32_t)next + 1;
+    return true;
+}
+
+size_t nepdate_range_format(nepdate_range range, char *buffer, size_t size) {
+    int32_t first = 0;
+    int32_t last = 0;
+    if (!range_serials(range, &first, &last)) {
+        return 0;
+    }
+    size_t position = write_short(buffer, size, 0, range.start, NEPDATE_YMD, NEPDATE_SEP_SLASH,
+                                  true, NEPDATE_ENGLISH);
+    position = write_text(buffer, size, position, dash_space);
+    position = write_short(buffer, size, position, range.end, NEPDATE_YMD, NEPDATE_SEP_SLASH, true,
+                           NEPDATE_ENGLISH);
+    return finish_text(buffer, size, position);
+}
+
+size_t nepdate_range_format_short(nepdate_range range, nepdate_order order,
+                                  nepdate_separator separator, nepdate_lang lang, char *buffer,
+                                  size_t size) {
+    int32_t first = 0;
+    int32_t last = 0;
+    if (!range_serials(range, &first, &last)) {
+        return 0;
+    }
+    size_t position = write_short(buffer, size, 0, range.start, order, separator, true, lang);
+    position = write_text(buffer, size, position, dash_space);
+    position = write_short(buffer, size, position, range.end, order, separator, true, lang);
+    return finish_text(buffer, size, position);
+}
+
+nepdate_status nepdate_range_equal(nepdate_range a, nepdate_range b, bool *out) {
+    if (out == NULL) {
+        return NEPDATE_E_NULL;
+    }
+    int32_t a_first = 0;
+    int32_t a_last = 0;
+    int32_t b_first = 0;
+    int32_t b_last = 0;
+    if (!range_serials(a, &a_first, &a_last) || !range_serials(b, &b_first, &b_last)) {
+        return NEPDATE_E_INVALID_DATE;
+    }
+    *out = a_first == b_first && a_last == b_last;
+    return NEPDATE_OK;
 }
 
 #if NEPDATE_C_WITH_TM

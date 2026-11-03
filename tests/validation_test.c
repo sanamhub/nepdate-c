@@ -46,9 +46,10 @@ TEST(status_names) {
     CHECK_EQ_STR(nepdate_status_name(NEPDATE_E_UNRECOGNIZED), "NEPDATE_E_UNRECOGNIZED");
     CHECK_EQ_STR(nepdate_status_name(NEPDATE_E_INVALID_DATE), "NEPDATE_E_INVALID_DATE");
     CHECK_EQ_STR(nepdate_status_name(NEPDATE_E_NULL), "NEPDATE_E_NULL");
+    CHECK_EQ_STR(nepdate_status_name(NEPDATE_E_NO_OVERLAP), "NEPDATE_E_NO_OVERLAP");
     // A value outside the enum is the point: status_name must not read past its table.
     // NOLINTNEXTLINE(clang-analyzer-optin.core.EnumCastOutOfRange): testing an unknown status
-    const nepdate_status unknown = (nepdate_status)12;
+    const nepdate_status unknown = (nepdate_status)13;
     CHECK_EQ_STR(nepdate_status_name(unknown), "unknown");
     // NOLINTNEXTLINE(clang-analyzer-optin.core.EnumCastOutOfRange): testing an unknown status
     const nepdate_status far = (nepdate_status)255;
@@ -62,6 +63,7 @@ TEST(status_values_are_fixed) {
     CHECK_EQ_INT(NEPDATE_E_UNRECOGNIZED, 9);
     CHECK_EQ_INT(NEPDATE_E_INVALID_DATE, 10);
     CHECK_EQ_INT(NEPDATE_E_NULL, 11);
+    CHECK_EQ_INT(NEPDATE_E_NO_OVERLAP, 12);
     CHECK_EQ_INT(sizeof(nepdate_date), 4);
 }
 
