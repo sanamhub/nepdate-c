@@ -1,0 +1,15 @@
+# C# NepaliDateRange.SplitByMonth and SplitByFiscalQuarter (NR22, NR23). The first and
+# last piece are clipped to the range ends; a piece is written start..end. C# advances to
+# the next month or quarter after the last piece and throws
+# ArgumentOutOfRangeException when that would pass 2199-12-30. The D-16 rows hold the
+# port's value: every piece, the last one ending at the range end.
+start	end	operation	result	note
+2081-04-15	2081-04-15	split_by_month	2081-04-15..2081-04-15	-
+2081-04-30	2081-06-02	split_by_month	2081-04-30..2081-04-32;2081-05-01..2081-05-31;2081-06-01..2081-06-02	-
+2081-01-01	2081-12-31	split_by_month	2081-01-01..2081-01-31;2081-02-01..2081-02-32;2081-03-01..2081-03-31;2081-04-01..2081-04-32;2081-05-01..2081-05-31;2081-06-01..2081-06-30;2081-07-01..2081-07-30;2081-08-01..2081-08-30;2081-09-01..2081-09-29;2081-10-01..2081-10-30;2081-11-01..2081-11-29;2081-12-01..2081-12-31	-
+2199-11-30	2199-12-30	split_by_month	2199-11-30..2199-11-30;2199-12-01..2199-12-30	D-16
+2081-03-30	2081-07-02	split_by_fiscal_quarter	2081-03-30..2081-03-31;2081-04-01..2081-06-30;2081-07-01..2081-07-02	-
+2081-01-01	2081-03-30	split_by_fiscal_quarter	2081-01-01..2081-03-30	-
+2080-10-01	2081-01-31	split_by_fiscal_quarter	2080-10-01..2080-12-30;2081-01-01..2081-01-31	-
+2081-04-01	2081-06-30	split_by_fiscal_quarter	2081-04-01..2081-06-30	-
+2199-12-25	2199-12-30	split_by_fiscal_quarter	2199-12-25..2199-12-30	D-16

@@ -174,9 +174,9 @@ TEST(golden_patterns) {
         rows++;
     }
     vector_close(&reader);
-    CHECK_EQ_INT(rows, 444);
+    CHECK_EQ_INT(rows, 445);
     CHECK_EQ_INT(skipped, 7);
-    CHECK_EQ_INT(sweeps, 4540);
+    CHECK_EQ_INT(sweeps, 4542);
     (void)printf("format-pattern sweep: %d rows, %zu buffer sizes checked\n", rows, sweeps);
 }
 
@@ -230,8 +230,9 @@ TEST(pattern_tokens) {
     check_format(date, "MMM yyyy", NEPDATE_NEPALI, "साउन २०८१");
     check_format(date, "'unterminated", NEPDATE_ENGLISH, "unterminated");
     check_format(date, "'unterminated'x", NEPDATE_ENGLISH, "unterminatedx");
-    check_format(date, "a\\", NEPDATE_ENGLISH, "a");
-    check_format(date, "\\", NEPDATE_ENGLISH, "");
+    /* A backslash at the very end of a pattern writes itself (FORMATTING section 5). */
+    check_format(date, "a\\", NEPDATE_ENGLISH, "a\\");
+    check_format(date, "\\", NEPDATE_ENGLISH, "\\");
 }
 
 TEST(null_and_truncated_buffers) {

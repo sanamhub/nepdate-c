@@ -9,16 +9,22 @@ directory and `data/` into its own `shared/` (ADR-0001).
 | `FORMATTING.md` | yes | names (En/Ne), short/long/pattern formats, digit localisation |
 | `PARSING.md` | yes | strict and lenient parsers, closed month-name list, error kinds |
 | `PATRO.md` | yes | tithi/holiday/event data model, queries, layout guidance |
-| `PARITY.md` | yes | C# golden vectors and the deliberate deviations D-01 … D-15 |
+| `PARITY.md` | yes | C# golden vectors and the deliberate deviations D-01 … D-16 |
 | `PORT-PLAN.md` | yes | phases and acceptance criteria every port meets |
 | `BENCHMARK.md` | yes | benchmark protocol: reference machine, the 64 dates, operations B1–B8, targets |
 | `versions.json` | yes | the `MAJOR.MINOR` line every SDK shares and each SDK's released version (ADR-0007) |
 | `vectors/csharp-tests/catalog.tsv` | yes | every test case of C# NepDate's own test suite, tagged with the phase that covers it |
 | `vectors/month-boundaries.csv` | yes | first and last day of every BS month (7176 rows) |
+| `vectors/year-length.tsv` | yes | the length of every BS year, 364 to 367 (reference vector, D-12) |
 | `vectors/patro-summary.json` | yes | patro counts every port reads: coverage, tithi, holidays, events, names |
 | `vectors/parse.tsv` | yes | strict + lenient parser expectations |
-| `vectors/csharp-golden/*.tsv` | parity | recorded output of C# NepDate 2.0.7 (`PARITY.md`) |
+| `vectors/csharp-golden/*.tsv` | parity | recorded output of C# NepDate 2.0.7 (`PARITY.md`), including `day-diff`, `ymd-int`, `bulk`, `serialization`, `format-matrix`, `ranges` and the `range-*` files |
 | `reference/verify_vectors.py` | reference | executable version of the specs; run it after any spec/data change |
+
+`year-length.tsv` is the one reference vector among the new API rows: C# has no year-length API,
+so the value is summed from `data/` by `tools/make_vectors.py`. Everything under
+`vectors/csharp-golden/` is recorded from C#. `tools/api_coverage.py` checks that every row of
+`API.md` names one of these files, a clock read, or a decision.
 
 Names in examples (`FromStr`, `Lang::Ne`) come from the Rust port. Other ports use their own
 idiomatic names; the results must be the same.
@@ -35,9 +41,12 @@ idiomatic names; the results must be the same.
    serial round-trip (0..=109211).
 5. Implement FORMATTING and PARSING, and pass `parse.tsv` and the golden columns, skipping
    only the rows `PARITY.md` lists.
-6. PATRO (the separate patro package, ADR-0004), with its counts read from
+6. Pass the API v1 vectors in their phase: `year-length.tsv` (phase 1), `day-diff.tsv` and the
+   range files (phase 2), `format-matrix.tsv` (phase 3), and `ymd-int.tsv`, `bulk.tsv` and
+   `serialization.tsv` (phase 4). `tools/api_coverage.py` lists the rows each file covers.
+7. PATRO (the separate patro package, ADR-0004), with its counts read from
    `shared/spec/vectors/patro-summary.json`.
-7. Add the port to the table in the hub `README.md`.
-8. Before the first release, add the port to `spec/versions.json` with the version it will release,
+8. Add the port to the table in the hub `README.md`.
+9. Before the first release, add the port to `spec/versions.json` with the version it will release,
    and to `spec/packages.json`. The port's `shared-check` call passes that name and version.
-9. No port-local deviations. If one seems necessary, open a PR to this hub.
+10. No port-local deviations. If one seems necessary, open a PR to this hub.

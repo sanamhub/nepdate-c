@@ -25,6 +25,18 @@ nepdate_c_add_test_program(range_test range_test.c)
 nepdate_c_add_test_program(format_test format_test.c vectors.c)
 target_compile_definitions(format_test PRIVATE
     NEPDATE_C_SHARED_DIR="${PROJECT_SOURCE_DIR}/shared")
+nepdate_c_add_test_program(format_matrix_test format_matrix_test.c vectors.c)
+target_compile_definitions(format_matrix_test PRIVATE
+    NEPDATE_C_SHARED_DIR="${PROJECT_SOURCE_DIR}/shared")
+nepdate_c_add_test_program(api_test api_test.c vectors.c)
+target_compile_definitions(api_test PRIVATE
+    NEPDATE_C_SHARED_DIR="${PROJECT_SOURCE_DIR}/shared")
+nepdate_c_add_test_program(bulk_test bulk_test.c vectors.c)
+target_compile_definitions(bulk_test PRIVATE
+    NEPDATE_C_SHARED_DIR="${PROJECT_SOURCE_DIR}/shared")
+nepdate_c_add_test_program(range_api_test range_api_test.c vectors.c)
+target_compile_definitions(range_api_test PRIVATE
+    NEPDATE_C_SHARED_DIR="${PROJECT_SOURCE_DIR}/shared")
 nepdate_c_add_test_program(parse_test parse_test.c vectors.c)
 target_compile_definitions(parse_test PRIVATE
     NEPDATE_C_SHARED_DIR="${PROJECT_SOURCE_DIR}/shared")

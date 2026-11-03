@@ -1,0 +1,17 @@
+# C# NepaliDateTypeConverter (NC09), both directions. D-11 keeps the YYYYMMDD integer
+# form and drops the converter type. A negative integer is read with C# truncating division.
+kind	input	ymd	result	note
+date	1901-01-01	19010101	1901-01-01	D-11
+date	2081-04-15	20810415	2081-04-15	D-11
+date	2081-04-32	20810432	2081-04-32	D-11
+date	2199-12-30	21991230	2199-12-30	D-11
+int	-	0	ERR	D-11
+int	-	2081	ERR	D-11
+int	-	20810400	ERR	D-11
+int	-	20810015	ERR	D-11
+int	-	20810432	2081-04-32	D-11
+int	-	20810433	ERR	D-11
+int	-	19010101	1901-01-01	D-11
+int	-	21991231	ERR	D-11
+int	-	99999999	ERR	D-11
+int	-	-1	ERR	D-11

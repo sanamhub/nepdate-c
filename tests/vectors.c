@@ -1,5 +1,9 @@
 #include "vectors.h"
 
+#include <nepdate.h>
+
+#include <limits.h>
+#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -109,6 +113,88 @@ bool vector_parse_ymd(const char *text, int *year, int *month, int *day) {
     }
     text++;
     return parse_integer(&text, day);
+}
+
+bool vector_parse_date(const char *text, nepdate_date *out) {
+    int year = 0;
+    int month = 0;
+    int day = 0;
+    if (!vector_parse_ymd(text, &year, &month, &day)) {
+        return false;
+    }
+    return nepdate_from_bs(year, month, day, out) == NEPDATE_OK;
+}
+
+bool vector_parse_range(const char *text, nepdate_range *out) {
+    /* The two ends are separated by "..", which never appears inside a date. */
+    const char *separator = strstr(text, "..");
+    if (separator == NULL) {
+        return false;
+    }
+    char first[16];
+    char last[16];
+    const size_t first_length = (size_t)(separator - text);
+    if (first_length == 0 || first_length >= sizeof first) {
+        return false;
+    }
+    memcpy(first, text, first_length);
+    first[first_length] = '\0';
+    const size_t last_length = strlen(separator + 2);
+    if (last_length == 0 || last_length >= sizeof last) {
+        return false;
+    }
+    memcpy(last, separator + 2, last_length + 1);
+    nepdate_date start = {0};
+    nepdate_date end = {0};
+    if (!vector_parse_date(first, &start) || !vector_parse_date(last, &end)) {
+        return false;
+    }
+    return nepdate_range_make(start, end, out) == NEPDATE_OK;
+}
+
+void vector_format_date(nepdate_date date, char *buffer, size_t size) {
+    if (size == 0) {
+        return;
+    }
+    /* The interchange form needs 11 bytes with the terminator; a smaller buffer truncates. */
+    const size_t length = nepdate_format_iso(date, buffer, size);
+    if (length >= size) {
+        buffer[size - 1] = '\0';
+    }
+}
+
+void vector_format_range(nepdate_range range, char *buffer, size_t size) {
+    if (size == 0) {
+        return;
+    }
+    char first[16];
+    char last[16];
+    vector_format_date(range.start, first, sizeof first);
+    vector_format_date(range.end, last, sizeof last);
+    const int written = snprintf(buffer, size, "%s..%s", first, last);
+    if (written < 0 || (size_t)written >= size) {
+        buffer[size - 1] = '\0';
+    }
+}
+
+bool vector_read_int(const char *text, int *out) {
+    char *end = NULL;
+    const long value = strtol(text, &end, 10);
+    if (end == text || *end != '\0' || value < INT_MIN || value > INT_MAX) {
+        return false;
+    }
+    *out = (int)value;
+    return true;
+}
+
+bool vector_read_int64(const char *text, int64_t *out) {
+    char *end = NULL;
+    const long long value = strtoll(text, &end, 10);
+    if (end == text || *end != '\0') {
+        return false;
+    }
+    *out = (int64_t)value;
+    return true;
 }
 
 int vector_weekday(const char *name) {

@@ -84,7 +84,7 @@ Custom pattern: scanned left to right, one pass.
 
 | Token | Meaning |
 |---|---|
-| `\x` | literal character `x`; a `\` at the very end of the pattern writes nothing |
+| `\x` | literal character `x`; a `\` at the very end of the pattern writes a literal `\` |
 | `'...'` | literal text; an unterminated quote runs to the end of the pattern |
 | run of `y`, length ≥ 4 | 4-digit year |
 | run of `y`, length 1–3 | `year % 100`, 2 digits |
@@ -100,7 +100,7 @@ Digits produced by tokens are localised per `lang`; literal characters are never
 
 Examples (2081-04-15, En): `yyyy-MM-dd` → `2081-04-15`; `M/d/yyyy` → `4/15/2081`;
 `yyyy'BS'` → `2081BS`; `yyyy\M\M-\d\d` → `2081MM-dd`; `MMM yyyy` → `Shr 2081`;
-`dd.MM.yy` → `15.04.81`.
+`dd.MM.yy` → `15.04.81`; a single trailing `\` → `\`.
 
 ## 6. Parity
 

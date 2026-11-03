@@ -1,0 +1,106 @@
+# C# ToString(DateFormats, Separators, leadingZeros) for every order and separator (NF02)
+# and ISpanFormattable.TryFormat (NF07). D-15 adds the Nepali-language rows; the digits are
+# the C# ToUnicodeString output. try_format writes ERR when the buffer is too small.
+kind	bs	order	separator	pad	lang	format	capacity	result	note
+short	2081-04-15	Ymd	Slash	true	en	-	-	2081/04/15	-
+short	2081-04-15	Ymd	Slash	false	en	-	-	2081/4/15	-
+short	2081-04-15	Ymd	Backslash	true	en	-	-	2081\04\15	-
+short	2081-04-15	Ymd	Backslash	false	en	-	-	2081\4\15	-
+short	2081-04-15	Ymd	Dot	true	en	-	-	2081.04.15	-
+short	2081-04-15	Ymd	Dot	false	en	-	-	2081.4.15	-
+short	2081-04-15	Ymd	Underscore	true	en	-	-	2081_04_15	-
+short	2081-04-15	Ymd	Underscore	false	en	-	-	2081_4_15	-
+short	2081-04-15	Ymd	Dash	true	en	-	-	2081-04-15	-
+short	2081-04-15	Ymd	Dash	false	en	-	-	2081-4-15	-
+short	2081-04-15	Ymd	Space	true	en	-	-	2081 04 15	-
+short	2081-04-15	Ymd	Space	false	en	-	-	2081 4 15	-
+short	2081-04-15	Ydm	Slash	true	en	-	-	2081/15/04	-
+short	2081-04-15	Ydm	Slash	false	en	-	-	2081/15/4	-
+short	2081-04-15	Ydm	Backslash	true	en	-	-	2081\15\04	-
+short	2081-04-15	Ydm	Backslash	false	en	-	-	2081\15\4	-
+short	2081-04-15	Ydm	Dot	true	en	-	-	2081.15.04	-
+short	2081-04-15	Ydm	Dot	false	en	-	-	2081.15.4	-
+short	2081-04-15	Ydm	Underscore	true	en	-	-	2081_15_04	-
+short	2081-04-15	Ydm	Underscore	false	en	-	-	2081_15_4	-
+short	2081-04-15	Ydm	Dash	true	en	-	-	2081-15-04	-
+short	2081-04-15	Ydm	Dash	false	en	-	-	2081-15-4	-
+short	2081-04-15	Ydm	Space	true	en	-	-	2081 15 04	-
+short	2081-04-15	Ydm	Space	false	en	-	-	2081 15 4	-
+short	2081-04-15	Myd	Slash	true	en	-	-	04/2081/15	-
+short	2081-04-15	Myd	Slash	false	en	-	-	4/2081/15	-
+short	2081-04-15	Myd	Backslash	true	en	-	-	04\2081\15	-
+short	2081-04-15	Myd	Backslash	false	en	-	-	4\2081\15	-
+short	2081-04-15	Myd	Dot	true	en	-	-	04.2081.15	-
+short	2081-04-15	Myd	Dot	false	en	-	-	4.2081.15	-
+short	2081-04-15	Myd	Underscore	true	en	-	-	04_2081_15	-
+short	2081-04-15	Myd	Underscore	false	en	-	-	4_2081_15	-
+short	2081-04-15	Myd	Dash	true	en	-	-	04-2081-15	-
+short	2081-04-15	Myd	Dash	false	en	-	-	4-2081-15	-
+short	2081-04-15	Myd	Space	true	en	-	-	04 2081 15	-
+short	2081-04-15	Myd	Space	false	en	-	-	4 2081 15	-
+short	2081-04-15	Mdy	Slash	true	en	-	-	04/15/2081	-
+short	2081-04-15	Mdy	Slash	false	en	-	-	4/15/2081	-
+short	2081-04-15	Mdy	Backslash	true	en	-	-	04\15\2081	-
+short	2081-04-15	Mdy	Backslash	false	en	-	-	4\15\2081	-
+short	2081-04-15	Mdy	Dot	true	en	-	-	04.15.2081	-
+short	2081-04-15	Mdy	Dot	false	en	-	-	4.15.2081	-
+short	2081-04-15	Mdy	Underscore	true	en	-	-	04_15_2081	-
+short	2081-04-15	Mdy	Underscore	false	en	-	-	4_15_2081	-
+short	2081-04-15	Mdy	Dash	true	en	-	-	04-15-2081	-
+short	2081-04-15	Mdy	Dash	false	en	-	-	4-15-2081	-
+short	2081-04-15	Mdy	Space	true	en	-	-	04 15 2081	-
+short	2081-04-15	Mdy	Space	false	en	-	-	4 15 2081	-
+short	2081-04-15	Dym	Slash	true	en	-	-	15/2081/04	-
+short	2081-04-15	Dym	Slash	false	en	-	-	15/2081/4	-
+short	2081-04-15	Dym	Backslash	true	en	-	-	15\2081\04	-
+short	2081-04-15	Dym	Backslash	false	en	-	-	15\2081\4	-
+short	2081-04-15	Dym	Dot	true	en	-	-	15.2081.04	-
+short	2081-04-15	Dym	Dot	false	en	-	-	15.2081.4	-
+short	2081-04-15	Dym	Underscore	true	en	-	-	15_2081_04	-
+short	2081-04-15	Dym	Underscore	false	en	-	-	15_2081_4	-
+short	2081-04-15	Dym	Dash	true	en	-	-	15-2081-04	-
+short	2081-04-15	Dym	Dash	false	en	-	-	15-2081-4	-
+short	2081-04-15	Dym	Space	true	en	-	-	15 2081 04	-
+short	2081-04-15	Dym	Space	false	en	-	-	15 2081 4	-
+short	2081-04-15	Dmy	Slash	true	en	-	-	15/04/2081	-
+short	2081-04-15	Dmy	Slash	false	en	-	-	15/4/2081	-
+short	2081-04-15	Dmy	Backslash	true	en	-	-	15\04\2081	-
+short	2081-04-15	Dmy	Backslash	false	en	-	-	15\4\2081	-
+short	2081-04-15	Dmy	Dot	true	en	-	-	15.04.2081	-
+short	2081-04-15	Dmy	Dot	false	en	-	-	15.4.2081	-
+short	2081-04-15	Dmy	Underscore	true	en	-	-	15_04_2081	-
+short	2081-04-15	Dmy	Underscore	false	en	-	-	15_4_2081	-
+short	2081-04-15	Dmy	Dash	true	en	-	-	15-04-2081	-
+short	2081-04-15	Dmy	Dash	false	en	-	-	15-4-2081	-
+short	2081-04-15	Dmy	Space	true	en	-	-	15 04 2081	-
+short	2081-04-15	Dmy	Space	false	en	-	-	15 4 2081	-
+short	1901-01-01	Ymd	Slash	true	en	-	-	1901/01/01	-
+short	1901-01-01	Ymd	Slash	false	en	-	-	1901/1/1	-
+short	2199-12-30	Ymd	Slash	true	en	-	-	2199/12/30	-
+short	2199-12-30	Ymd	Slash	false	en	-	-	2199/12/30	-
+short	1901-01-01	Ymd	Slash	true	ne	-	-	१९०१/०१/०१	D-15
+short	2081-04-15	Ymd	Slash	true	ne	-	-	२०८१/०४/१५	D-15
+short	2199-12-30	Ymd	Slash	true	ne	-	-	२१९९/१२/३०	D-15
+short	1901-01-01	Ydm	Slash	true	ne	-	-	१९०१/०१/०१	D-15
+short	2081-04-15	Ydm	Slash	true	ne	-	-	२०८१/१५/०४	D-15
+short	2199-12-30	Ydm	Slash	true	ne	-	-	२१९९/३०/१२	D-15
+short	1901-01-01	Myd	Slash	true	ne	-	-	०१/१९०१/०१	D-15
+short	2081-04-15	Myd	Slash	true	ne	-	-	०४/२०८१/१५	D-15
+short	2199-12-30	Myd	Slash	true	ne	-	-	१२/२१९९/३०	D-15
+short	1901-01-01	Mdy	Slash	true	ne	-	-	०१/०१/१९०१	D-15
+short	2081-04-15	Mdy	Slash	true	ne	-	-	०४/१५/२०८१	D-15
+short	2199-12-30	Mdy	Slash	true	ne	-	-	१२/३०/२१९९	D-15
+short	1901-01-01	Dym	Slash	true	ne	-	-	०१/१९०१/०१	D-15
+short	2081-04-15	Dym	Slash	true	ne	-	-	१५/२०८१/०४	D-15
+short	2199-12-30	Dym	Slash	true	ne	-	-	३०/२१९९/१२	D-15
+short	1901-01-01	Dmy	Slash	true	ne	-	-	०१/०१/१९०१	D-15
+short	2081-04-15	Dmy	Slash	true	ne	-	-	१५/०४/२०८१	D-15
+short	2199-12-30	Dmy	Slash	true	ne	-	-	३०/१२/२१९९	D-15
+try_format	2081-04-15	-	-	-	en	default	5	ERR	-
+try_format	2081-04-15	-	-	-	en	default	9	ERR	-
+try_format	2081-04-15	-	-	-	en	default	10	2081/04/15	-
+try_format	2081-04-15	-	-	-	en	default	11	2081/04/15	-
+try_format	2081-04-15	-	-	-	en	yyyy-MM-dd	9	ERR	-
+try_format	2081-04-15	-	-	-	en	yyyy-MM-dd	10	2081-04-15	-
+try_format	2081-04-15	-	-	-	en	MMMM d, yyyy	15	ERR	-
+try_format	2081-04-15	-	-	-	en	MMMM d, yyyy	16	Shrawan 15, 2081	-

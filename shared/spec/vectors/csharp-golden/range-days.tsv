@@ -1,0 +1,23 @@
+# C# NepaliDateRange day helpers (NR24-NR27). Every list is in date order; none is an
+# empty result and ERR is a rejected argument (interval below 1). C# also advances one
+# day after the last item and throws ArgumentOutOfRangeException at 2199-12-30. The D-16
+# rows hold the port's value: every date up to and including 2199-12-30.
+start	end	operation	argument	result	note
+2081-04-10	2081-04-20	dates_with_interval	1	2081-04-10;2081-04-11;2081-04-12;2081-04-13;2081-04-14;2081-04-15;2081-04-16;2081-04-17;2081-04-18;2081-04-19;2081-04-20	-
+2081-04-10	2081-04-20	dates_with_interval	3	2081-04-10;2081-04-13;2081-04-16;2081-04-19	-
+2081-04-10	2081-04-20	dates_with_interval	11	2081-04-10	-
+2081-04-10	2081-04-20	dates_with_interval	0	ERR	-
+2081-04-10	2081-04-20	dates_with_interval	-1	ERR	-
+2081-04-13	2081-04-21	working_days	false	2081-04-13;2081-04-14;2081-04-15;2081-04-16;2081-04-17;2081-04-18;2081-04-20;2081-04-21	-
+2081-04-13	2081-04-21	working_days	true	2081-04-14;2081-04-15;2081-04-16;2081-04-17;2081-04-18;2081-04-21	-
+2081-04-13	2081-04-21	weekend_days	true	2081-04-13;2081-04-19;2081-04-20	-
+2081-04-13	2081-04-21	weekend_days	false	2081-04-19	-
+2081-04-15	2081-04-15	working_days	false	2081-04-15	-
+2081-04-15	2081-04-15	weekend_days	true	none	-
+2199-12-25	2199-12-30	working_days	false	2199-12-25;2199-12-26;2199-12-27;2199-12-29;2199-12-30	D-16
+2081-04-10	2081-04-12	enumerate	-	2081-04-10;2081-04-11;2081-04-12	-
+1901-01-01	1901-01-03	enumerate	-	1901-01-01;1901-01-02;1901-01-03	-
+2199-12-30	2199-12-30	enumerate	-	2199-12-30	D-16
+2199-12-30	2199-12-30	working_days	false	2199-12-30	D-16
+2199-12-30	2199-12-30	weekend_days	true	none	D-16
+2199-12-30	2199-12-30	dates_with_interval	1	2199-12-30	D-16

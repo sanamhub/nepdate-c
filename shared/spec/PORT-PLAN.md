@@ -40,15 +40,18 @@ marker that names it.
 - Validation (ALGORITHM §3), serial conversion (§4), Gregorian via integer day arithmetic (§5),
   weekday (§7), day of year, month length, first and last day of month, comparison.
 - AC: `month-boundaries.csv` (7176 rows) passes; all 109,212 serials round-trip; golden `dates.tsv`
-  columns `ad`, `weekday`, `day_of_year`, `month_length` pass; 2081-04-32 valid, 2081-04-33 invalid;
-  AD 1844-04-10 and 2143-04-16 out of range.
+  columns `ad`, `weekday`, `day_of_year`, `month_length` pass; `year-length.tsv` (299 years) passes;
+  2081-04-32 valid, 2081-04-33 invalid; AD 1844-04-10 and 2143-04-16 out of range.
 
 ## Phase 2: arithmetic, diff, fiscal year, range
 
-- Add days, add months and years with clamp and spill (§8), signed day difference, calendar
-  breakdown (§8a), fiscal year and quarters (§8b), inclusive date range with length, contains and
-  iteration.
-- AC: golden `add-days.tsv` (9162 rows) and `add-months.tsv` (10180 rows, both columns); the §8 and
+- Add days, add months and years with clamp and spill (§8), signed day difference (§8a, D-07),
+  fiscal year and quarters (§8b), and the full inclusive range: bounds, length, containment of a
+  date and a range, overlap, adjacency, intersection, union, difference, the month and
+  fiscal-quarter splits, the interval and working-day helpers, iteration, and both string forms.
+- AC: golden `add-days.tsv` (9162 rows) and `add-months.tsv` (10180 rows, both columns);
+  `day-diff.tsv` (16 rows, both signs); `ranges.tsv` (54), `range-factories.tsv` (27),
+  `range-splits.tsv` (9), `range-days.tsv` (18) and `range-format.tsv` (18); the §8 and
   §8a examples; golden `dates.tsv` fiscal and quarter columns; FY 2082 label in Nepali is
   `२०८२/८३`; every year's range length equals the sum of its month lengths; tests with negative
   amounts.
@@ -57,9 +60,10 @@ marker that names it.
 
 - Names (FORMATTING §1), Devanagari digits, short, long and pattern formats, strict and lenient parse
   (PARSING), the canonical string forms (`YYYY/MM/DD` display, `YYYY-MM-DD` interchange).
-- AC: golden `dates.tsv` text columns; `format-pattern.tsv` (451 rows) except D-04 rows; every row of
-  `parse.tsv` with the right error kind; property or fuzz test: arbitrary input never crashes and only
-  raises the port's parse error.
+- AC: golden `dates.tsv` text columns; `format-pattern.tsv` (452 rows) except D-04 rows;
+  `format-matrix.tsv` (102 rows: six orders, six separators, the short buffer, and the D-15
+  Nepali rows); every row of `parse.tsv` with the right error kind; property or fuzz test:
+  arbitrary input never crashes and only raises the port's parse error.
 
 ## Phase 4: patro package and platform interop
 
@@ -73,7 +77,8 @@ marker that names it.
   `MAX`, documented on the function.
 - AC: the tables report the `tithi_days`, `holidays` and `event_days` of
   `spec/vectors/patro-summary.json`, and their coverage is its `first_day` to `last_day`; every
-  PATRO §4 anchor; the core
+  PATRO §4 anchor; `ymd-int.tsv` (14 rows), `bulk.tsv` (6 rows, input order asserted) and
+  `serialization.tsv` (11 rows) pass; the core
   package's manifest has no dependency on `nepdate-patro`, and its built artefact doesn't contain
   the string `World Day Against Human Trafficking` (CI checks it; the artefact is the release binary
   of a small program that uses only the core for Rust, Go and Swift, the core jar for Kotlin, the

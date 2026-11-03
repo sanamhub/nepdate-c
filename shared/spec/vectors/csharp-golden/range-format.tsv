@@ -1,0 +1,21 @@
+# C# NepaliDateRange string forms (NR28, NR29). D-01: a port cannot build the C# empty
+# range, so that row is ERR instead of "Empty Range". D-15 adds the Nepali-language rows.
+start	end	kind	order	separator	lang	result	note
+2081-04-10	2081-04-20	default	-	-	en	2081/04/10 - 2081/04/20	-
+2081-04-15	2081-04-15	default	-	-	en	2081/04/15 - 2081/04/15	-
+2199-12-25	2199-12-30	default	-	-	en	2199/12/25 - 2199/12/30	-
+2081-04-10	2081-04-20	short	Ymd	Dash	en	2081-04-10 - 2081-04-20	-
+2081-04-10	2081-04-20	short	Ydm	Dash	en	2081-10-04 - 2081-20-04	-
+2081-04-10	2081-04-20	short	Myd	Dash	en	04-2081-10 - 04-2081-20	-
+2081-04-10	2081-04-20	short	Mdy	Dash	en	04-10-2081 - 04-20-2081	-
+2081-04-10	2081-04-20	short	Dym	Dash	en	10-2081-04 - 20-2081-04	-
+2081-04-10	2081-04-20	short	Dmy	Dash	en	10-04-2081 - 20-04-2081	-
+2081-04-10	2081-04-20	short	Dmy	Slash	en	10/04/2081 - 20/04/2081	-
+2081-04-10	2081-04-20	short	Dmy	Space	en	10 04 2081 - 20 04 2081	-
+2081-04-10	2081-04-20	short	Ymd	Slash	ne	२०८१/०४/१० - २०८१/०४/२०	D-15
+2081-04-10	2081-04-20	short	Ydm	Slash	ne	२०८१/१०/०४ - २०८१/२०/०४	D-15
+2081-04-10	2081-04-20	short	Myd	Slash	ne	०४/२०८१/१० - ०४/२०८१/२०	D-15
+2081-04-10	2081-04-20	short	Mdy	Slash	ne	०४/१०/२०८१ - ०४/२०/२०८१	D-15
+2081-04-10	2081-04-20	short	Dym	Slash	ne	१०/२०८१/०४ - २०/२०८१/०४	D-15
+2081-04-10	2081-04-20	short	Dmy	Slash	ne	१०/०४/२०८१ - २०/०४/२०८१	D-15
+2081-04-20	2081-04-10	default	-	-	en	ERR	D-01

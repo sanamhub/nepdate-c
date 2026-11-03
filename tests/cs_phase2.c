@@ -550,24 +550,176 @@ TEST(current_calendar_year_start_is_baishakh_1) {
     expect(range.start, ymd.year, 1, 1);
 }
 
-/* cs-deviation: NepaliDateRangeExtendedTests.SplitByFiscalQuarter_EmptyRange_ReturnsEmptyArray D-09 no splitting */
-/* cs-deviation: NepaliDateRangeExtendedTests.SplitByFiscalQuarter_RangeWithinOneQuarter_ReturnsSingleRange D-09 no splitting */
-/* cs-deviation: NepaliDateRangeExtendedTests.SplitByFiscalQuarter_RangeSpanningTwoQuarters_ReturnsTwoRanges D-09 no splitting */
-/* cs-deviation: NepaliDateRangeExtendedTests.SplitByFiscalQuarter_FullFiscalYear_ReturnsFourRanges D-09 no splitting */
-/* cs-deviation: NepaliDateRangeExtendedTests.SplitByFiscalQuarter_RangeInQ4Months_SingleRange D-09 no splitting */
-/* cs-deviation: NepaliDateRangeExtendedTests.DatesWithInterval_Zero_ThrowsArgumentOutOfRangeException D-09 day iterator only */
-/* cs-deviation: NepaliDateRangeExtendedTests.DatesWithInterval_NegativeInterval_ThrowsArgumentOutOfRangeException D-09 day iterator only */
-/* cs-deviation: NepaliDateRangeExtendedTests.DatesWithInterval_IntervalOfOne_YieldsEveryDay D-09 day iterator only */
-/* cs-deviation: NepaliDateRangeExtendedTests.DatesWithInterval_IntervalOfTwo_YieldsOddDays D-09 day iterator only */
-/* cs-deviation: NepaliDateRangeExtendedTests.DatesWithInterval_IntervalLargerThanRange_YieldsOnlyStartDate D-09 day iterator only */
-/* cs-deviation: NepaliDateRangeExtendedTests.DatesWithInterval_EmptyRange_YieldsNothing D-09 day iterator only */
-/* cs-deviation: NepaliDateRangeExtendedTests.WeekendDays_IncludeSundayTrue_ReturnsBothSaturdayAndSunday D-09 no working or weekend days */
-/* cs-deviation: NepaliDateRangeExtendedTests.WeekendDays_IncludeSundayFalse_ReturnsOnlySaturday D-09 no working or weekend days */
-/* cs-deviation: NepaliDateRangeExtendedTests.WeekendDays_RangeWithNoWeekend_ReturnsEmpty D-09 no working or weekend days */
-/* cs-deviation: NepaliDateRangeExtendedTests.WeekendDays_EmptyRange_ReturnsEmpty D-09 no working or weekend days */
-/* cs-deviation: NepaliDateRangeExtendedTests.WorkingDays_ExcludeSundayFalse_ExcludesOnlySaturday D-09 no working or weekend days */
-/* cs-deviation: NepaliDateRangeExtendedTests.WorkingDays_ExcludeSundayTrue_ExcludesBothSatAndSun D-09 no working or weekend days */
-/* cs-deviation: NepaliDateRangeExtendedTests.WorkingDays_EmptyRange_ReturnsEmpty D-09 no working or weekend days */
+/* cs-deviation: NepaliDateRangeExtendedTests.SplitByFiscalQuarter_EmptyRange_ReturnsEmptyArray D-01 no empty range */
+/* cs-deviation: NepaliDateRangeExtendedTests.DatesWithInterval_EmptyRange_YieldsNothing D-01 no empty range */
+/* cs-deviation: NepaliDateRangeExtendedTests.WeekendDays_EmptyRange_ReturnsEmpty D-01 no empty range */
+/* cs-deviation: NepaliDateRangeExtendedTests.WorkingDays_EmptyRange_ReturnsEmpty D-01 no empty range */
+/* cs-deviation: NepaliDateRangeExtendedTests.Union_LeftRangeIsEmpty_ReturnsRightRange D-01 no empty range */
+/* cs-deviation: NepaliDateRangeExtendedTests.Union_RightRangeIsEmpty_ReturnsLeftRange D-01 no empty range */
+/* cs-deviation: NepaliDateRangeExtendedTests.IsAdjacentTo_EmptyRange_ReturnsFalse D-01 no empty range */
+
+TEST(split_quarter_within_one) {
+    const nepdate_range range = make_range(bs(2080, 4, 5), bs(2080, 5, 10));
+    nepdate_range parts[8] = {{{0}, {0}}};
+    size_t written = 0;
+    CHECK_EQ_INT(nepdate_range_split_by_fiscal_quarter(range, parts, 8, &written), NEPDATE_OK);
+    CHECK_EQ_INT(written, 1);
+    expect(parts[0].start, 2080, 4, 5);
+    expect(parts[0].end, 2080, 5, 10);
+}
+
+TEST(split_quarter_two) {
+    const nepdate_range range = make_range(bs(2080, 6, 25), bs(2080, 7, 5));
+    nepdate_range parts[8] = {{{0}, {0}}};
+    size_t written = 0;
+    CHECK_EQ_INT(nepdate_range_split_by_fiscal_quarter(range, parts, 8, &written), NEPDATE_OK);
+    CHECK_EQ_INT(written, 2);
+    expect(parts[0].start, 2080, 6, 25);
+    expect(parts[0].end, 2080, 6, 30);
+    expect(parts[1].start, 2080, 7, 1);
+    expect(parts[1].end, 2080, 7, 5);
+}
+
+TEST(split_quarter_full_fiscal_year) {
+    nepdate_range year = {{0}, {0}};
+    CHECK_EQ_INT(nepdate_range_of_fiscal_year(2080, &year), NEPDATE_OK);
+    nepdate_range parts[8] = {{{0}, {0}}};
+    size_t written = 0;
+    CHECK_EQ_INT(nepdate_range_split_by_fiscal_quarter(year, parts, 8, &written), NEPDATE_OK);
+    CHECK_EQ_INT(written, 4);
+    expect(parts[0].start, 2080, 4, 1);
+    expect(parts[0].end, 2080, 6, 30);
+    expect(parts[1].start, 2080, 7, 1);
+    expect(parts[2].start, 2080, 10, 1);
+    expect(parts[3].start, 2081, 1, 1);
+    CHECK_EQ_INT(parts[3].end.value, year.end.value);
+}
+
+TEST(split_quarter_in_q4) {
+    const nepdate_range range = make_range(bs(2081, 1, 10), bs(2081, 2, 20));
+    nepdate_range parts[8] = {{{0}, {0}}};
+    size_t written = 0;
+    CHECK_EQ_INT(nepdate_range_split_by_fiscal_quarter(range, parts, 8, &written), NEPDATE_OK);
+    CHECK_EQ_INT(written, 1);
+    expect(parts[0].start, 2081, 1, 10);
+    expect(parts[0].end, 2081, 2, 20);
+}
+
+TEST(interval_zero) {
+    nepdate_range_day_cursor cursor = {0, 0, 0, 0};
+    CHECK_EQ_INT(
+        nepdate_range_dates_with_interval(make_range(bs(2080, 5, 1), bs(2080, 5, 5)), 0, &cursor),
+        NEPDATE_E_OUT_OF_RANGE);
+}
+
+TEST(interval_negative) {
+    nepdate_range_day_cursor cursor = {0, 0, 0, 0};
+    CHECK_EQ_INT(
+        nepdate_range_dates_with_interval(make_range(bs(2080, 5, 1), bs(2080, 5, 5)), -1, &cursor),
+        NEPDATE_E_OUT_OF_RANGE);
+}
+
+TEST(interval_one) {
+    const nepdate_range range = make_range(bs(2080, 5, 1), bs(2080, 5, 5));
+    nepdate_range_day_cursor cursor = {0, 0, 0, 0};
+    CHECK_EQ_INT(nepdate_range_dates_with_interval(range, 1, &cursor), NEPDATE_OK);
+    int count = 0;
+    nepdate_date date = {0};
+    while (nepdate_range_day_next(&cursor, &date)) {
+        expect(date, 2080, 5, 1 + count);
+        count++;
+    }
+    CHECK_EQ_INT(count, 5);
+}
+
+TEST(interval_two) {
+    const nepdate_range range = make_range(bs(2080, 5, 1), bs(2080, 5, 8));
+    nepdate_range_day_cursor cursor = {0, 0, 0, 0};
+    CHECK_EQ_INT(nepdate_range_dates_with_interval(range, 2, &cursor), NEPDATE_OK);
+    int count = 0;
+    nepdate_date date = {0};
+    while (nepdate_range_day_next(&cursor, &date)) {
+        expect(date, 2080, 5, 1 + 2 * count);
+        count++;
+    }
+    CHECK_EQ_INT(count, 4);
+}
+
+TEST(interval_larger_than_range) {
+    const nepdate_range range = make_range(bs(2080, 5, 1), bs(2080, 5, 5));
+    nepdate_range_day_cursor cursor = {0, 0, 0, 0};
+    CHECK_EQ_INT(nepdate_range_dates_with_interval(range, 10, &cursor), NEPDATE_OK);
+    nepdate_date date = {0};
+    CHECK(nepdate_range_day_next(&cursor, &date));
+    expect(date, 2080, 5, 1);
+    CHECK(!nepdate_range_day_next(&cursor, &date));
+}
+
+TEST(weekends_both_days) {
+    const nepdate_range range = make_range(bs(2081, 4, 13), bs(2081, 4, 21));
+    nepdate_range_day_cursor cursor = {0, 0, 0, 0};
+    CHECK_EQ_INT(nepdate_range_weekend_days(range, true, &cursor), NEPDATE_OK);
+    int count = 0;
+    nepdate_date date = {0};
+    while (nepdate_range_day_next(&cursor, &date)) {
+        count++;
+    }
+    CHECK_EQ_INT(count, 3);
+}
+
+TEST(weekends_saturday_only) {
+    const nepdate_range range = make_range(bs(2081, 4, 13), bs(2081, 4, 21));
+    nepdate_range_day_cursor cursor = {0, 0, 0, 0};
+    CHECK_EQ_INT(nepdate_range_weekend_days(range, false, &cursor), NEPDATE_OK);
+    int count = 0;
+    nepdate_date date = {0};
+    while (nepdate_range_day_next(&cursor, &date)) {
+        nepdate_weekday weekday = NEPDATE_SUNDAY;
+        CHECK_EQ_INT(nepdate_weekday_of(date, &weekday), NEPDATE_OK);
+        CHECK_EQ_INT(weekday, NEPDATE_SATURDAY);
+        count++;
+    }
+    CHECK_EQ_INT(count, 1);
+}
+
+TEST(weekends_none_in_range) {
+    /* Monday to Friday of the week that starts on Sunday 2081-04-13. */
+    const nepdate_range range = make_range(bs(2081, 4, 14), bs(2081, 4, 18));
+    nepdate_range_day_cursor cursor = {0, 0, 0, 0};
+    CHECK_EQ_INT(nepdate_range_weekend_days(range, true, &cursor), NEPDATE_OK);
+    nepdate_date date = {0};
+    CHECK(!nepdate_range_day_next(&cursor, &date));
+}
+
+TEST(working_days_saturday_only) {
+    const nepdate_range range = make_range(bs(2081, 4, 13), bs(2081, 4, 21));
+    nepdate_range_day_cursor cursor = {0, 0, 0, 0};
+    CHECK_EQ_INT(nepdate_range_working_days(range, false, &cursor), NEPDATE_OK);
+    int count = 0;
+    nepdate_date date = {0};
+    while (nepdate_range_day_next(&cursor, &date)) {
+        nepdate_weekday weekday = NEPDATE_SUNDAY;
+        CHECK_EQ_INT(nepdate_weekday_of(date, &weekday), NEPDATE_OK);
+        CHECK(weekday != NEPDATE_SATURDAY);
+        count++;
+    }
+    CHECK_EQ_INT(count, 8);
+}
+
+TEST(working_days_both_weekend_days) {
+    const nepdate_range range = make_range(bs(2081, 4, 13), bs(2081, 4, 21));
+    nepdate_range_day_cursor cursor = {0, 0, 0, 0};
+    CHECK_EQ_INT(nepdate_range_working_days(range, true, &cursor), NEPDATE_OK);
+    int count = 0;
+    nepdate_date date = {0};
+    while (nepdate_range_day_next(&cursor, &date)) {
+        nepdate_weekday weekday = NEPDATE_SATURDAY;
+        CHECK_EQ_INT(nepdate_weekday_of(date, &weekday), NEPDATE_OK);
+        CHECK(weekday != NEPDATE_SATURDAY && weekday != NEPDATE_SUNDAY);
+        count++;
+    }
+    CHECK_EQ_INT(count, 6);
+}
 
 TEST(from_day_count_zero) {
     const nepdate_date start = bs(2080, 5, 1);
@@ -581,12 +733,40 @@ TEST(from_day_count_negative) {
     CHECK_EQ_INT(nepdate_range_make(start, add_days(start, -6), &range), NEPDATE_E_OUT_OF_RANGE);
 }
 
-/* cs-deviation: NepaliDateRangeExtendedTests.Intersect_NonOverlappingRanges_ReturnsEmptyRange D-09 no set operations */
-/* cs-deviation: NepaliDateRangeExtendedTests.Intersect_AdjacentRanges_ReturnsEmptyRange D-09 no set operations */
-/* cs-deviation: NepaliDateRangeExtendedTests.Intersect_OneRangeFullyInsideOther_ReturnsInnerRange D-09 no set operations */
-/* cs-deviation: NepaliDateRangeExtendedTests.Union_LeftRangeIsEmpty_ReturnsRightRange D-09 no set operations */
-/* cs-deviation: NepaliDateRangeExtendedTests.Union_RightRangeIsEmpty_ReturnsLeftRange D-09 no set operations */
-/* cs-deviation: NepaliDateRangeExtendedTests.Union_NonOverlappingRanges_SpansEntireGap D-09 no set operations */
+TEST(intersect_disjoint) {
+    const nepdate_range first = make_range(bs(2080, 1, 1), bs(2080, 1, 10));
+    const nepdate_range second = make_range(bs(2080, 2, 1), bs(2080, 2, 10));
+    nepdate_range intersection = {{0}, {0}};
+    CHECK_EQ_INT(nepdate_range_intersect(first, second, &intersection), NEPDATE_E_NO_OVERLAP);
+}
+
+TEST(intersect_adjacent) {
+    const nepdate_range first = make_range(bs(2080, 1, 1), bs(2080, 1, 10));
+    const nepdate_range second = make_range(bs(2080, 1, 11), bs(2080, 1, 20));
+    nepdate_range intersection = {{0}, {0}};
+    CHECK_EQ_INT(nepdate_range_intersect(first, second, &intersection), NEPDATE_E_NO_OVERLAP);
+}
+
+TEST(intersect_inside) {
+    const nepdate_range outer = make_range(bs(2080, 1, 1), bs(2080, 1, 31));
+    const nepdate_range inner = make_range(bs(2080, 1, 10), bs(2080, 1, 20));
+    nepdate_range intersection = {{0}, {0}};
+    /* The outer range is deliberately the first argument; tidy would guess the two range
+     * arguments might be swapped. */
+    // NOLINTNEXTLINE(readability-suspicious-call-argument)
+    CHECK_EQ_INT(nepdate_range_intersect(outer, inner, &intersection), NEPDATE_OK);
+    expect(intersection.start, 2080, 1, 10);
+    expect(intersection.end, 2080, 1, 20);
+}
+
+TEST(union_spans_gap) {
+    const nepdate_range first = make_range(bs(2080, 1, 1), bs(2080, 1, 10));
+    const nepdate_range second = make_range(bs(2080, 1, 20), bs(2080, 1, 25));
+    nepdate_range combined = {{0}, {0}};
+    CHECK_EQ_INT(nepdate_range_union(first, second, &combined), NEPDATE_OK);
+    expect(combined.start, 2080, 1, 1);
+    expect(combined.end, 2080, 1, 25);
+}
 
 TEST(contains_exact_start) {
     bool contains = false;
@@ -626,13 +806,63 @@ TEST(contains_empty_range) {
     CHECK_EQ_INT(nepdate_range_make(start, add_days(start, -1), &range), NEPDATE_E_OUT_OF_RANGE);
 }
 
-/* cs-deviation: NepaliDateRangeExtendedTests.IsAdjacentTo_GapBetweenRanges_ReturnsFalse D-09 no set operations */
-/* cs-deviation: NepaliDateRangeExtendedTests.IsAdjacentTo_OverlappingRanges_ReturnsFalse D-09 no set operations */
-/* cs-deviation: NepaliDateRangeExtendedTests.IsAdjacentTo_EmptyRange_ReturnsFalse D-09 no set operations */
-/* cs-deviation: NepaliDateRangeExtendedTests.Except_NonOverlappingExcludeRange_ReturnsOriginalRange D-09 no set operations */
-/* cs-deviation: NepaliDateRangeExtendedTests.Except_ExcludeRangeFullyContainsThis_ReturnsEmptyArray D-09 no set operations */
-/* cs-deviation: NepaliDateRangeExtendedTests.Except_ExcludeOverlapsStart_ReturnsRightPart D-09 no set operations */
-/* cs-deviation: NepaliDateRangeExtendedTests.Except_ExcludeOverlapsEnd_ReturnsLeftPart D-09 no set operations */
+TEST(adjacent_gap_between) {
+    const nepdate_range first = make_range(bs(2080, 1, 1), bs(2080, 1, 10));
+    const nepdate_range second = make_range(bs(2080, 1, 12), bs(2080, 1, 20));
+    bool adjacent = true;
+    CHECK_EQ_INT(nepdate_range_is_adjacent_to(first, second, &adjacent), NEPDATE_OK);
+    CHECK(!adjacent);
+}
+
+TEST(adjacent_overlapping) {
+    const nepdate_range first = make_range(bs(2080, 1, 1), bs(2080, 1, 15));
+    const nepdate_range second = make_range(bs(2080, 1, 10), bs(2080, 1, 20));
+    bool adjacent = true;
+    CHECK_EQ_INT(nepdate_range_is_adjacent_to(first, second, &adjacent), NEPDATE_OK);
+    CHECK(!adjacent);
+}
+
+TEST(except_disjoint) {
+    const nepdate_range range = make_range(bs(2080, 1, 1), bs(2080, 1, 15));
+    const nepdate_range other = make_range(bs(2080, 2, 1), bs(2080, 2, 10));
+    nepdate_range pieces[2] = {{{0}, {0}}, {{0}, {0}}};
+    size_t written = 0;
+    CHECK_EQ_INT(nepdate_range_except(range, other, pieces, &written), NEPDATE_OK);
+    CHECK_EQ_INT(written, 1);
+    expect(pieces[0].start, 2080, 1, 1);
+    expect(pieces[0].end, 2080, 1, 15);
+}
+
+TEST(except_covered) {
+    const nepdate_range range = make_range(bs(2080, 1, 5), bs(2080, 1, 15));
+    const nepdate_range other = make_range(bs(2080, 1, 1), bs(2080, 1, 31));
+    nepdate_range pieces[2] = {{{0}, {0}}, {{0}, {0}}};
+    size_t written = 99;
+    CHECK_EQ_INT(nepdate_range_except(range, other, pieces, &written), NEPDATE_OK);
+    CHECK_EQ_INT(written, 0);
+}
+
+TEST(except_overlaps_start) {
+    const nepdate_range range = make_range(bs(2080, 1, 5), bs(2080, 1, 15));
+    const nepdate_range other = make_range(bs(2080, 1, 1), bs(2080, 1, 10));
+    nepdate_range pieces[2] = {{{0}, {0}}, {{0}, {0}}};
+    size_t written = 0;
+    CHECK_EQ_INT(nepdate_range_except(range, other, pieces, &written), NEPDATE_OK);
+    CHECK_EQ_INT(written, 1);
+    expect(pieces[0].start, 2080, 1, 11);
+    expect(pieces[0].end, 2080, 1, 15);
+}
+
+TEST(except_overlaps_end) {
+    const nepdate_range range = make_range(bs(2080, 1, 5), bs(2080, 1, 15));
+    const nepdate_range other = make_range(bs(2080, 1, 10), bs(2080, 1, 31));
+    nepdate_range pieces[2] = {{{0}, {0}}, {{0}, {0}}};
+    size_t written = 0;
+    CHECK_EQ_INT(nepdate_range_except(range, other, pieces, &written), NEPDATE_OK);
+    CHECK_EQ_INT(written, 1);
+    expect(pieces[0].start, 2080, 1, 5);
+    expect(pieces[0].end, 2080, 1, 9);
+}
 
 TEST(enumerator_three_days) {
     nepdate_range range = make_range(bs(2080, 5, 13), bs(2080, 5, 15));
@@ -666,10 +896,25 @@ TEST(enumerator_single) {
     CHECK_EQ_INT(count, 1);
 }
 
-/* cs-deviation: NepaliDateRangeExtendedTests.ToString_DefaultFormat_IsStartDashEnd D-09 no text form for a range */
-/* cs-deviation: NepaliDateRangeExtendedTests.ToString_EmptyRange_ReturnsEmptyRangeString D-09 no text form for a range */
-/* cs-deviation: NepaliDateRangeExtendedTests.ToString_WithDateFormat_UsesSpecifiedFormat D-09 no text form for a range */
-/* cs-deviation: NepaliDateRangeExtendedTests.ToString_WithDateFormat_EmptyRange_ReturnsEmptyRangeString D-09 no text form for a range */
+/* cs-deviation: NepaliDateRangeExtendedTests.ToString_EmptyRange_ReturnsEmptyRangeString D-01 no empty range */
+/* cs-deviation: NepaliDateRangeExtendedTests.ToString_WithDateFormat_EmptyRange_ReturnsEmptyRangeString D-01 no empty range */
+
+TEST(range_to_string_default) {
+    const nepdate_range range = make_range(bs(2080, 1, 1), bs(2080, 1, 15));
+    char text[64];
+    const size_t length = nepdate_range_format(range, text, sizeof text);
+    CHECK_EQ_INT(length, 23);
+    CHECK_EQ_STR(text, "2080/01/01 - 2080/01/15");
+}
+
+TEST(range_to_string_order_and_separator) {
+    const nepdate_range range = make_range(bs(2080, 1, 1), bs(2080, 1, 15));
+    char text[64];
+    const size_t length = nepdate_range_format_short(range, NEPDATE_DMY, NEPDATE_SEP_DASH,
+                                                     NEPDATE_ENGLISH, text, sizeof text);
+    CHECK_EQ_INT(length, 23);
+    CHECK_EQ_STR(text, "01-01-2080 - 15-01-2080");
+}
 
 TEST(equals_identical) {
     CHECK(ranges_equal(make_range(bs(2080, 1, 1), bs(2080, 1, 15)),
@@ -776,15 +1021,115 @@ TEST(range_contains_outside) {
     CHECK(!contains);
 }
 
-/* cs-deviation: NepaliDateRangeTests.Contains_RangeFullyContained_ReturnsTrue D-09 contains takes a date only */
-/* cs-deviation: NepaliDateRangeTests.Overlaps_RangesOverlap_ReturnsTrue D-09 no set operations */
-/* cs-deviation: NepaliDateRangeTests.Overlaps_RangesDontOverlap_ReturnsFalse D-09 no set operations */
-/* cs-deviation: NepaliDateRangeTests.IsAdjacentTo_AdjacentRanges_ReturnsTrue D-09 no set operations */
-/* cs-deviation: NepaliDateRangeTests.Intersect_OverlappingRanges_ReturnsIntersection D-09 no set operations */
-/* cs-deviation: NepaliDateRangeTests.Union_OverlappingRanges_ReturnsUnion D-09 no set operations */
-/* cs-deviation: NepaliDateRangeTests.Except_RemovingRangeFromMiddle_ReturnsTwoRanges D-09 no set operations */
-/* cs-deviation: NepaliDateRangeTests.SplitByMonth_RangeAcrossMonths_SplitsCorrectly D-09 no splitting */
-/* cs-deviation: NepaliDateRangeTests.WorkingDays_ReturnsCorrectDays D-09 no working days */
+TEST(contains_range_inside) {
+    const nepdate_range outer = make_range(bs(2080, 1, 1), bs(2080, 1, 31));
+    const nepdate_range inner = make_range(bs(2080, 1, 5), bs(2080, 1, 20));
+    bool contains = false;
+    /* The outer range is deliberately the first argument; tidy would guess the two range
+     * arguments might be swapped. */
+    // NOLINTNEXTLINE(readability-suspicious-call-argument)
+    CHECK_EQ_INT(nepdate_range_contains_range(outer, inner, &contains), NEPDATE_OK);
+    CHECK(contains);
+    CHECK_EQ_INT(nepdate_range_contains_range(inner, outer, &contains), NEPDATE_OK);
+    CHECK(!contains);
+}
+
+TEST(overlaps_yes) {
+    const nepdate_range first = make_range(bs(2080, 1, 1), bs(2080, 1, 15));
+    const nepdate_range second = make_range(bs(2080, 1, 10), bs(2080, 1, 20));
+    bool overlaps = false;
+    CHECK_EQ_INT(nepdate_range_overlaps(first, second, &overlaps), NEPDATE_OK);
+    CHECK(overlaps);
+}
+
+TEST(overlaps_no) {
+    const nepdate_range first = make_range(bs(2080, 1, 1), bs(2080, 1, 15));
+    const nepdate_range second = make_range(bs(2080, 1, 16), bs(2080, 1, 20));
+    bool overlaps = true;
+    CHECK_EQ_INT(nepdate_range_overlaps(first, second, &overlaps), NEPDATE_OK);
+    CHECK(!overlaps);
+}
+
+TEST(adjacent_yes) {
+    const nepdate_range first = make_range(bs(2080, 1, 1), bs(2080, 1, 15));
+    const nepdate_range second = make_range(bs(2080, 1, 16), bs(2080, 1, 20));
+    bool adjacent = false;
+    CHECK_EQ_INT(nepdate_range_is_adjacent_to(first, second, &adjacent), NEPDATE_OK);
+    CHECK(adjacent);
+    CHECK_EQ_INT(nepdate_range_is_adjacent_to(second, first, &adjacent), NEPDATE_OK);
+    CHECK(adjacent);
+}
+
+TEST(intersect_overlapping) {
+    const nepdate_range first = make_range(bs(2080, 1, 1), bs(2080, 1, 15));
+    const nepdate_range second = make_range(bs(2080, 1, 10), bs(2080, 1, 20));
+    nepdate_range intersection = {{0}, {0}};
+    CHECK_EQ_INT(nepdate_range_intersect(first, second, &intersection), NEPDATE_OK);
+    expect(intersection.start, 2080, 1, 10);
+    expect(intersection.end, 2080, 1, 15);
+}
+
+TEST(union_overlapping) {
+    const nepdate_range first = make_range(bs(2080, 1, 1), bs(2080, 1, 15));
+    const nepdate_range second = make_range(bs(2080, 1, 10), bs(2080, 1, 20));
+    nepdate_range combined = {{0}, {0}};
+    CHECK_EQ_INT(nepdate_range_union(first, second, &combined), NEPDATE_OK);
+    expect(combined.start, 2080, 1, 1);
+    expect(combined.end, 2080, 1, 20);
+}
+
+TEST(except_from_middle) {
+    const nepdate_range range = make_range(bs(2080, 1, 1), bs(2080, 1, 15));
+    const nepdate_range other = make_range(bs(2080, 1, 6), bs(2080, 1, 10));
+    nepdate_range pieces[2] = {{{0}, {0}}, {{0}, {0}}};
+    size_t written = 0;
+    CHECK_EQ_INT(nepdate_range_except(range, other, pieces, &written), NEPDATE_OK);
+    CHECK_EQ_INT(written, 2);
+    expect(pieces[0].start, 2080, 1, 1);
+    expect(pieces[0].end, 2080, 1, 5);
+    expect(pieces[1].start, 2080, 1, 11);
+    expect(pieces[1].end, 2080, 1, 15);
+}
+
+TEST(split_month_across_months) {
+    /* Parts of Baishakh, Jestha and Ashad. */
+    const nepdate_range range = make_range(bs(2080, 1, 20), bs(2080, 3, 10));
+    nepdate_range parts[8] = {{{0}, {0}}};
+    size_t written = 0;
+    CHECK_EQ_INT(nepdate_range_split_by_month(range, parts, 8, &written), NEPDATE_OK);
+    CHECK_EQ_INT(written, 3);
+    expect(parts[0].start, 2080, 1, 20);
+    expect(parts[0].end, 2080, 1, 31);
+    expect(parts[1].start, 2080, 2, 1);
+    expect(parts[1].end, 2080, 2, 32);
+    expect(parts[2].start, 2080, 3, 1);
+    expect(parts[2].end, 2080, 3, 10);
+}
+
+TEST(working_days_in_fourteen) {
+    const nepdate_range range = make_range(bs(2081, 4, 13), bs(2081, 4, 26));
+    int weekend_days = 0;
+    nepdate_range_iterator iterator = {0, 0};
+    CHECK_EQ_INT(nepdate_range_begin(range, &iterator), NEPDATE_OK);
+    nepdate_date date = {0};
+    int total = 0;
+    while (nepdate_range_next(&iterator, &date)) {
+        nepdate_weekday weekday = NEPDATE_SUNDAY;
+        CHECK_EQ_INT(nepdate_weekday_of(date, &weekday), NEPDATE_OK);
+        if (weekday == NEPDATE_SATURDAY) {
+            weekend_days++;
+        }
+        total++;
+    }
+    CHECK_EQ_INT(total, 14);
+    nepdate_range_day_cursor cursor = {0, 0, 0, 0};
+    CHECK_EQ_INT(nepdate_range_working_days(range, false, &cursor), NEPDATE_OK);
+    int working_days = 0;
+    while (nepdate_range_day_next(&cursor, &date)) {
+        working_days++;
+    }
+    CHECK_EQ_INT(working_days, total - weekend_days);
+}
 
 TEST(range_enumeration) {
     nepdate_range range = make_range(bs(2080, 1, 1), bs(2080, 1, 10));
@@ -799,7 +1144,39 @@ TEST(range_enumeration) {
     CHECK_EQ_INT(count, 10);
 }
 
-/* cs-deviation: NepaliDateRangeTests.Demo_RangeOperations D-09 demonstrates splitting, weekend days, working days, overlaps and except */
+TEST(demo_range_operations) {
+    /* The operations work together: the month pieces cover the range without a gap or an overlap,
+     * and subtracting a piece from the range leaves the rest in order. */
+    const nepdate_range range = make_range(bs(2080, 4, 15), bs(2080, 6, 10));
+    nepdate_range parts[16] = {{{0}, {0}}};
+    size_t pieces_count = 0;
+    CHECK_EQ_INT(nepdate_range_split_by_month(range, parts, 16, &pieces_count), NEPDATE_OK);
+    CHECK_EQ_INT(pieces_count, 3);
+    CHECK_EQ_INT(parts[0].start.value, range.start.value);
+    CHECK_EQ_INT(parts[pieces_count - 1].end.value, range.end.value);
+    for (size_t i = 0; i + 1 < pieces_count; i++) {
+        CHECK_EQ_INT(parts[i].end.value + 1, parts[i + 1].start.value);
+    }
+    bool contained = false;
+    // NOLINTNEXTLINE(readability-suspicious-call-argument)
+    CHECK_EQ_INT(nepdate_range_contains_range(range, parts[1], &contained), NEPDATE_OK);
+    CHECK(contained);
+
+    nepdate_range rest[2] = {{{0}, {0}}, {{0}, {0}}};
+    size_t written = 0;
+    CHECK_EQ_INT(nepdate_range_except(range, parts[1], rest, &written), NEPDATE_OK);
+    CHECK_EQ_INT(written, 2);
+    CHECK_EQ_INT(rest[0].start.value, range.start.value);
+    CHECK_EQ_INT(rest[0].end.value, parts[1].start.value - 1);
+    CHECK_EQ_INT(rest[1].start.value, parts[1].end.value + 1);
+    CHECK_EQ_INT(rest[1].end.value, range.end.value);
+
+    const nepdate_range next = make_range(bs(2080, 6, 11), bs(2080, 6, 15));
+    bool adjacent = true;
+    CHECK_EQ_INT(nepdate_range_is_adjacent_to(parts[pieces_count - 1], next, &adjacent),
+                 NEPDATE_OK);
+    CHECK(adjacent);
+}
 
 /* ---------- Core/OptimizationVerificationTests.cs ---------- */
 
@@ -1126,6 +1503,86 @@ int main(void) {
     RUN_TEST_NAMED("NepaliDateRangeTests.Contains_DateInRange_ReturnsTrue", range_contains_inside);
     RUN_TEST_NAMED("NepaliDateRangeTests.Contains_DateOutsideRange_ReturnsFalse",
                    range_contains_outside);
+    RUN_TEST_NAMED("NepaliDateRangeExtendedTests.SplitByFiscalQuarter_RangeWithinOneQuarter_"
+                   "ReturnsSingleRange",
+                   split_quarter_within_one);
+    RUN_TEST_NAMED("NepaliDateRangeExtendedTests.SplitByFiscalQuarter_RangeSpanningTwoQuarters_"
+                   "ReturnsTwoRanges",
+                   split_quarter_two);
+    RUN_TEST_NAMED(
+        "NepaliDateRangeExtendedTests.SplitByFiscalQuarter_FullFiscalYear_ReturnsFourRanges",
+        split_quarter_full_fiscal_year);
+    RUN_TEST_NAMED("NepaliDateRangeExtendedTests.SplitByFiscalQuarter_RangeInQ4Months_SingleRange",
+                   split_quarter_in_q4);
+    RUN_TEST_NAMED("NepaliDateRangeExtendedTests.DatesWithInterval_Zero_"
+                   "ThrowsArgumentOutOfRangeException",
+                   interval_zero);
+    RUN_TEST_NAMED("NepaliDateRangeExtendedTests.DatesWithInterval_NegativeInterval_"
+                   "ThrowsArgumentOutOfRangeException",
+                   interval_negative);
+    RUN_TEST_NAMED("NepaliDateRangeExtendedTests.DatesWithInterval_IntervalOfOne_YieldsEveryDay",
+                   interval_one);
+    RUN_TEST_NAMED("NepaliDateRangeExtendedTests.DatesWithInterval_IntervalOfTwo_YieldsOddDays",
+                   interval_two);
+    RUN_TEST_NAMED("NepaliDateRangeExtendedTests.DatesWithInterval_IntervalLargerThanRange_"
+                   "YieldsOnlyStartDate",
+                   interval_larger_than_range);
+    RUN_TEST_NAMED("NepaliDateRangeExtendedTests.WeekendDays_IncludeSundayTrue_"
+                   "ReturnsBothSaturdayAndSunday",
+                   weekends_both_days);
+    RUN_TEST_NAMED("NepaliDateRangeExtendedTests.WeekendDays_IncludeSundayFalse_"
+                   "ReturnsOnlySaturday",
+                   weekends_saturday_only);
+    RUN_TEST_NAMED("NepaliDateRangeExtendedTests.WeekendDays_RangeWithNoWeekend_ReturnsEmpty",
+                   weekends_none_in_range);
+    RUN_TEST_NAMED(
+        "NepaliDateRangeExtendedTests.WorkingDays_ExcludeSundayFalse_ExcludesOnlySaturday",
+        working_days_saturday_only);
+    RUN_TEST_NAMED("NepaliDateRangeExtendedTests.WorkingDays_ExcludeSundayTrue_"
+                   "ExcludesBothSatAndSun",
+                   working_days_both_weekend_days);
+    RUN_TEST_NAMED("NepaliDateRangeExtendedTests.Intersect_NonOverlappingRanges_"
+                   "ReturnsEmptyRange",
+                   intersect_disjoint);
+    RUN_TEST_NAMED("NepaliDateRangeExtendedTests.Intersect_AdjacentRanges_ReturnsEmptyRange",
+                   intersect_adjacent);
+    RUN_TEST_NAMED("NepaliDateRangeExtendedTests.Intersect_OneRangeFullyInsideOther_"
+                   "ReturnsInnerRange",
+                   intersect_inside);
+    RUN_TEST_NAMED("NepaliDateRangeExtendedTests.Union_NonOverlappingRanges_SpansEntireGap",
+                   union_spans_gap);
+    RUN_TEST_NAMED("NepaliDateRangeExtendedTests.IsAdjacentTo_GapBetweenRanges_ReturnsFalse",
+                   adjacent_gap_between);
+    RUN_TEST_NAMED("NepaliDateRangeExtendedTests.IsAdjacentTo_OverlappingRanges_ReturnsFalse",
+                   adjacent_overlapping);
+    RUN_TEST_NAMED("NepaliDateRangeExtendedTests.Except_NonOverlappingExcludeRange_"
+                   "ReturnsOriginalRange",
+                   except_disjoint);
+    RUN_TEST_NAMED("NepaliDateRangeExtendedTests.Except_ExcludeRangeFullyContainsThis_"
+                   "ReturnsEmptyArray",
+                   except_covered);
+    RUN_TEST_NAMED("NepaliDateRangeExtendedTests.Except_ExcludeOverlapsStart_ReturnsRightPart",
+                   except_overlaps_start);
+    RUN_TEST_NAMED("NepaliDateRangeExtendedTests.Except_ExcludeOverlapsEnd_ReturnsLeftPart",
+                   except_overlaps_end);
+    RUN_TEST_NAMED("NepaliDateRangeExtendedTests.ToString_DefaultFormat_IsStartDashEnd",
+                   range_to_string_default);
+    RUN_TEST_NAMED("NepaliDateRangeExtendedTests.ToString_WithDateFormat_UsesSpecifiedFormat",
+                   range_to_string_order_and_separator);
+    RUN_TEST_NAMED("NepaliDateRangeTests.Contains_RangeFullyContained_ReturnsTrue",
+                   contains_range_inside);
+    RUN_TEST_NAMED("NepaliDateRangeTests.Overlaps_RangesOverlap_ReturnsTrue", overlaps_yes);
+    RUN_TEST_NAMED("NepaliDateRangeTests.Overlaps_RangesDontOverlap_ReturnsFalse", overlaps_no);
+    RUN_TEST_NAMED("NepaliDateRangeTests.IsAdjacentTo_AdjacentRanges_ReturnsTrue", adjacent_yes);
+    RUN_TEST_NAMED("NepaliDateRangeTests.Intersect_OverlappingRanges_ReturnsIntersection",
+                   intersect_overlapping);
+    RUN_TEST_NAMED("NepaliDateRangeTests.Union_OverlappingRanges_ReturnsUnion", union_overlapping);
+    RUN_TEST_NAMED("NepaliDateRangeTests.Except_RemovingRangeFromMiddle_ReturnsTwoRanges",
+                   except_from_middle);
+    RUN_TEST_NAMED("NepaliDateRangeTests.SplitByMonth_RangeAcrossMonths_SplitsCorrectly",
+                   split_month_across_months);
+    RUN_TEST_NAMED("NepaliDateRangeTests.WorkingDays_ReturnsCorrectDays", working_days_in_fourteen);
+    RUN_TEST_NAMED("NepaliDateRangeTests.Demo_RangeOperations", demo_range_operations);
     RUN_TEST_NAMED("NepaliDateRangeTests.Enumeration_EnumeratesAllDaysInRange", range_enumeration);
     RUN_TEST_NAMED("OptimizationVerificationTests.Subtraction_SameDate_ReturnsZeroDays",
                    subtraction_same);

@@ -1,0 +1,17 @@
+# C# System.Text.Json converter (NC10). D-11 keeps only the native string hook and the
+# canonical YYYY-MM-DD text; D-01 means a null JSON value has no port representation, so
+# the port hook rejects it instead of producing C#'s 0000-00-00 default. The json field is
+# literal JSON text, quotes included: read the file with a TSV reader that does not treat
+# quotes as quoting characters.
+kind	input	json	result	note
+write	1901-01-01	"1901-01-01"	-	D-11
+read	"1901-01-01"	-	1901-01-01	D-11
+roundtrip	1901-01-01	"1901-01-01"	1901-01-01	D-11
+write	2081-04-15	"2081-04-15"	-	D-11
+read	"2081-04-15"	-	2081-04-15	D-11
+roundtrip	2081-04-15	"2081-04-15"	2081-04-15	D-11
+write	2199-12-30	"2199-12-30"	-	D-11
+read	"2199-12-30"	-	2199-12-30	D-11
+roundtrip	2199-12-30	"2199-12-30"	2199-12-30	D-11
+read	null	-	ERR	D-01
+read	"2081-01-32"	-	ERR	D-11

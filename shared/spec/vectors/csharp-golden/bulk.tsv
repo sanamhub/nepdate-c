@@ -1,0 +1,11 @@
+# C# BulkConvert (NC04-NC08). Above 500 inputs C# uses PLINQ and does not promise order.
+# The generator compares that parallel result as a multiset with the per-element
+# conversions, then writes the per-element result in input order, which is what every
+# port returns. The last row is ERR because the whole call fails on one bad string.
+operation	input	output	note
+to_nepali_dates	1844-04-11;2024-07-31;2143-04-15;2000-01-01;2025-04-14	1901-01-01;2081-04-16;2199-12-30;2056-09-17;2082-01-01	input order
+batch_to_nepali_dates	1844-04-11;2024-07-31;2143-04-15;2000-01-01;2025-04-14	1901-01-01;2081-04-16;2199-12-30;2056-09-17;2082-01-01	input order
+to_english_dates_from_strings	2081-04-15;1901-01-01;2199-12-30;2081-04-32;2082-01-01	2024-07-30;1844-04-11;2143-04-15;2024-08-16;2025-04-14	input order
+to_english_dates_from_dates	2081-04-15;1901-01-01;2199-12-30;2081-04-32;2082-01-01	2024-07-30;1844-04-11;2143-04-15;2024-08-16;2025-04-14	input order
+batch_to_english_dates	2081-04-15;1901-01-01;2199-12-30;2081-04-32;2082-01-01	2024-07-30;1844-04-11;2143-04-15;2024-08-16;2025-04-14	input order
+to_english_dates_from_strings	2081-04-15;2081-01-32	ERR	one bad input
