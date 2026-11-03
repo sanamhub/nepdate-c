@@ -6,6 +6,7 @@
 
 #include <stdbool.h>
 #include <stddef.h>
+#include <stdint.h>
 
 typedef struct vector_reader {
     char *data;
@@ -45,5 +46,12 @@ void vector_format_range(nepdate_range range, char *buffer, size_t size);
 
 /* "Sunday" -> 0 .. "Saturday" -> 6, or -1 for any other name. */
 int vector_weekday(const char *name);
+
+/* Reads a whole decimal number from a vector field into *out. Returns false when the field is not
+ * one, so a caller turns a changed row shape into a failed check instead of a reading of zero. */
+bool vector_read_int(const char *text, int *out);
+
+/* The same for a 64-bit number. */
+bool vector_read_int64(const char *text, int64_t *out);
 
 #endif /* NEPDATE_TESTS_VECTORS_H */

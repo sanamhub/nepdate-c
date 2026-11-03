@@ -131,6 +131,9 @@ static void check_invalid(uint32_t value) {
     CHECK_EQ_INT(written, 99);
     /* A range built from a forged date is not a range this library made. */
     const nepdate_range forged = {date, valid};
+    /* The forged range is deliberately the first argument; the two range arguments are not
+     * swapped. */
+    /* NOLINTBEGIN(readability-suspicious-call-argument) */
     CHECK_EQ_INT(nepdate_range_contains_range(forged, anchor_range, &contains),
                  NEPDATE_E_INVALID_DATE);
     CHECK_EQ_INT(nepdate_range_overlaps(forged, anchor_range, &contains), NEPDATE_E_INVALID_DATE);
@@ -151,6 +154,7 @@ static void check_invalid(uint32_t value) {
     CHECK_EQ_INT(nepdate_range_format_short(forged, NEPDATE_YMD, NEPDATE_SEP_SLASH, NEPDATE_ENGLISH,
                                             text, sizeof text),
                  0);
+    /* NOLINTEND(readability-suspicious-call-argument) */
     CHECK_EQ_INT(nepdate_format_iso(date, text, sizeof text), 0);
     CHECK_EQ_INT(nepdate_format(date, "yyyy-MM-dd", NEPDATE_ENGLISH, text, sizeof text), 0);
     CHECK_EQ_INT(nepdate_format_short(date, NEPDATE_YMD, NEPDATE_SEP_SLASH, true, NEPDATE_ENGLISH,
@@ -226,77 +230,12 @@ static void check_valid_arithmetic(nepdate_date date) {
     CHECK(contains);
 }
 
-static void check_valid(uint32_t value) {
-    const nepdate_date date = {(int32_t)value};
-    nepdate_ymd ymd = {0, 0, 0};
-    nepdate_ymd ad = {0, 0, 0};
-    nepdate_weekday weekday = NEPDATE_SUNDAY;
-    nepdate_month month = NEPDATE_BAISHAKH;
-    nepdate_date first = {0};
-    nepdate_date last = {0};
-    int day_of_year = 0;
-    int length = 0;
-    int comparison = 0;
+/* The API v1 calls on a date this library made: every one returns a value in its stated range and
+ * none of them allocates. The checks are here rather than in check_valid to keep that function
+ * readable. */
+static void check_valid_api(nepdate_date date, nepdate_ymd ad) {
     bool contains = false;
-    const nepdate_date valid = anchor_date;
-
-    CHECK_EQ_INT(nepdate_to_bs(date, &ymd), NEPDATE_OK);
-    CHECK(ymd.year >= 1901 && ymd.year <= 2199);
-    CHECK(ymd.month >= 1 && ymd.month <= 12);
-    CHECK(ymd.day >= 1 && ymd.day <= 32);
-    nepdate_date back = {0};
-    CHECK_EQ_INT(nepdate_from_bs(ymd.year, ymd.month, ymd.day, &back), NEPDATE_OK);
-    CHECK_EQ_INT(back.value, date.value);
-
-    CHECK_EQ_INT(nepdate_to_ad(date, &ad), NEPDATE_OK);
-    nepdate_date from_ad = {0};
-    CHECK_EQ_INT(nepdate_from_ad(ad.year, ad.month, ad.day, &from_ad), NEPDATE_OK);
-    CHECK_EQ_INT(from_ad.value, date.value);
-
-    CHECK_EQ_INT(nepdate_weekday_of(date, &weekday), NEPDATE_OK);
-    CHECK(weekday >= NEPDATE_SUNDAY && weekday <= NEPDATE_SATURDAY);
-    CHECK_EQ_INT(nepdate_month_of(date, &month), NEPDATE_OK);
-    CHECK(month >= NEPDATE_BAISHAKH && month <= NEPDATE_CHAITRA);
-    CHECK_EQ_INT(nepdate_day_of_year(date, &day_of_year), NEPDATE_OK);
-    CHECK(day_of_year >= 1 && day_of_year <= 367);
-    CHECK_EQ_INT(nepdate_month_length(date, &length), NEPDATE_OK);
-    CHECK(length >= 29 && length <= 32);
-    CHECK_EQ_INT(nepdate_year_length(date, &length), NEPDATE_OK);
-    CHECK(length >= 364 && length <= 367);
-
-    CHECK_EQ_INT(nepdate_first_day_of_month(date, &first), NEPDATE_OK);
-    CHECK_EQ_INT(nepdate_last_day_of_month(date, &last), NEPDATE_OK);
-    CHECK_EQ_INT(nepdate_compare(first, date, &comparison), NEPDATE_OK);
-    CHECK(comparison <= 0);
-    CHECK_EQ_INT(nepdate_compare(date, last, &comparison), NEPDATE_OK);
-    CHECK(comparison <= 0);
-    CHECK_EQ_INT(nepdate_compare(first, last, &comparison), NEPDATE_OK);
-    CHECK(comparison < 0);
-    nepdate_date first_back = {0};
-    nepdate_date last_back = {0};
-    CHECK_EQ_INT(nepdate_to_bs(first, &ymd), NEPDATE_OK);
-    CHECK_EQ_INT(nepdate_from_bs(ymd.year, ymd.month, ymd.day, &first_back), NEPDATE_OK);
-    CHECK_EQ_INT(first_back.value, first.value);
-    CHECK_EQ_INT(nepdate_to_bs(last, &ymd), NEPDATE_OK);
-    CHECK_EQ_INT(nepdate_from_bs(ymd.year, ymd.month, ymd.day, &last_back), NEPDATE_OK);
-    CHECK_EQ_INT(last_back.value, last.value);
-
-    CHECK_EQ_INT(nepdate_compare(date, date, &comparison), NEPDATE_OK);
-    CHECK_EQ_INT(comparison, 0);
-    CHECK_EQ_INT(nepdate_compare(date, valid, &comparison), NEPDATE_OK);
-    CHECK(comparison >= -1 && comparison <= 1);
-    CHECK_EQ_INT(nepdate_compare(valid, date, &comparison), NEPDATE_OK);
-    CHECK(comparison >= -1 && comparison <= 1);
-
     char text[96];
-    CHECK_EQ_INT(nepdate_format(date, NULL, NEPDATE_ENGLISH, text, sizeof text), 10);
-    CHECK_EQ_INT(text[10], '\0');
-    CHECK_EQ_INT(nepdate_format_short(date, NEPDATE_YMD, NEPDATE_SEP_SLASH, true, NEPDATE_ENGLISH,
-                                      text, sizeof text),
-                 10);
-    const nepdate_long_options options = {true, true, true};
-    CHECK(nepdate_format_long(date, options, NEPDATE_ENGLISH, text, sizeof text) > 0);
-
     CHECK_EQ_INT(nepdate_format_iso(date, text, sizeof text), 10);
     CHECK_EQ_INT(text[10], '\0');
     int64_t packed = 0;
@@ -357,6 +296,80 @@ static void check_valid(uint32_t value) {
     CHECK_EQ_INT(nepdate_range_format_short(single, NEPDATE_YMD, NEPDATE_SEP_SLASH, NEPDATE_ENGLISH,
                                             range_text, sizeof range_text),
                  23);
+}
+
+static void check_valid(uint32_t value) {
+    const nepdate_date date = {(int32_t)value};
+    nepdate_ymd ymd = {0, 0, 0};
+    nepdate_ymd ad = {0, 0, 0};
+    nepdate_weekday weekday = NEPDATE_SUNDAY;
+    nepdate_month month = NEPDATE_BAISHAKH;
+    nepdate_date first = {0};
+    nepdate_date last = {0};
+    int day_of_year = 0;
+    int length = 0;
+    int comparison = 0;
+    const nepdate_date valid = anchor_date;
+
+    CHECK_EQ_INT(nepdate_to_bs(date, &ymd), NEPDATE_OK);
+    CHECK(ymd.year >= 1901 && ymd.year <= 2199);
+    CHECK(ymd.month >= 1 && ymd.month <= 12);
+    CHECK(ymd.day >= 1 && ymd.day <= 32);
+    nepdate_date back = {0};
+    CHECK_EQ_INT(nepdate_from_bs(ymd.year, ymd.month, ymd.day, &back), NEPDATE_OK);
+    CHECK_EQ_INT(back.value, date.value);
+
+    CHECK_EQ_INT(nepdate_to_ad(date, &ad), NEPDATE_OK);
+    nepdate_date from_ad = {0};
+    CHECK_EQ_INT(nepdate_from_ad(ad.year, ad.month, ad.day, &from_ad), NEPDATE_OK);
+    CHECK_EQ_INT(from_ad.value, date.value);
+
+    CHECK_EQ_INT(nepdate_weekday_of(date, &weekday), NEPDATE_OK);
+    CHECK(weekday >= NEPDATE_SUNDAY && weekday <= NEPDATE_SATURDAY);
+    CHECK_EQ_INT(nepdate_month_of(date, &month), NEPDATE_OK);
+    CHECK(month >= NEPDATE_BAISHAKH && month <= NEPDATE_CHAITRA);
+    CHECK_EQ_INT(nepdate_day_of_year(date, &day_of_year), NEPDATE_OK);
+    CHECK(day_of_year >= 1 && day_of_year <= 367);
+    CHECK_EQ_INT(nepdate_month_length(date, &length), NEPDATE_OK);
+    CHECK(length >= 29 && length <= 32);
+    CHECK_EQ_INT(nepdate_year_length(date, &length), NEPDATE_OK);
+    CHECK(length >= 364 && length <= 367);
+
+    CHECK_EQ_INT(nepdate_first_day_of_month(date, &first), NEPDATE_OK);
+    CHECK_EQ_INT(nepdate_last_day_of_month(date, &last), NEPDATE_OK);
+    CHECK_EQ_INT(nepdate_compare(first, date, &comparison), NEPDATE_OK);
+    CHECK(comparison <= 0);
+    CHECK_EQ_INT(nepdate_compare(date, last, &comparison), NEPDATE_OK);
+    CHECK(comparison <= 0);
+    CHECK_EQ_INT(nepdate_compare(first, last, &comparison), NEPDATE_OK);
+    CHECK(comparison < 0);
+    nepdate_date first_back = {0};
+    nepdate_date last_back = {0};
+    CHECK_EQ_INT(nepdate_to_bs(first, &ymd), NEPDATE_OK);
+    CHECK_EQ_INT(nepdate_from_bs(ymd.year, ymd.month, ymd.day, &first_back), NEPDATE_OK);
+    CHECK_EQ_INT(first_back.value, first.value);
+    CHECK_EQ_INT(nepdate_to_bs(last, &ymd), NEPDATE_OK);
+    CHECK_EQ_INT(nepdate_from_bs(ymd.year, ymd.month, ymd.day, &last_back), NEPDATE_OK);
+    CHECK_EQ_INT(last_back.value, last.value);
+
+    CHECK_EQ_INT(nepdate_compare(date, date, &comparison), NEPDATE_OK);
+    CHECK_EQ_INT(comparison, 0);
+    CHECK_EQ_INT(nepdate_compare(date, valid, &comparison), NEPDATE_OK);
+    CHECK(comparison >= -1 && comparison <= 1);
+    CHECK_EQ_INT(nepdate_compare(valid, date, &comparison), NEPDATE_OK);
+    CHECK(comparison >= -1 && comparison <= 1);
+
+    char text[96];
+    CHECK_EQ_INT(nepdate_format(date, NULL, NEPDATE_ENGLISH, text, sizeof text), 10);
+    CHECK_EQ_INT(text[10], '\0');
+    CHECK_EQ_INT(nepdate_format_short(date, NEPDATE_YMD, NEPDATE_SEP_SLASH, true, NEPDATE_ENGLISH,
+                                      text, sizeof text),
+                 10);
+    const nepdate_long_options options = {true, true, true};
+    CHECK(nepdate_format_long(date, options, NEPDATE_ENGLISH, text, sizeof text) > 0);
+
+    check_valid_api(date, ad);
+
 #ifdef NEPDATE_C_TEST_PATRO
     nepdate_patro_day_info patro_info;
     CHECK_EQ_INT(nepdate_patro_info(date, &patro_info), NEPDATE_OK);

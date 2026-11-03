@@ -82,6 +82,159 @@ static void check_bool_field(const char *field, bool actual) {
     CHECK_EQ_INT(actual, expected);
 }
 
+/* One construct row: a reversed pair or an invalid date is a failure, anything else the range. */
+static void check_construct_row(const char *expected, const nepdate_range *range, bool range_ok) {
+    if (result_is(expected, "ERR")) {
+        CHECK(!range_ok);
+        return;
+    }
+    CHECK(range_ok);
+    if (!range_ok) {
+        return;
+    }
+    char text[40];
+    vector_format_range(*range, text, sizeof text);
+    CHECK_EQ_STR(text, expected);
+}
+
+static void check_length_row(nepdate_range range, const char *expected) {
+    int length = 0;
+    CHECK_EQ_INT(nepdate_range_length(range, &length), NEPDATE_OK);
+    int expected_length = 0;
+    CHECK(vector_read_int(expected, &expected_length));
+    CHECK_EQ_INT(length, expected_length);
+}
+
+static void check_contains_date_row(nepdate_range range, const char *argument,
+                                    const char *expected) {
+    nepdate_date date = {0};
+    CHECK(vector_parse_date(argument, &date));
+    bool contains = false;
+    CHECK_EQ_INT(nepdate_range_contains(range, date, &contains), NEPDATE_OK);
+    check_bool_field(expected, contains);
+}
+
+/* contains_range, overlaps, is_adjacent_to and equals all take a second range and answer a bool. */
+static void check_pair_bool_row(const char *operation, nepdate_range range, const char *argument,
+                                const char *expected) {
+    nepdate_range other = {{0}, {0}};
+    CHECK(vector_parse_range(argument, &other));
+    bool actual = false;
+    nepdate_status status = NEPDATE_OK;
+    if (strcmp(operation, "contains_range") == 0) {
+        status = nepdate_range_contains_range(range, other, &actual);
+    } else if (strcmp(operation, "overlaps") == 0) {
+        status = nepdate_range_overlaps(range, other, &actual);
+    } else if (strcmp(operation, "is_adjacent_to") == 0) {
+        status = nepdate_range_is_adjacent_to(range, other, &actual);
+    } else {
+        status = nepdate_range_equal(range, other, &actual);
+    }
+    CHECK_EQ_INT(status, NEPDATE_OK);
+    check_bool_field(expected, actual);
+}
+
+static void check_intersect_row(nepdate_range range, const char *argument, const char *expected) {
+    nepdate_range other = {{0}, {0}};
+    CHECK(vector_parse_range(argument, &other));
+    nepdate_range actual = {{0}, {0}};
+    const nepdate_status status = nepdate_range_intersect(range, other, &actual);
+    if (result_is(expected, "none")) {
+        /* D-01 and D-16: a port has no empty range, so a disjoint pair has no result. */
+        CHECK_EQ_INT(status, NEPDATE_E_NO_OVERLAP);
+        CHECK_EQ_INT(actual.start.value, 0);
+        CHECK_EQ_INT(actual.end.value, 0);
+        return;
+    }
+    CHECK_EQ_INT(status, NEPDATE_OK);
+    char text[40];
+    vector_format_range(actual, text, sizeof text);
+    CHECK_EQ_STR(text, expected);
+}
+
+static void check_union_row(nepdate_range range, const char *argument, const char *expected) {
+    nepdate_range other = {{0}, {0}};
+    CHECK(vector_parse_range(argument, &other));
+    nepdate_range actual = {{0}, {0}};
+    CHECK_EQ_INT(nepdate_range_union(range, other, &actual), NEPDATE_OK);
+    char text[40];
+    vector_format_range(actual, text, sizeof text);
+    CHECK_EQ_STR(text, expected);
+}
+
+static void check_except_row(nepdate_range range, const char *argument, const char *expected) {
+    nepdate_range other = {{0}, {0}};
+    CHECK(vector_parse_range(argument, &other));
+    nepdate_range pieces[2] = {{{0}, {0}}, {{0}, {0}}};
+    size_t written = 99;
+    CHECK_EQ_INT(nepdate_range_except(range, other, pieces, &written), NEPDATE_OK);
+    text_builder builder = {{0}, 0, false};
+    for (size_t i = 0; i < written; i++) {
+        append_separator(&builder);
+        append_range(&builder, pieces[i]);
+    }
+    CHECK_EQ_STR(list_text(&builder), expected);
+}
+
+static void check_range_format_row(nepdate_range range, const char *expected) {
+    char text[64];
+    const size_t length = nepdate_range_format(range, text, sizeof text);
+    CHECK_EQ_INT(length, strlen(expected));
+    CHECK_EQ_STR(text, expected);
+}
+
+static void check_enumerate_row(nepdate_range range, const char *expected) {
+    nepdate_range_iterator iterator = {0, 0};
+    CHECK_EQ_INT(nepdate_range_begin(range, &iterator), NEPDATE_OK);
+    text_builder builder = {{0}, 0, false};
+    nepdate_date date = {0};
+    while (nepdate_range_next(&iterator, &date)) {
+        append_separator(&builder);
+        append_date(&builder, date);
+    }
+    CHECK_EQ_STR(list_text(&builder), expected);
+}
+
+/* One row of ranges.tsv, dispatched on its operation column. Returns false for a row whose range
+ * could not be built where the operation needs one. */
+static bool check_range_row(char *fields[]) {
+    const char *operation = fields[2];
+    const char *argument = fields[3];
+    const char *expected = fields[4];
+    nepdate_range range = {{0}, {0}};
+    const bool range_ok = optional_range(fields[0], fields[1], &range);
+    if (strcmp(operation, "construct") == 0) {
+        check_construct_row(expected, &range, range_ok);
+        return true;
+    }
+    CHECK(range_ok);
+    if (!range_ok) {
+        return false;
+    }
+    if (strcmp(operation, "length") == 0) {
+        check_length_row(range, expected);
+    } else if (strcmp(operation, "contains_date") == 0) {
+        check_contains_date_row(range, argument, expected);
+    } else if (strcmp(operation, "contains_range") == 0 || strcmp(operation, "overlaps") == 0 ||
+               strcmp(operation, "is_adjacent_to") == 0 || strcmp(operation, "equals") == 0) {
+        check_pair_bool_row(operation, range, argument, expected);
+    } else if (strcmp(operation, "intersect") == 0) {
+        check_intersect_row(range, argument, expected);
+    } else if (strcmp(operation, "union") == 0) {
+        check_union_row(range, argument, expected);
+    } else if (strcmp(operation, "except") == 0) {
+        check_except_row(range, argument, expected);
+    } else if (strcmp(operation, "to_string") == 0) {
+        check_range_format_row(range, expected);
+    } else if (strcmp(operation, "enumerate") == 0) {
+        check_enumerate_row(range, expected);
+    } else {
+        FAIL("unknown range operation");
+        return false;
+    }
+    return true;
+}
+
 TEST(golden_range_rows) {
     vector_reader reader;
     CHECK(vector_open(&reader, "csharp-golden/ranges.tsv"));
@@ -91,116 +244,59 @@ TEST(golden_range_rows) {
     while ((line = vector_next(&reader)) != NULL) {
         char *fields[7];
         CHECK_EQ_INT(vector_split(line, '\t', fields, 7), 6);
-        const char *operation = fields[2];
-        const char *argument = fields[3];
-        const char *expected = fields[4];
-
-        nepdate_range range = {{0}, {0}};
-        const bool range_ok = optional_range(fields[0], fields[1], &range);
-
-        if (strcmp(operation, "construct") == 0) {
-            if (result_is(expected, "ERR")) {
-                CHECK(!range_ok);
-            } else {
-                CHECK(range_ok);
-                char text[40];
-                vector_format_range(range, text, sizeof text);
-                CHECK_EQ_STR(text, expected);
-            }
+        if (check_range_row(fields)) {
             rows++;
-            continue;
         }
-
-        CHECK(range_ok);
-        if (!range_ok) {
-            continue;
-        }
-
-        if (strcmp(operation, "length") == 0) {
-            int length = 0;
-            CHECK_EQ_INT(nepdate_range_length(range, &length), NEPDATE_OK);
-            CHECK_EQ_INT(length, atoi(expected));
-        } else if (strcmp(operation, "contains_date") == 0) {
-            nepdate_date date = {0};
-            CHECK(vector_parse_date(argument, &date));
-            bool contains = false;
-            CHECK_EQ_INT(nepdate_range_contains(range, date, &contains), NEPDATE_OK);
-            check_bool_field(expected, contains);
-        } else if (strcmp(operation, "contains_range") == 0 || strcmp(operation, "overlaps") == 0 ||
-                   strcmp(operation, "is_adjacent_to") == 0 || strcmp(operation, "equals") == 0) {
-            nepdate_range other = {{0}, {0}};
-            CHECK(vector_parse_range(argument, &other));
-            bool actual = false;
-            nepdate_status status = NEPDATE_OK;
-            if (strcmp(operation, "contains_range") == 0) {
-                status = nepdate_range_contains_range(range, other, &actual);
-            } else if (strcmp(operation, "overlaps") == 0) {
-                status = nepdate_range_overlaps(range, other, &actual);
-            } else if (strcmp(operation, "is_adjacent_to") == 0) {
-                status = nepdate_range_is_adjacent_to(range, other, &actual);
-            } else {
-                status = nepdate_range_equal(range, other, &actual);
-            }
-            CHECK_EQ_INT(status, NEPDATE_OK);
-            check_bool_field(expected, actual);
-        } else if (strcmp(operation, "intersect") == 0) {
-            nepdate_range other = {{0}, {0}};
-            CHECK(vector_parse_range(argument, &other));
-            nepdate_range actual = {{0}, {0}};
-            const nepdate_status status = nepdate_range_intersect(range, other, &actual);
-            if (result_is(expected, "none")) {
-                /* D-01 and D-16: a port has no empty range, so a disjoint pair has no result. */
-                CHECK_EQ_INT(status, NEPDATE_E_NO_OVERLAP);
-                CHECK_EQ_INT(actual.start.value, 0);
-                CHECK_EQ_INT(actual.end.value, 0);
-            } else {
-                CHECK_EQ_INT(status, NEPDATE_OK);
-                char text[40];
-                vector_format_range(actual, text, sizeof text);
-                CHECK_EQ_STR(text, expected);
-            }
-        } else if (strcmp(operation, "union") == 0) {
-            nepdate_range other = {{0}, {0}};
-            CHECK(vector_parse_range(argument, &other));
-            nepdate_range actual = {{0}, {0}};
-            CHECK_EQ_INT(nepdate_range_union(range, other, &actual), NEPDATE_OK);
-            char text[40];
-            vector_format_range(actual, text, sizeof text);
-            CHECK_EQ_STR(text, expected);
-        } else if (strcmp(operation, "except") == 0) {
-            nepdate_range other = {{0}, {0}};
-            CHECK(vector_parse_range(argument, &other));
-            nepdate_range pieces[2] = {{{0}, {0}}, {{0}, {0}}};
-            size_t written = 99;
-            CHECK_EQ_INT(nepdate_range_except(range, other, pieces, &written), NEPDATE_OK);
-            text_builder builder = {{0}, 0, false};
-            for (size_t i = 0; i < written; i++) {
-                append_separator(&builder);
-                append_range(&builder, pieces[i]);
-            }
-            CHECK_EQ_STR(list_text(&builder), expected);
-        } else if (strcmp(operation, "to_string") == 0) {
-            char text[64];
-            const size_t length = nepdate_range_format(range, text, sizeof text);
-            CHECK_EQ_INT(length, strlen(expected));
-            CHECK_EQ_STR(text, expected);
-        } else if (strcmp(operation, "enumerate") == 0) {
-            nepdate_range_iterator iterator = {0, 0};
-            CHECK_EQ_INT(nepdate_range_begin(range, &iterator), NEPDATE_OK);
-            text_builder builder = {{0}, 0, false};
-            nepdate_date date = {0};
-            while (nepdate_range_next(&iterator, &date)) {
-                append_separator(&builder);
-                append_date(&builder, date);
-            }
-            CHECK_EQ_STR(list_text(&builder), expected);
-        } else {
-            FAIL("unknown range operation");
-        }
-        rows++;
     }
     vector_close(&reader);
     CHECK_EQ_INT(rows, 54);
+}
+
+/* One factory row: the argument shape depends on the factory, and a refused argument is the row's
+ * expected error. */
+static nepdate_status factory_status(const char *factory, char *argument, nepdate_range *actual) {
+    char *parts[3];
+    const int count = vector_split(argument, ',', parts, 3);
+    if (strcmp(factory, "single_day") == 0) {
+        nepdate_date date = {0};
+        CHECK_EQ_INT(count, 1);
+        return vector_parse_date(parts[0], &date) ? nepdate_range_make(date, date, actual)
+                                                  : NEPDATE_E_OUT_OF_RANGE;
+    }
+    if (strcmp(factory, "for_month") == 0) {
+        int year = 0;
+        int month = 0;
+        CHECK_EQ_INT(count, 2);
+        CHECK(vector_read_int(parts[0], &year));
+        CHECK(vector_read_int(parts[1], &month));
+        return nepdate_range_of_month(year, month, actual);
+    }
+    if (strcmp(factory, "for_calendar_year") == 0 || strcmp(factory, "for_fiscal_year") == 0) {
+        int year = 0;
+        CHECK_EQ_INT(count, 1);
+        CHECK(vector_read_int(parts[0], &year));
+        return strcmp(factory, "for_calendar_year") == 0
+                   ? nepdate_range_of_year(year, actual)
+                   : nepdate_range_of_fiscal_year(year, actual);
+    }
+    if (strcmp(factory, "construct") == 0) {
+        nepdate_date first = {0};
+        nepdate_date last = {0};
+        CHECK_EQ_INT(count, 2);
+        CHECK(vector_parse_date(parts[0], &first));
+        CHECK(vector_parse_date(parts[1], &last));
+        return nepdate_range_make(first, last, actual);
+    }
+    if (strcmp(factory, "from_day_count") == 0) {
+        nepdate_date start = {0};
+        int64_t days = 0;
+        CHECK_EQ_INT(count, 2);
+        CHECK(vector_parse_date(parts[0], &start));
+        CHECK(vector_read_int64(parts[1], &days));
+        return nepdate_range_from_day_count(start, (int32_t)days, actual);
+    }
+    FAIL("unknown range factory");
+    return NEPDATE_E_OUT_OF_RANGE;
 }
 
 TEST(golden_range_factories) {
@@ -212,52 +308,15 @@ TEST(golden_range_factories) {
     while ((line = vector_next(&reader)) != NULL) {
         char *fields[5];
         CHECK_EQ_INT(vector_split(line, '\t', fields, 5), 4);
-        const char *factory = fields[0];
-        char *argument = fields[1];
-        const char *expected = fields[2];
-
-        char *parts[3];
-        const int count = vector_split(argument, ',', parts, 3);
         nepdate_range actual = {{0}, {0}};
-        nepdate_status status = NEPDATE_OK;
-        if (strcmp(factory, "single_day") == 0) {
-            nepdate_date date = {0};
-            CHECK_EQ_INT(count, 1);
-            status = vector_parse_date(parts[0], &date) ? nepdate_range_make(date, date, &actual)
-                                                        : NEPDATE_E_OUT_OF_RANGE;
-        } else if (strcmp(factory, "from_day_count") == 0) {
-            nepdate_date start = {0};
-            CHECK_EQ_INT(count, 2);
-            CHECK(vector_parse_date(parts[0], &start));
-            status = nepdate_range_from_day_count(start, (int32_t)atoll(parts[1]), &actual);
-        } else if (strcmp(factory, "for_month") == 0) {
-            CHECK_EQ_INT(count, 2);
-            status = nepdate_range_of_month(atoi(parts[0]), atoi(parts[1]), &actual);
-        } else if (strcmp(factory, "for_calendar_year") == 0) {
-            CHECK_EQ_INT(count, 1);
-            status = nepdate_range_of_year(atoi(parts[0]), &actual);
-        } else if (strcmp(factory, "for_fiscal_year") == 0) {
-            CHECK_EQ_INT(count, 1);
-            status = nepdate_range_of_fiscal_year(atoi(parts[0]), &actual);
-        } else if (strcmp(factory, "construct") == 0) {
-            nepdate_date first = {0};
-            nepdate_date last = {0};
-            CHECK_EQ_INT(count, 2);
-            CHECK(vector_parse_date(parts[0], &first));
-            CHECK(vector_parse_date(parts[1], &last));
-            status = nepdate_range_make(first, last, &actual);
-        } else {
-            FAIL("unknown range factory");
-            continue;
-        }
-
-        if (result_is(expected, "ERR")) {
+        const nepdate_status status = factory_status(fields[0], fields[1], &actual);
+        if (result_is(fields[2], "ERR")) {
             CHECK(status != NEPDATE_OK);
         } else {
             CHECK_EQ_INT(status, NEPDATE_OK);
             char text[40];
             vector_format_range(actual, text, sizeof text);
-            CHECK_EQ_STR(text, expected);
+            CHECK_EQ_STR(text, fields[2]);
         }
         rows++;
     }
@@ -301,6 +360,48 @@ TEST(golden_range_splits) {
     CHECK_EQ_INT(rows, 9);
 }
 
+/* Every date a day cursor yields, as the text the vector compares. */
+static void append_cursor_days(nepdate_range_day_cursor cursor, text_builder *builder) {
+    nepdate_date date = {0};
+    while (nepdate_range_day_next(&cursor, &date)) {
+        append_separator(builder);
+        append_date(builder, date);
+    }
+}
+
+/* One day-helper row: the argument is the interval or the Sunday flag, and ERR is a refused
+ * argument. Returns false for a refused argument. */
+static bool check_range_day_row(char *fields[], nepdate_range range, text_builder *builder) {
+    const char *operation = fields[2];
+    const char *argument = fields[3];
+    const char *expected = fields[4];
+    nepdate_range_day_cursor cursor = {0, 0, 0, 0};
+    nepdate_status status = NEPDATE_OK;
+    if (strcmp(operation, "dates_with_interval") == 0) {
+        int64_t interval = 0;
+        CHECK(vector_read_int64(argument, &interval));
+        status = nepdate_range_dates_with_interval(range, (int32_t)interval, &cursor);
+    } else if (strcmp(operation, "working_days") == 0) {
+        bool exclude_sunday = false;
+        CHECK(parse_bool(argument, &exclude_sunday));
+        status = nepdate_range_working_days(range, exclude_sunday, &cursor);
+    } else if (strcmp(operation, "weekend_days") == 0) {
+        bool include_sunday = false;
+        CHECK(parse_bool(argument, &include_sunday));
+        status = nepdate_range_weekend_days(range, include_sunday, &cursor);
+    } else {
+        FAIL("unknown range day operation");
+        return false;
+    }
+    if (result_is(expected, "ERR")) {
+        CHECK(status != NEPDATE_OK);
+        return false;
+    }
+    CHECK_EQ_INT(status, NEPDATE_OK);
+    append_cursor_days(cursor, builder);
+    return true;
+}
+
 TEST(golden_range_days) {
     vector_reader reader;
     CHECK(vector_open(&reader, "csharp-golden/range-days.tsv"));
@@ -312,53 +413,70 @@ TEST(golden_range_days) {
         CHECK_EQ_INT(vector_split(line, '\t', fields, 7), 6);
         nepdate_range range = {{0}, {0}};
         CHECK(optional_range(fields[0], fields[1], &range));
-        const char *operation = fields[2];
-        const char *expected = fields[4];
         text_builder builder = {{0}, 0, false};
-
-        if (strcmp(operation, "enumerate") == 0) {
-            nepdate_range_iterator iterator = {0, 0};
-            CHECK_EQ_INT(nepdate_range_begin(range, &iterator), NEPDATE_OK);
-            nepdate_date date = {0};
-            while (nepdate_range_next(&iterator, &date)) {
-                append_separator(&builder);
-                append_date(&builder, date);
-            }
-        } else {
-            nepdate_range_day_cursor cursor = {0, 0, 0, 0};
-            nepdate_status status = NEPDATE_OK;
-            if (strcmp(operation, "dates_with_interval") == 0) {
-                status =
-                    nepdate_range_dates_with_interval(range, (int32_t)atoll(fields[3]), &cursor);
-            } else if (strcmp(operation, "working_days") == 0) {
-                bool exclude_sunday = false;
-                CHECK(parse_bool(fields[3], &exclude_sunday));
-                status = nepdate_range_working_days(range, exclude_sunday, &cursor);
-            } else if (strcmp(operation, "weekend_days") == 0) {
-                bool include_sunday = false;
-                CHECK(parse_bool(fields[3], &include_sunday));
-                status = nepdate_range_weekend_days(range, include_sunday, &cursor);
-            } else {
-                FAIL("unknown range day operation");
-                continue;
-            }
-            if (result_is(expected, "ERR")) {
-                CHECK(status != NEPDATE_OK);
-                rows++;
-                continue;
-            }
-            CHECK_EQ_INT(status, NEPDATE_OK);
-            nepdate_date date = {0};
-            while (nepdate_range_day_next(&cursor, &date)) {
-                append_separator(&builder);
-                append_date(&builder, date);
-            }
+        if (strcmp(fields[2], "enumerate") == 0) {
+            check_enumerate_row(range, fields[4]);
+            rows++;
+            continue;
         }
-        CHECK_EQ_STR(list_text(&builder), expected);
+        if (check_range_day_row(fields, range, &builder)) {
+            CHECK_EQ_STR(list_text(&builder), fields[4]);
+        }
         rows++;
     }
     vector_close(&reader);
     CHECK_EQ_INT(rows, 18);
+}
+
+static nepdate_order range_order(const char *name) {
+    const struct {
+        const char *name;
+        nepdate_order order;
+    } orders[] = {{"Ymd", NEPDATE_YMD}, {"Ydm", NEPDATE_YDM}, {"Myd", NEPDATE_MYD},
+                  {"Mdy", NEPDATE_MDY}, {"Dym", NEPDATE_DYM}, {"Dmy", NEPDATE_DMY}};
+    for (size_t i = 0; i < sizeof orders / sizeof orders[0]; i++) {
+        if (strcmp(name, orders[i].name) == 0) {
+            return orders[i].order;
+        }
+    }
+    FAIL("unknown date order");
+    return NEPDATE_YMD;
+}
+
+static nepdate_separator range_separator(const char *name) {
+    const struct {
+        const char *name;
+        nepdate_separator separator;
+    } separators[] = {{"Slash", NEPDATE_SEP_SLASH}, {"Backslash", NEPDATE_SEP_BACKSLASH},
+                      {"Dot", NEPDATE_SEP_DOT},     {"Underscore", NEPDATE_SEP_UNDERSCORE},
+                      {"Dash", NEPDATE_SEP_DASH},   {"Space", NEPDATE_SEP_SPACE}};
+    for (size_t i = 0; i < sizeof separators / sizeof separators[0]; i++) {
+        if (strcmp(name, separators[i].name) == 0) {
+            return separators[i].separator;
+        }
+    }
+    FAIL("unknown separator");
+    return NEPDATE_SEP_SLASH;
+}
+
+/* One format row: the default display, or the short form in the row's order, separator and
+ * language. */
+static void check_range_format_matrix_row(char *fields[], nepdate_range range) {
+    char text[64];
+    size_t length = 0;
+    if (strcmp(fields[2], "default") == 0) {
+        length = nepdate_range_format(range, text, sizeof text);
+    } else if (strcmp(fields[2], "short") == 0) {
+        const nepdate_order order = range_order(fields[3]);
+        const nepdate_separator separator = range_separator(fields[4]);
+        const nepdate_lang lang = strcmp(fields[5], "ne") == 0 ? NEPDATE_NEPALI : NEPDATE_ENGLISH;
+        length = nepdate_range_format_short(range, order, separator, lang, text, sizeof text);
+    } else {
+        FAIL("unknown range format kind");
+        return;
+    }
+    CHECK_EQ_INT(length, strlen(fields[6]));
+    CHECK_EQ_STR(text, fields[6]);
 }
 
 TEST(golden_range_format) {
@@ -372,52 +490,15 @@ TEST(golden_range_format) {
         char *fields[9];
         CHECK_EQ_INT(vector_split(line, '\t', fields, 9), 8);
         nepdate_range range = {{0}, {0}};
-        const bool range_ok = optional_range(fields[0], fields[1], &range);
-        char text[64];
-        size_t length = 0;
-        if (!range_ok) {
+        if (!optional_range(fields[0], fields[1], &range)) {
             /* D-01: the C# empty range cannot be built here, so the row is an error. */
             CHECK(result_is(fields[6], "ERR"));
+            char text[64];
             CHECK_EQ_INT(nepdate_range_format(range, text, sizeof text), 0);
             rejected++;
-            rows++;
-            continue;
-        }
-        if (strcmp(fields[2], "default") == 0) {
-            length = nepdate_range_format(range, text, sizeof text);
-        } else if (strcmp(fields[2], "short") == 0) {
-            const struct {
-                const char *name;
-                nepdate_order order;
-            } orders[] = {{"Ymd", NEPDATE_YMD}, {"Ydm", NEPDATE_YDM}, {"Myd", NEPDATE_MYD},
-                          {"Mdy", NEPDATE_MDY}, {"Dym", NEPDATE_DYM}, {"Dmy", NEPDATE_DMY}};
-            const struct {
-                const char *name;
-                nepdate_separator separator;
-            } separators[] = {{"Slash", NEPDATE_SEP_SLASH}, {"Backslash", NEPDATE_SEP_BACKSLASH},
-                              {"Dot", NEPDATE_SEP_DOT},     {"Underscore", NEPDATE_SEP_UNDERSCORE},
-                              {"Dash", NEPDATE_SEP_DASH},   {"Space", NEPDATE_SEP_SPACE}};
-            nepdate_order order = NEPDATE_YMD;
-            nepdate_separator separator = NEPDATE_SEP_SLASH;
-            for (size_t i = 0; i < sizeof orders / sizeof orders[0]; i++) {
-                if (strcmp(fields[3], orders[i].name) == 0) {
-                    order = orders[i].order;
-                }
-            }
-            for (size_t i = 0; i < sizeof separators / sizeof separators[0]; i++) {
-                if (strcmp(fields[4], separators[i].name) == 0) {
-                    separator = separators[i].separator;
-                }
-            }
-            const nepdate_lang lang =
-                strcmp(fields[5], "ne") == 0 ? NEPDATE_NEPALI : NEPDATE_ENGLISH;
-            length = nepdate_range_format_short(range, order, separator, lang, text, sizeof text);
         } else {
-            FAIL("unknown range format kind");
-            continue;
+            check_range_format_matrix_row(fields, range);
         }
-        CHECK_EQ_INT(length, strlen(fields[6]));
-        CHECK_EQ_STR(text, fields[6]);
         rows++;
     }
     vector_close(&reader);
@@ -614,6 +695,9 @@ TEST(range_errors_and_identity) {
 
     const nepdate_range forged = {{0}, {10}};
     nepdate_range out = {{0}, {0}};
+    /* The forged range is deliberately the first argument here; tidy would guess the two range
+     * arguments might be swapped. */
+    /* NOLINTBEGIN(readability-suspicious-call-argument) */
     CHECK_EQ_INT(nepdate_range_intersect(forged, range, &out), NEPDATE_E_INVALID_DATE);
     CHECK_EQ_INT(nepdate_range_union(range, forged, &out), NEPDATE_E_INVALID_DATE);
     CHECK_EQ_INT(nepdate_range_contains_range(forged, range, &actual), NEPDATE_E_INVALID_DATE);
@@ -629,6 +713,7 @@ TEST(range_errors_and_identity) {
     CHECK_EQ_INT(nepdate_range_union(reversed, range, &out), NEPDATE_E_INVALID_DATE);
     CHECK_EQ_INT(nepdate_range_is_adjacent_to(reversed, range, &actual), NEPDATE_E_INVALID_DATE);
     CHECK_EQ_INT(nepdate_range_equal(reversed, range, &actual), NEPDATE_E_INVALID_DATE);
+    /* NOLINTEND(readability-suspicious-call-argument) */
 }
 
 TEST(from_day_count_and_current_factories) {

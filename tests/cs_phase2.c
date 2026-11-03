@@ -751,6 +751,9 @@ TEST(intersect_inside) {
     const nepdate_range outer = make_range(bs(2080, 1, 1), bs(2080, 1, 31));
     const nepdate_range inner = make_range(bs(2080, 1, 10), bs(2080, 1, 20));
     nepdate_range intersection = {{0}, {0}};
+    /* The outer range is deliberately the first argument; tidy would guess the two range
+     * arguments might be swapped. */
+    // NOLINTNEXTLINE(readability-suspicious-call-argument)
     CHECK_EQ_INT(nepdate_range_intersect(outer, inner, &intersection), NEPDATE_OK);
     expect(intersection.start, 2080, 1, 10);
     expect(intersection.end, 2080, 1, 20);
@@ -1022,6 +1025,9 @@ TEST(contains_range_inside) {
     const nepdate_range outer = make_range(bs(2080, 1, 1), bs(2080, 1, 31));
     const nepdate_range inner = make_range(bs(2080, 1, 5), bs(2080, 1, 20));
     bool contains = false;
+    /* The outer range is deliberately the first argument; tidy would guess the two range
+     * arguments might be swapped. */
+    // NOLINTNEXTLINE(readability-suspicious-call-argument)
     CHECK_EQ_INT(nepdate_range_contains_range(outer, inner, &contains), NEPDATE_OK);
     CHECK(contains);
     CHECK_EQ_INT(nepdate_range_contains_range(inner, outer, &contains), NEPDATE_OK);
@@ -1152,6 +1158,7 @@ TEST(demo_range_operations) {
         CHECK_EQ_INT(parts[i].end.value + 1, parts[i + 1].start.value);
     }
     bool contained = false;
+    // NOLINTNEXTLINE(readability-suspicious-call-argument)
     CHECK_EQ_INT(nepdate_range_contains_range(range, parts[1], &contained), NEPDATE_OK);
     CHECK(contained);
 

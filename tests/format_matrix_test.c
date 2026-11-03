@@ -47,6 +47,47 @@ static nepdate_separator separator_of(const char *name) {
     return NEPDATE_SEP_SLASH;
 }
 
+/* One short row: the six orders and six separators with the padding and the language asked for. */
+static void check_short_row(char *fields[], nepdate_date date, nepdate_lang lang) {
+    const nepdate_order order = order_of(fields[2]);
+    const nepdate_separator separator = separator_of(fields[3]);
+    const bool pad = strcmp(fields[4], "true") == 0;
+    char buffer[64];
+    memset(buffer, 0x5A, sizeof buffer);
+    const size_t length =
+        nepdate_format_short(date, order, separator, pad, lang, buffer, sizeof buffer);
+    CHECK_EQ_INT(length, strlen(fields[8]));
+    CHECK_EQ_STR(buffer, fields[8]);
+    /* Nothing beyond the terminator is touched. */
+    CHECK_EQ_INT((unsigned char)buffer[length], 0);
+    CHECK_EQ_INT((unsigned char)buffer[length + 1], 0x5A);
+}
+
+/* One try_format row: capacity is the number of characters the caller has room for, so the C
+ * buffer is one byte larger and the text fits when its length is at most capacity. */
+static void check_try_format_row(char *fields[], nepdate_date date, nepdate_lang lang,
+                                 int *too_small) {
+    int capacity = 0;
+    CHECK(vector_read_int(fields[7], &capacity));
+    CHECK(capacity > 0);
+    const bool default_pattern = strcmp(fields[6], "default") == 0;
+    char buffer[64];
+    memset(buffer, 0x5A, sizeof buffer);
+    const size_t length = nepdate_format(date, default_pattern ? NULL : fields[6], lang, buffer,
+                                         (size_t)capacity + 1);
+    if (strcmp(fields[8], "ERR") == 0) {
+        CHECK(length > (size_t)capacity);
+        /* The text is cut at the capacity and still terminated there. */
+        CHECK_EQ_INT((unsigned char)buffer[capacity], 0);
+        CHECK_EQ_INT((unsigned char)buffer[capacity + 1], 0x5A);
+        (*too_small)++;
+        return;
+    }
+    CHECK(length <= (size_t)capacity);
+    CHECK_EQ_INT(length, strlen(fields[8]));
+    CHECK_EQ_STR(buffer, fields[8]);
+}
+
 TEST(format_matrix) {
     vector_reader reader;
     CHECK(vector_open(&reader, "csharp-golden/format-matrix.tsv"));
@@ -64,42 +105,11 @@ TEST(format_matrix) {
         CHECK(vector_parse_ymd(fields[1], &year, &month, &day));
         const nepdate_date date = date_of(year, month, day);
         const nepdate_lang lang = strcmp(fields[5], "ne") == 0 ? NEPDATE_NEPALI : NEPDATE_ENGLISH;
-
         if (strcmp(fields[0], "short") == 0) {
-            const nepdate_order order = order_of(fields[2]);
-            const nepdate_separator separator = separator_of(fields[3]);
-            const bool pad = strcmp(fields[4], "true") == 0;
-            char buffer[64];
-            memset(buffer, 0x5A, sizeof buffer);
-            const size_t length =
-                nepdate_format_short(date, order, separator, pad, lang, buffer, sizeof buffer);
-            CHECK_EQ_INT(length, strlen(fields[8]));
-            CHECK_EQ_STR(buffer, fields[8]);
-            /* Nothing beyond the terminator is touched. */
-            CHECK_EQ_INT((unsigned char)buffer[length], 0);
-            CHECK_EQ_INT((unsigned char)buffer[length + 1], 0x5A);
+            check_short_row(fields, date, lang);
             short_rows++;
         } else if (strcmp(fields[0], "try_format") == 0) {
-            const int capacity = atoi(fields[7]);
-            CHECK(capacity > 0);
-            const bool default_pattern = strcmp(fields[6], "default") == 0;
-            char buffer[64];
-            memset(buffer, 0x5A, sizeof buffer);
-            /* The capacity is the number of characters the caller has room for, so the C buffer is
-             * one byte larger than that and the text fits when its length is at most capacity. */
-            const size_t length = nepdate_format(date, default_pattern ? NULL : fields[6], lang,
-                                                 buffer, (size_t)capacity + 1);
-            if (strcmp(fields[8], "ERR") == 0) {
-                CHECK(length > (size_t)capacity);
-                /* The text is cut at the capacity and still terminated there. */
-                CHECK_EQ_INT((unsigned char)buffer[capacity], 0);
-                CHECK_EQ_INT((unsigned char)buffer[capacity + 1], 0x5A);
-                too_small++;
-            } else {
-                CHECK(length <= (size_t)capacity);
-                CHECK_EQ_INT(length, strlen(fields[8]));
-                CHECK_EQ_STR(buffer, fields[8]);
-            }
+            check_try_format_row(fields, date, lang, &too_small);
             try_format_rows++;
         } else {
             FAIL("unknown format matrix kind");

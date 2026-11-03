@@ -67,6 +67,55 @@ static int parse_text_list(char *field, nepdate_text *out) {
     return count;
 }
 
+/* One row whose output is a list of dates, checked element by element in input order. */
+static void check_bulk_dates(char *operation, char *input, char *expected) {
+    size_t written = 0;
+    char *items[MAX_BATCH];
+    char *expected_items[MAX_BATCH];
+    if (strcmp(operation, "to_nepali_dates") == 0 ||
+        strcmp(operation, "batch_to_nepali_dates") == 0) {
+        nepdate_ymd ad[MAX_BATCH] = {{0, 0, 0}};
+        const int count = parse_ad_list(input, ad);
+        CHECK_EQ_INT(vector_split(expected, ';', expected_items, MAX_BATCH), count);
+        nepdate_date out[MAX_BATCH] = {{0}};
+        CHECK_EQ_INT(nepdate_bulk_to_bs(ad, (size_t)count, out, MAX_BATCH, &written), NEPDATE_OK);
+        CHECK_EQ_INT(written, count);
+        for (int i = 0; i < count; i++) {
+            check_bs_date(out[i], expected_items[i]);
+        }
+        return;
+    }
+
+    const int count = vector_split(input, ';', items, MAX_BATCH);
+    CHECK(count <= MAX_BATCH);
+    CHECK_EQ_INT(vector_split(expected, ';', expected_items, MAX_BATCH), count);
+    nepdate_ymd out[MAX_BATCH] = {{0, 0, 0}};
+    if (strcmp(operation, "to_english_dates_from_strings") == 0) {
+        nepdate_text texts[MAX_BATCH] = {{NULL, 0}};
+        for (int i = 0; i < count; i++) {
+            texts[i].text = items[i];
+            texts[i].length = strlen(items[i]);
+        }
+        CHECK_EQ_INT(nepdate_bulk_parse_to_ad(texts, (size_t)count, out, MAX_BATCH, &written),
+                     NEPDATE_OK);
+    } else if (strcmp(operation, "to_english_dates_from_dates") == 0 ||
+               strcmp(operation, "batch_to_english_dates") == 0) {
+        nepdate_date dates[MAX_BATCH] = {{0}};
+        for (int i = 0; i < count; i++) {
+            CHECK(vector_parse_date(items[i], &dates[i]));
+        }
+        CHECK_EQ_INT(nepdate_bulk_to_ad(dates, (size_t)count, out, MAX_BATCH, &written),
+                     NEPDATE_OK);
+    } else {
+        FAIL("unknown bulk operation");
+        return;
+    }
+    CHECK_EQ_INT(written, count);
+    for (int i = 0; i < count; i++) {
+        check_ad_date(out[i], expected_items[i]);
+    }
+}
+
 TEST(golden_bulk_rows) {
     vector_reader reader;
     CHECK(vector_open(&reader, "csharp-golden/bulk.tsv"));
@@ -77,64 +126,18 @@ TEST(golden_bulk_rows) {
     while ((line = vector_next(&reader)) != NULL) {
         char *fields[5];
         CHECK_EQ_INT(vector_split(line, '\t', fields, 5), 4);
-        const bool fails = strcmp(fields[2], "ERR") == 0;
-        size_t written = 99;
-        nepdate_status status = NEPDATE_OK;
-
-        if (strcmp(fields[0], "to_nepali_dates") == 0 ||
-            strcmp(fields[0], "batch_to_nepali_dates") == 0) {
-            nepdate_ymd ad[MAX_BATCH] = {{0, 0, 0}};
-            const int count = parse_ad_list(fields[1], ad);
-            nepdate_date out[MAX_BATCH] = {{0}};
-            status = nepdate_bulk_to_bs(ad, (size_t)count, out, MAX_BATCH, &written);
-            if (!fails) {
-                CHECK_EQ_INT(status, NEPDATE_OK);
-                CHECK_EQ_INT(written, count);
-                char *expected[MAX_BATCH];
-                CHECK_EQ_INT(vector_split(fields[2], ';', expected, MAX_BATCH), count);
-                for (int i = 0; i < count; i++) {
-                    check_bs_date(out[i], expected[i]);
-                }
-            }
-        } else if (strcmp(fields[0], "to_english_dates_from_strings") == 0) {
-            nepdate_text texts[MAX_BATCH] = {{NULL, 0}};
-            const int count = parse_text_list(fields[1], texts);
-            nepdate_ymd out[MAX_BATCH] = {{0, 0, 0}};
-            status = nepdate_bulk_parse_to_ad(texts, (size_t)count, out, MAX_BATCH, &written);
-            if (!fails) {
-                CHECK_EQ_INT(status, NEPDATE_OK);
-                CHECK_EQ_INT(written, count);
-                char *expected[MAX_BATCH];
-                CHECK_EQ_INT(vector_split(fields[2], ';', expected, MAX_BATCH), count);
-                for (int i = 0; i < count; i++) {
-                    check_ad_date(out[i], expected[i]);
-                }
-            }
-        } else if (strcmp(fields[0], "to_english_dates_from_dates") == 0 ||
-                   strcmp(fields[0], "batch_to_english_dates") == 0) {
-            nepdate_date dates[MAX_BATCH] = {{0}};
-            const int count = parse_bs_list(fields[1], dates);
-            nepdate_ymd out[MAX_BATCH] = {{0, 0, 0}};
-            status = nepdate_bulk_to_ad(dates, (size_t)count, out, MAX_BATCH, &written);
-            if (!fails) {
-                CHECK_EQ_INT(status, NEPDATE_OK);
-                CHECK_EQ_INT(written, count);
-                char *expected[MAX_BATCH];
-                CHECK_EQ_INT(vector_split(fields[2], ';', expected, MAX_BATCH), count);
-                for (int i = 0; i < count; i++) {
-                    check_ad_date(out[i], expected[i]);
-                }
-            }
-        } else {
-            FAIL("unknown bulk operation");
-            continue;
-        }
-        if (fails) {
+        if (strcmp(fields[2], "ERR") == 0) {
             /* One bad input fails the whole call and writes nothing. */
-            CHECK(status != NEPDATE_OK);
-            /* Nothing is written and written keeps its value, as for every out object. */
+            size_t written = 99;
+            nepdate_text texts[MAX_BATCH] = {{NULL, 0}};
+            nepdate_ymd out[MAX_BATCH] = {{0, 0, 0}};
+            const int count = parse_text_list(fields[1], texts);
+            CHECK_EQ_INT(nepdate_bulk_parse_to_ad(texts, (size_t)count, out, MAX_BATCH, &written),
+                         NEPDATE_E_INVALID_DAY);
             CHECK_EQ_INT(written, 99);
             rejected++;
+        } else {
+            check_bulk_dates(fields[0], fields[1], fields[2]);
         }
         rows++;
     }

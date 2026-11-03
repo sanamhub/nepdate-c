@@ -1,5 +1,9 @@
 #include "vectors.h"
 
+#include <nepdate.h>
+
+#include <limits.h>
+#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -171,6 +175,26 @@ void vector_format_range(nepdate_range range, char *buffer, size_t size) {
     if (written < 0 || (size_t)written >= size) {
         buffer[size - 1] = '\0';
     }
+}
+
+bool vector_read_int(const char *text, int *out) {
+    char *end = NULL;
+    const long value = strtol(text, &end, 10);
+    if (end == text || *end != '\0' || value < INT_MIN || value > INT_MAX) {
+        return false;
+    }
+    *out = (int)value;
+    return true;
+}
+
+bool vector_read_int64(const char *text, int64_t *out) {
+    char *end = NULL;
+    const long long value = strtoll(text, &end, 10);
+    if (end == text || *end != '\0') {
+        return false;
+    }
+    *out = (int64_t)value;
+    return true;
 }
 
 int vector_weekday(const char *name) {

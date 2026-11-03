@@ -70,8 +70,10 @@ TEST(year_lengths) {
     while ((line = vector_next(&reader)) != NULL) {
         char *fields[3];
         CHECK_EQ_INT(vector_split(line, '\t', fields, 3), 2);
-        const int year = atoi(fields[0]);
-        const int expected = atoi(fields[1]);
+        int year = 0;
+        int expected = 0;
+        CHECK(vector_read_int(fields[0], &year));
+        CHECK(vector_read_int(fields[1], &expected));
         int length = 0;
         /* Any day of the year gives the same length: the first, a middle month and the last. */
         CHECK_EQ_INT(nepdate_year_length(date_of(year, 1, 1), &length), NEPDATE_OK);
@@ -110,8 +112,12 @@ TEST(day_differences) {
         nepdate_date b = {0};
         CHECK(vector_parse_date(fields[0], &a));
         CHECK(vector_parse_date(fields[1], &b));
-        const int32_t days_until = (int32_t)atoi(fields[2]);
-        const int32_t operator_minus = (int32_t)atoi(fields[3]);
+        int days_until_value = 0;
+        int operator_minus_value = 0;
+        CHECK(vector_read_int(fields[2], &days_until_value));
+        CHECK(vector_read_int(fields[3], &operator_minus_value));
+        const int32_t days_until = (int32_t)days_until_value;
+        const int32_t operator_minus = (int32_t)operator_minus_value;
         /* D-07: the named difference is other - this, so days_until is b - a. */
         int32_t days = INT32_MAX;
         CHECK_EQ_INT(nepdate_diff_days(a, b, &days), NEPDATE_OK);
@@ -126,6 +132,38 @@ TEST(day_differences) {
     CHECK_EQ_INT(rows, 16);
 }
 
+/* One "date" row: the packed number of the date, and the number read back as the date. */
+static void check_ymd_row_as_date(char *input, char *packed_text) {
+    nepdate_date date = {0};
+    CHECK(vector_parse_date(input, &date));
+    int64_t packed = 0;
+    CHECK_EQ_INT(nepdate_to_ymd_int(date, &packed), NEPDATE_OK);
+    int64_t expected_packed = 0;
+    CHECK(vector_read_int64(packed_text, &expected_packed));
+    CHECK_EQ_INT(packed, expected_packed);
+    nepdate_date roundtrip = {0};
+    CHECK_EQ_INT(nepdate_from_ymd_int(packed, &roundtrip), NEPDATE_OK);
+    CHECK_EQ_INT(roundtrip.value, date.value);
+}
+
+/* One "int" row: the packed number read as a date, or refused. Returns 1 for a refused row. */
+static int check_ymd_row_as_int(char *packed_text, const char *result) {
+    int64_t input = 0;
+    CHECK(vector_read_int64(packed_text, &input));
+    nepdate_date actual = {0};
+    const nepdate_status status = nepdate_from_ymd_int(input, &actual);
+    if (strcmp(result, "ERR") == 0) {
+        CHECK(status != NEPDATE_OK);
+        CHECK_EQ_INT(actual.value, 0);
+        return 1;
+    }
+    nepdate_date expected = {0};
+    CHECK(vector_parse_date(result, &expected));
+    CHECK_EQ_INT(status, NEPDATE_OK);
+    CHECK_EQ_INT(actual.value, expected.value);
+    return 0;
+}
+
 TEST(packed_ymd_integer) {
     vector_reader reader;
     CHECK(vector_open(&reader, "csharp-golden/ymd-int.tsv"));
@@ -136,32 +174,10 @@ TEST(packed_ymd_integer) {
     while ((line = vector_next(&reader)) != NULL) {
         char *fields[6];
         CHECK_EQ_INT(vector_split(line, '\t', fields, 6), 5);
-        const bool as_date = strcmp(fields[0], "date") == 0;
-        nepdate_date expected = {0};
-        const bool expect_date = strcmp(fields[3], "ERR") != 0;
-        if (expect_date) {
-            CHECK(vector_parse_date(fields[3], &expected));
-        }
-        if (as_date) {
-            nepdate_date date = {0};
-            CHECK(vector_parse_date(fields[1], &date));
-            int64_t packed = 0;
-            CHECK_EQ_INT(nepdate_to_ymd_int(date, &packed), NEPDATE_OK);
-            CHECK_EQ_INT(packed, atoll(fields[2]));
-            nepdate_date roundtrip = {0};
-            CHECK_EQ_INT(nepdate_from_ymd_int(packed, &roundtrip), NEPDATE_OK);
-            CHECK_EQ_INT(roundtrip.value, date.value);
+        if (strcmp(fields[0], "date") == 0) {
+            check_ymd_row_as_date(fields[1], fields[2]);
         } else {
-            nepdate_date actual = {0};
-            const nepdate_status status = nepdate_from_ymd_int(atoll(fields[2]), &actual);
-            if (expect_date) {
-                CHECK_EQ_INT(status, NEPDATE_OK);
-                CHECK_EQ_INT(actual.value, expected.value);
-            } else {
-                CHECK(status != NEPDATE_OK);
-                CHECK_EQ_INT(actual.value, 0);
-                rejected++;
-            }
+            rejected += check_ymd_row_as_int(fields[2], fields[3]);
         }
         rows++;
     }
@@ -201,6 +217,47 @@ static bool json_string(const char *field, const char **body, size_t *length) {
     return true;
 }
 
+/* One write or roundtrip row: the interchange text of the input date must equal the JSON body. */
+static void check_serialization_write(const char *input, const char *json, const char *result,
+                                      bool roundtrip) {
+    nepdate_date date = {0};
+    CHECK(vector_parse_date(input, &date));
+    char text[16];
+    const size_t length = nepdate_format_iso(date, text, sizeof text);
+    CHECK_EQ_INT(length, 10);
+    const char *body = NULL;
+    size_t body_length = 0;
+    CHECK(json_string(json, &body, &body_length));
+    CHECK_EQ_INT(body_length, 10);
+    CHECK_EQ_INT(length, body_length);
+    CHECK_EQ_INT(memcmp(text, body, body_length), 0);
+    if (roundtrip) {
+        nepdate_date parsed = {0};
+        CHECK_EQ_INT(nepdate_parse(text, length, &parsed), NEPDATE_OK);
+        nepdate_date expected = {0};
+        CHECK(vector_parse_date(result, &expected));
+        CHECK_EQ_INT(parsed.value, expected.value);
+    }
+}
+
+/* One read row: a JSON string body is parsed, and anything else has no form here (D-01). */
+static void check_serialization_read(const char *json, const char *result) {
+    const char *body = NULL;
+    size_t body_length = 0;
+    nepdate_date parsed = {0};
+    const bool is_string = json_string(json, &body, &body_length);
+    const nepdate_status status =
+        is_string ? nepdate_parse(body, body_length, &parsed) : NEPDATE_E_NULL;
+    if (strcmp(result, "ERR") == 0) {
+        CHECK(status != NEPDATE_OK);
+        return;
+    }
+    CHECK_EQ_INT(status, NEPDATE_OK);
+    nepdate_date expected = {0};
+    CHECK(vector_parse_date(result, &expected));
+    CHECK_EQ_INT(parsed.value, expected.value);
+}
+
 TEST(interchange_string) {
     vector_reader reader;
     CHECK(vector_open(&reader, "csharp-golden/serialization.tsv"));
@@ -210,44 +267,12 @@ TEST(interchange_string) {
     while ((line = vector_next(&reader)) != NULL) {
         char *fields[6];
         CHECK_EQ_INT(vector_split(line, '\t', fields, 6), 5);
-        const bool write = strcmp(fields[0], "write") == 0;
-        const bool read = strcmp(fields[0], "read") == 0;
-        const bool roundtrip = strcmp(fields[0], "roundtrip") == 0;
-
-        if (write || roundtrip) {
-            nepdate_date date = {0};
-            CHECK(vector_parse_date(fields[1], &date));
-            char text[16];
-            const size_t length = nepdate_format_iso(date, text, sizeof text);
-            CHECK_EQ_INT(length, 10);
-            const char *body = NULL;
-            size_t body_length = 0;
-            CHECK(json_string(fields[2], &body, &body_length));
-            CHECK_EQ_INT(body_length, 10);
-            CHECK_EQ_INT(length, body_length);
-            CHECK_EQ_INT(memcmp(text, body, body_length), 0);
-            if (roundtrip) {
-                nepdate_date parsed = {0};
-                CHECK_EQ_INT(nepdate_parse(text, length, &parsed), NEPDATE_OK);
-                nepdate_date expected = {0};
-                CHECK(vector_parse_date(fields[3], &expected));
-                CHECK_EQ_INT(parsed.value, expected.value);
-            }
-        } else if (read) {
-            const char *body = NULL;
-            size_t body_length = 0;
-            nepdate_date parsed = {0};
-            const bool is_string = json_string(fields[1], &body, &body_length);
-            const nepdate_status status =
-                is_string ? nepdate_parse(body, body_length, &parsed) : NEPDATE_E_NULL;
-            if (strcmp(fields[3], "ERR") == 0) {
-                CHECK(status != NEPDATE_OK);
-            } else {
-                CHECK_EQ_INT(status, NEPDATE_OK);
-                nepdate_date expected = {0};
-                CHECK(vector_parse_date(fields[3], &expected));
-                CHECK_EQ_INT(parsed.value, expected.value);
-            }
+        if (strcmp(fields[0], "write") == 0) {
+            check_serialization_write(fields[1], fields[2], fields[3], false);
+        } else if (strcmp(fields[0], "roundtrip") == 0) {
+            check_serialization_write(fields[1], fields[2], fields[3], true);
+        } else if (strcmp(fields[0], "read") == 0) {
+            check_serialization_read(fields[1], fields[3]);
         } else {
             FAIL("unknown serialization row kind");
         }
@@ -332,7 +357,8 @@ TEST(relative_days) {
     CHECK_EQ_INT(nepdate_is_tomorrow(today, 0, fixed_instant, &actual), NEPDATE_OK);
     CHECK(actual);
 
-    /* At the last supported day there is no tomorrow, and at the first there is no yesterday. */
+    /* At the last supported day there is no tomorrow, and at the first there is no yesterday.
+     */
     const nepdate_date first = NEPDATE_MIN;
     const nepdate_date last = NEPDATE_MAX;
     CHECK_EQ_INT(nepdate_is_today(first, 0, -INT64_C(3967488000), &actual), NEPDATE_OK);
