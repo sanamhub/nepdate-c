@@ -12,23 +12,23 @@ lists each C# member and the C function or functions that replace it.
 
 ```c
 #define NEPDATE_VERSION_MAJOR 0
-#define NEPDATE_VERSION_MINOR 1
+#define NEPDATE_VERSION_MINOR 2
 #define NEPDATE_VERSION_PATCH 0
 #define NEPDATE_VERSION_PRERELEASE "rc.1"
-#define NEPDATE_VERSION_STRING "0.1.0-rc.1"
+#define NEPDATE_VERSION_STRING "0.2.0-rc.1"
 
 const char *nepdate_version(void);
 ```
 
 The macros give the version of the header. `NEPDATE_VERSION_PRERELEASE` is the part after `-` in
-a pre-release such as `0.1.0-rc.1`, and empty for a stable version.
+a pre-release such as `0.2.0-rc.1`, and empty for a stable version.
 
 `nepdate_version` returns the version of the compiled library as a static string, equal to
 `NEPDATE_VERSION_STRING` when the header and the library come from the same release. It can't
 fail.
 
 ```c
-/* prints 0.1.0-rc.1 */
+/* prints 0.2.0-rc.1 */
 printf("%s\n", nepdate_version());
 ```
 
