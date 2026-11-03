@@ -4,7 +4,7 @@
 
 if(CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR)
     cmake_minimum_required(VERSION 3.25...4.1)
-    project(nepdate-c-patro VERSION 0.1.0 LANGUAGES C)
+    project(nepdate-c-patro VERSION 0.2.0 LANGUAGES C)
     set(CMAKE_C_STANDARD 11)
     set(CMAKE_C_STANDARD_REQUIRED ON)
     set(CMAKE_C_EXTENSIONS OFF)

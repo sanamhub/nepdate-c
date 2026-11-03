@@ -112,6 +112,34 @@
       "packages": ["nepdate-c"],
       "managers": ["cmake", "amalgamation"],
       "install": "FetchContent_Declare(nepdate-c GIT_REPOSITORY https://github.com/sanamhub/nepdate-c.git GIT_TAG v0.1.0-beta.1)"
+    },
+    {
+      "id": "dart",
+      "name": "Dart",
+      "repository": "sanamhub/nepdate-dart",
+      "workflow": "verify-published.yml",
+      "registry": {
+        "name": "pub.dev",
+        "url": "https://pub.dev/packages/nepdate"
+      },
+      "package": "nepdate",
+      "packages": ["nepdate", "nepdate_patro"],
+      "managers": ["pub"],
+      "install": "dart pub add nepdate:0.2.0-rc.1"
+    },
+    {
+      "id": "php",
+      "name": "PHP",
+      "repository": "sanamhub/nepdate-php",
+      "workflow": "verify-published.yml",
+      "registry": {
+        "name": "Packagist",
+        "url": "https://packagist.org/packages/sanamhub/nepdate"
+      },
+      "package": "sanamhub/nepdate",
+      "packages": ["sanamhub/nepdate", "sanamhub/nepdate-patro"],
+      "managers": ["composer"],
+      "install": "composer require sanamhub/nepdate:0.2.0-rc.1"
     }
   ]
 }

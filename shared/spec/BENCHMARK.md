@@ -97,8 +97,8 @@ language, including languages added after this section was written.
 
 Search the language's main package registry and GitHub for every library that converts between
 Bikram Sambat and Gregorian dates. The registries are nuget.org, crates.io, pkg.go.dev, npm, PyPI,
-Swift Package Index, Maven Central, vcpkg and Conan. Leave out the NepDate family itself, and forks
-or copies of another candidate.
+Packagist, Swift Package Index, Maven Central, vcpkg and Conan. Leave out the NepDate family itself,
+and forks or copies of another candidate.
 
 ### Usage
 
@@ -112,6 +112,7 @@ Each ecosystem exposes a different measure, so each has its own minimum. The min
 | crates.io | recent downloads (90 days) | 1,000 |
 | npm | weekly downloads, and dependents from deps.dev | 1,000 weekly and 5 dependents |
 | PyPI | last month from pypistats | 1,000 |
+| Packagist | total downloads, and monthly downloads from the package's API record | 10,000 total or 500 monthly |
 | Go | "Imported by" on pkg.go.dev | 3 importing packages |
 | Maven | dependents on deps.dev | 1 dependent |
 | Swift | GitHub stars and dependents, and whether the package is in the Swift Package Index | 10 stars, or listed in the Swift Package Index |

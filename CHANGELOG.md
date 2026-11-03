@@ -5,6 +5,8 @@ Versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [0.2.0-rc.1] - 2026-11-03
+
 ### Added
 
 - `NEPDATE_MIN` and `NEPDATE_MAX`, the first and last supported dates, with `nepdate_min` and
