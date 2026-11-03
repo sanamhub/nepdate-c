@@ -249,7 +249,7 @@ TEST(interchange_string) {
                 CHECK_EQ_INT(parsed.value, expected.value);
             }
         } else {
-            CHECK(!"unknown serialization row kind");
+            FAIL("unknown serialization row kind");
         }
         rows++;
     }

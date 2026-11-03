@@ -34,6 +34,7 @@ static int harness_checks_failed;
     } while (0)
 
 #define CHECK(expr) harness_check((expr) ? 1 : 0, __FILE__, __LINE__, #expr)
+#define FAIL(message) harness_fail((message), __FILE__, __LINE__)
 
 /* Both sides are converted to long long, so compare values that fit in it. */
 #define CHECK_EQ_INT(actual, expected)                                                             \
@@ -76,6 +77,13 @@ static inline void harness_check_str(const char *actual, const char *expected, c
                       expected_expr, actual == NULL ? "(null)" : actual,
                       expected == NULL ? "(null)" : expected);
     }
+}
+
+/* Fails a check with a message, for a case that must never happen. A bare CHECK with a string
+ * literal would be an implicit conversion of a string to bool, which Clang rejects. */
+static inline void harness_fail(const char *message, const char *file, int line) {
+    harness_fail_location(file, line);
+    (void)fprintf(stderr, "FAIL(%s)\n", message);
 }
 
 static inline void harness_skip(const char *file, int line, const char *reason) {

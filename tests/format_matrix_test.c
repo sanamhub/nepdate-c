@@ -27,7 +27,7 @@ static nepdate_order order_of(const char *name) {
             return orders[i].order;
         }
     }
-    CHECK(!"unknown order");
+    FAIL("unknown order");
     return NEPDATE_YMD;
 }
 
@@ -43,7 +43,7 @@ static nepdate_separator separator_of(const char *name) {
             return separators[i].separator;
         }
     }
-    CHECK(!"unknown separator");
+    FAIL("unknown separator");
     return NEPDATE_SEP_SLASH;
 }
 
@@ -102,7 +102,7 @@ TEST(format_matrix) {
             }
             try_format_rows++;
         } else {
-            CHECK(!"unknown format matrix kind");
+            FAIL("unknown format matrix kind");
         }
     }
     vector_close(&reader);

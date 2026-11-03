@@ -126,7 +126,7 @@ TEST(golden_bulk_rows) {
                 }
             }
         } else {
-            CHECK(!"unknown bulk operation");
+            FAIL("unknown bulk operation");
             continue;
         }
         if (fails) {

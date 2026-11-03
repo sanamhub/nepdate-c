@@ -195,7 +195,7 @@ TEST(golden_range_rows) {
             }
             CHECK_EQ_STR(list_text(&builder), expected);
         } else {
-            CHECK(!"unknown range operation");
+            FAIL("unknown range operation");
         }
         rows++;
     }
@@ -247,7 +247,7 @@ TEST(golden_range_factories) {
             CHECK(vector_parse_date(parts[1], &last));
             status = nepdate_range_make(first, last, &actual);
         } else {
-            CHECK(!"unknown range factory");
+            FAIL("unknown range factory");
             continue;
         }
 
@@ -284,7 +284,7 @@ TEST(golden_range_splits) {
         } else if (strcmp(fields[2], "split_by_fiscal_quarter") == 0) {
             status = nepdate_range_split_by_fiscal_quarter(range, pieces, 32, &written);
         } else {
-            CHECK(!"unknown range split");
+            FAIL("unknown range split");
             continue;
         }
         CHECK_EQ_INT(status, NEPDATE_OK);
@@ -339,7 +339,7 @@ TEST(golden_range_days) {
                 CHECK(parse_bool(fields[3], &include_sunday));
                 status = nepdate_range_weekend_days(range, include_sunday, &cursor);
             } else {
-                CHECK(!"unknown range day operation");
+                FAIL("unknown range day operation");
                 continue;
             }
             if (result_is(expected, "ERR")) {
@@ -413,7 +413,7 @@ TEST(golden_range_format) {
                 strcmp(fields[5], "ne") == 0 ? NEPDATE_NEPALI : NEPDATE_ENGLISH;
             length = nepdate_range_format_short(range, order, separator, lang, text, sizeof text);
         } else {
-            CHECK(!"unknown range format kind");
+            FAIL("unknown range format kind");
             continue;
         }
         CHECK_EQ_INT(length, strlen(fields[6]));
