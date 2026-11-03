@@ -227,7 +227,10 @@ static void check_serialization_write(const char *input, const char *json, const
     CHECK_EQ_INT(length, 10);
     const char *body = NULL;
     size_t body_length = 0;
-    CHECK(json_string(json, &body, &body_length));
+    if (!json_string(json, &body, &body_length)) {
+        FAIL("the JSON field is not a string");
+        return;
+    }
     CHECK_EQ_INT(body_length, 10);
     CHECK_EQ_INT(length, body_length);
     CHECK_EQ_INT(memcmp(text, body, body_length), 0);
