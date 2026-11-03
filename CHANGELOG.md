@@ -5,6 +5,50 @@ Versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Added
+
+- `NEPDATE_MIN` and `NEPDATE_MAX`, the first and last supported dates, with `nepdate_min` and
+  `nepdate_max` behind them.
+- `nepdate_year_length`, the length of a BS year, 364 to 367. It replaces the C# `IsLeapYear`,
+  which follows the Gregorian year and changes in the middle of a BS year.
+- `nepdate_today`, which takes the instant and the UTC offset, and `nepdate_is_today`,
+  `nepdate_is_yesterday` and `nepdate_is_tomorrow` beside it. The library still never reads the
+  clock itself.
+- The `YYYYMMDD` integer form to and from a date: `nepdate_from_ymd_int` and `nepdate_to_ymd_int`.
+  The integer is read whole, so a value that does not fit the supported years is refused instead of
+  being truncated.
+- `nepdate_format_iso`, the interchange text `YYYY-MM-DD`, named so a caller does not have to know
+  that the pattern `"s"` writes it.
+- Ordered batch conversion with caller buffers: `nepdate_bulk_to_bs`, `nepdate_bulk_parse_to_ad`
+  and `nepdate_bulk_to_ad`, with the `nepdate_text` value for the text input. Each call is all or
+  nothing, so a failing input writes no result.
+- The rest of the range surface: `nepdate_range_from_day_count`, the three
+  `nepdate_range_current_*` factories, `nepdate_range_contains_range`, `nepdate_range_overlaps`,
+  `nepdate_range_is_adjacent_to`, `nepdate_range_intersect`, `nepdate_range_union`,
+  `nepdate_range_except`, `nepdate_range_split_by_month`,
+  `nepdate_range_split_by_fiscal_quarter`, `nepdate_range_equal`, `nepdate_range_format`,
+  `nepdate_range_format_short`, and the day cursors `nepdate_range_dates_with_interval`,
+  `nepdate_range_working_days`, `nepdate_range_weekend_days` and `nepdate_range_day_next` with the
+  `nepdate_range_day_cursor` value.
+- `NEPDATE_E_NO_OVERLAP`, the result of intersecting two ranges that share no day.
+- Tests against the new shared vectors: the year lengths, the day difference in both directions,
+  the packed integer, the interchange string, the ordered batch rows, the formatting matrix and the
+  five range files. The bit-pattern property test now covers every new call that takes a date.
+
+### Changed
+
+- `nepdate_date.value` is documented as reserved and not part of the API. The struct stays a 4-byte
+  value passed by value, and no layout changed.
+- The API document is grouped like the canonical inventory and ends with a table that maps each C#
+  member to its C functions, so a reader can find an equivalent without knowing the port's names.
+
+### Breaking changes
+
+- A pattern that ends in a single `\` now writes `\`. A backslash escapes the next character, and
+  one at the end of the pattern has nothing to escape, so it is the character itself; before, the
+  trailing backslash was dropped.
+  **Migration:** remove the trailing `\` when the old output without it was intended.
+
 ## [0.1.0-rc.1] - 2026-11-03
 
 ### Added

@@ -371,6 +371,55 @@ if (nepdate_bulk_to_bs(ad, 3, bs, 3, &written) == NEPDATE_OK) {
 }
 ```
 
+### Time and the Gregorian type
+
+The platform Gregorian date has three forms here: `nepdate_from_ad` takes a year, a month and a day,
+`nepdate_from_unix` takes an instant, and `nepdate_from_tm` takes a broken-down `struct tm`.
+`nepdate_to_tm` writes a date back into a `struct tm`.
+
+```c
+nepdate_status nepdate_from_unix(int64_t unix_seconds, int32_t utc_offset_minutes,
+                                 nepdate_date *out);
+nepdate_status nepdate_today_nepal(int64_t unix_seconds, nepdate_date *out);
+nepdate_status nepdate_from_tm(const struct tm *tm, nepdate_date *out);
+nepdate_status nepdate_to_tm(nepdate_date date, struct tm *out);
+```
+
+`nepdate_from_unix` takes an instant as seconds since 1970-01-01 00:00 UTC, adds
+`utc_offset_minutes` (east of UTC is positive) and returns the BS date of the resulting local day.
+Seconds before the epoch are floored, so an instant at 23:59:59 belongs to that day. It returns
+`NEPDATE_E_OUT_OF_RANGE` when the local day is outside the supported range and `NEPDATE_E_NULL`
+when `out` is `NULL`; any `int64_t` seconds and `int32_t` offset are accepted, including their
+extreme values.
+
+`nepdate_today_nepal` is `nepdate_from_unix` with Nepal's offset at that instant: UTC+05:45 from
+1986-01-01 00:00 local (1985-12-31 18:30 UTC) and UTC+05:30 before. The +05:30 rule also covers
+instants before 1920, where IANA's tzdata has local mean time (+05:41:16). Neither function reads
+the clock; the caller passes the instant.
+
+The `struct tm` pair is declared only when the core is built with `NEPDATE_C_WITH_TM=1`, which is
+the default, so a build that leaves the bridge out needs no `<time.h>` at all. `nepdate_from_tm`
+reads `tm_year + 1900`, `tm_mon + 1` and `tm_mday` as an AD date; the time of day and `tm_isdst` are
+ignored. It returns `NEPDATE_E_NULL`, `NEPDATE_E_OUT_OF_RANGE` for a year outside `int` or the
+supported range, and `NEPDATE_E_INVALID_GREGORIAN` for a month or day the Gregorian calendar doesn't
+have. `nepdate_to_tm` writes the AD date, midnight in the time fields, `tm_wday` (0 = Sunday),
+`tm_yday` (0 = 1 January) and `tm_isdst = -1`; it returns `NEPDATE_E_NULL` or
+`NEPDATE_E_INVALID_DATE`, and leaves the object unchanged on error. Neither function reads or writes
+a time zone.
+
+```c
+#include <time.h>
+
+nepdate_date date;
+nepdate_date back;
+struct tm broken_down;
+const int64_t instant = 1722364200; /* 2024-07-30 18:30 UTC */
+nepdate_from_unix(instant, 0, &date); /* 2081-04-15 */
+nepdate_today_nepal(instant, &date);  /* 2081-04-16 */
+nepdate_to_tm(date, &broken_down);    /* AD 2024-07-31 in tm_year, tm_mon and tm_mday */
+nepdate_from_tm(&broken_down, &back); /* the same date again */
+```
+
 ## Arithmetic
 
 ```c
