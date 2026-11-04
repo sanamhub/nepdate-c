@@ -47,6 +47,8 @@ idiomatic names; the results must be the same.
 7. PATRO (the separate patro package, ADR-0004), with its counts read from
    `shared/spec/vectors/patro-summary.json`.
 8. Add the port to the table in the hub `README.md`.
-9. Before the first release, add the port to `spec/versions.json` with the version it will release,
-   and to `spec/packages.json`. The port's `shared-check` call passes that name and version.
+9. At its first release, add the port to `spec/versions.json` with the version it publishes, and to
+   `spec/packages.json`. Before that release it may declare the line it is built for
+   ([ADR-0008](../docs/adr/0008-unreleased-port-version.md)); the port's `shared-check` call passes
+   that name and version.
 10. No port-local deviations. If one seems necessary, open a PR to this hub.

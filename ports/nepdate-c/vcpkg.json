@@ -1,6 +1,6 @@
 {
   "name": "nepdate-c",
-  "version-semver": "0.2.0-rc.1",
+  "version-semver": "1.0.0-rc.1",
   "description": "Bikram Sambat (Nepali calendar) dates for C11: BS to AD and back, arithmetic, formatting, parsing and time interop. No dependencies.",
   "homepage": "https://github.com/sanamhub/nepdate-c",
   "license": "MIT",
