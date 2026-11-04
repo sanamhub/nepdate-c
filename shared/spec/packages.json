@@ -13,7 +13,7 @@
       "package": "nepdate",
       "packages": ["nepdate", "nepdate-patro"],
       "managers": ["cargo"],
-      "install": "cargo add nepdate@=0.1.0-beta.1"
+      "install": "cargo add nepdate@=1.0.0-rc.1"
     },
     {
       "id": "go",
@@ -27,7 +27,7 @@
       "package": "github.com/sanamhub/nepdate-go",
       "packages": ["github.com/sanamhub/nepdate-go", "github.com/sanamhub/nepdate-go/patro"],
       "managers": ["go"],
-      "install": "go get github.com/sanamhub/nepdate-go@v0.1.0-beta.1"
+      "install": "go get github.com/sanamhub/nepdate-go@v1.0.0-rc.1"
     },
     {
       "id": "typescript",
@@ -41,7 +41,7 @@
       "package": "nepdate-core",
       "packages": ["nepdate-core", "nepdate-patro", "nepdate-datepicker"],
       "managers": ["npm", "pnpm", "yarn", "yarn-pnp", "bun"],
-      "install": "npm install nepdate-core@0.1.0-beta.1"
+      "install": "npm install nepdate-core@1.0.0-rc.1"
     },
     {
       "id": "python",
@@ -55,7 +55,7 @@
       "package": "nepdate-core",
       "packages": ["nepdate-core", "nepdate-patro"],
       "managers": ["pip", "uv", "poetry"],
-      "install": "pip install nepdate-core==0.1.0b1"
+      "install": "pip install nepdate-core==1.0.0rc1"
     },
     {
       "id": "swift",
@@ -69,7 +69,7 @@
       "package": "nepdate-swift",
       "packages": ["NepDate", "NepDatePatro"],
       "managers": ["swiftpm"],
-      "install": ".package(url: \"https://github.com/sanamhub/nepdate-swift\", exact: \"0.1.0-beta.1\")"
+      "install": ".package(url: \"https://github.com/sanamhub/nepdate-swift\", exact: \"1.0.0-rc.1\")"
     },
     {
       "id": "kotlin",
@@ -83,7 +83,7 @@
       "package": "io.github.sanamhub:nepdate",
       "packages": ["io.github.sanamhub:nepdate", "io.github.sanamhub:nepdate-patro"],
       "managers": ["gradle", "maven"],
-      "install": "implementation(\"io.github.sanamhub:nepdate:0.1.0-beta.1\")"
+      "install": "implementation(\"io.github.sanamhub:nepdate:1.0.0-rc.1\")"
     },
     {
       "id": "cpp",
@@ -97,7 +97,7 @@
       "package": "nepdate-cpp",
       "packages": ["nepdate-cpp"],
       "managers": ["cmake"],
-      "install": "FetchContent_Declare(nepdate GIT_REPOSITORY https://github.com/sanamhub/nepdate-cpp.git GIT_TAG v0.1.0-beta.1)"
+      "install": "FetchContent_Declare(nepdate GIT_REPOSITORY https://github.com/sanamhub/nepdate-cpp.git GIT_TAG v1.0.0-rc.1)"
     },
     {
       "id": "c",
@@ -111,7 +111,7 @@
       "package": "nepdate-c",
       "packages": ["nepdate-c"],
       "managers": ["cmake", "amalgamation"],
-      "install": "FetchContent_Declare(nepdate-c GIT_REPOSITORY https://github.com/sanamhub/nepdate-c.git GIT_TAG v0.1.0-beta.1)"
+      "install": "FetchContent_Declare(nepdate-c GIT_REPOSITORY https://github.com/sanamhub/nepdate-c.git GIT_TAG v1.0.0-rc.1)"
     },
     {
       "id": "dart",
@@ -125,7 +125,7 @@
       "package": "nepdate",
       "packages": ["nepdate", "nepdate_patro"],
       "managers": ["pub"],
-      "install": "dart pub add nepdate:0.2.0-rc.1"
+      "install": "dart pub add nepdate:1.0.0-rc.1"
     },
     {
       "id": "php",
@@ -139,7 +139,7 @@
       "package": "sanamhub/nepdate",
       "packages": ["sanamhub/nepdate", "sanamhub/nepdate-patro"],
       "managers": ["composer"],
-      "install": "composer require sanamhub/nepdate:0.2.0-rc.1"
+      "install": "composer require sanamhub/nepdate:1.0.0-rc.1"
     },
     {
       "id": "java",
