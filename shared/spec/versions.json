@@ -1,15 +1,15 @@
 {
   "schema": 1,
-  "line": "0.2",
+  "line": "1.0",
   "sdks": {
-    "rust": "0.1.0-rc.1",
-    "go": "0.1.0-rc.1",
-    "typescript": "0.1.0-rc.1",
-    "python": "0.1.0-rc.1",
-    "swift": "0.1.0-rc.1",
-    "kotlin": "0.1.0-rc.1",
-    "cpp": "0.1.0-rc.1",
-    "c": "0.1.0-rc.1",
+    "rust": "0.2.0-rc.1",
+    "go": "0.2.0-rc.1",
+    "typescript": "0.2.0-rc.1",
+    "python": "0.2.0-rc.1",
+    "swift": "0.2.0-rc.1",
+    "kotlin": "0.2.0-rc.1",
+    "cpp": "0.2.0-rc.1",
+    "c": "0.2.0-rc.1",
     "dart": "0.2.0-rc.1",
     "php": "0.2.0-rc.1"
   }
