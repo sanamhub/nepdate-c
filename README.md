@@ -17,9 +17,7 @@ hub [`sanamhub/nepdate`](https://github.com/sanamhub/nepdate); the C# original i
 Plain ISO C11 with no allocation, no global state and no dependencies, so it also builds into Zig
 projects and into extensions for languages that call C.
 
-> **Status:** `1.0.0-rc.1`, the release candidate on the 1.0 line. The API is stable from `1.0`
-> (hub ADR-0009); the other [released languages](https://github.com/sanamhub/nepdate#packages)
-> follow the same versions.
+The API is listed in [docs/API.md](https://github.com/sanamhub/nepdate-c/blob/main/docs/API.md) and is stable from 1.0 ([ADR-0009](https://github.com/sanamhub/nepdate/blob/main/docs/adr/0009-what-1.0-promises.md)). Tithi, public holidays and events are informational, not an official calendar.
 
 ## Build
 
@@ -293,9 +291,17 @@ Zig project can add this repository as a path or fetch dependency and link the `
 | A wrong date, holiday or tithi | the hub's [data error form](https://github.com/sanamhub/nepdate/issues/new/choose) |
 | The other languages | [sanamhub/nepdate](https://github.com/sanamhub/nepdate#packages) |
 
+<!-- family:start -->
+## NepDate in other languages
+
+The same calendar, with the same answers, for [C#](https://github.com/RajuPrasai/NepDate), [TypeScript](https://github.com/sanamhub/nepdate-typescript), [Python](https://github.com/sanamhub/nepdate-python), [PHP](https://github.com/sanamhub/nepdate-php), [Java](https://github.com/sanamhub/nepdate-java), [Dart](https://github.com/sanamhub/nepdate-dart), [Kotlin](https://github.com/sanamhub/nepdate-kotlin), [Go](https://github.com/sanamhub/nepdate-go), [Swift](https://github.com/sanamhub/nepdate-swift), [C++](https://github.com/sanamhub/nepdate-cpp), [Rust](https://github.com/sanamhub/nepdate-rust), [Ruby](https://github.com/sanamhub/nepdate-ruby), [Zig](https://github.com/sanamhub/nepdate-zig). Every library is listed at [nepdate.com](https://nepdate.com/).
+
+For people rather than code: [MitiBar](https://nepdate.com/mitibar/) puts today's date on the Windows, macOS and Linux desktop, [patro.nepdate.com](https://patro.nepdate.com/) is the calendar on the web, and NepDate for Android and iOS is coming soon.
+<!-- family:end -->
+
 ## License
 
 MIT, see [LICENSE](https://github.com/sanamhub/nepdate-c/blob/main/LICENSE). Calendar and patro
-data from NepDate by Raju Prasai and contributors, MIT, see
+data from NepDate, MIT, see
 [shared/data/NOTICE](https://github.com/sanamhub/nepdate-c/blob/main/shared/data/NOTICE). Not
 affiliated with the Government of Nepal.
