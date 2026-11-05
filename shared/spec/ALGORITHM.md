@@ -1,8 +1,8 @@
 # NepDate Calendar Algorithm: normative spec (v1)
 
-Language-neutral. Every port (Rust, Go, Java, TypeScript, Python) MUST implement exactly this
-and MUST pass every file in `spec/vectors/`. How a port stores the tables is its own
-decision; the results are not.
+Language-neutral. Every port (C#, TypeScript, Python, PHP, Java, Dart, Kotlin, Go, Swift, C++, C,
+Rust, Ruby, Zig) MUST implement exactly this and MUST pass every file in `spec/vectors/`. How a
+port stores the tables is its own decision; the results are not.
 
 Notation: `/` is integer division. Within the supported range every intermediate value
 in this document is **non-negative**, so truncating division (C, Rust, Go, Java) and

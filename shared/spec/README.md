@@ -1,7 +1,7 @@
 # spec/: language-neutral specification
 
-Everything a port (Rust, Go, Java, TypeScript, Python) needs. Each port vendors this
-directory and `data/` into its own `shared/` (ADR-0001).
+Everything a port (C#, TypeScript, Python, PHP, Java, Dart, Kotlin, Go, Swift, C++, C, Rust, Ruby,
+Zig) needs. Each port vendors this directory and `data/` into its own `shared/` (ADR-0001).
 
 | File | Normative? | Content |
 |---|---|---|
