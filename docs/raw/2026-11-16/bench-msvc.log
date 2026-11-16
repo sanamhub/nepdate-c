@@ -1,0 +1,16 @@
+idle gate (30 one-second samples): avg=5.5 max=14.9
+run is about one second long; one load sample was taken: total 10.9, other CPUs 12.0 percent
+command: build\bench\bin\nepdate_bench.exe --json docs\raw\2026-11-16\bench-msvc.json --affinity 2
+bench: golden vectors agree
+B1 5.399 ns/op
+B2 7.424 ns/op
+B3 8.291 ns/op
+B4 11.078 ns/op
+B5 32.747 ns/op
+B6 11.924 ns/op
+B7 16.570 ns/op
+B8 540.179 ns/op
+repeat runs on the same binary, not published (B1..B8):
+4.961 7.014 8.049 10.748 31.421 11.760 16.602 528.013
+5.544 7.243 8.130 10.893 31.729 11.777 17.050 526.302
+5.416 7.239 8.106 10.835 32.001 11.849 15.604 530.373
