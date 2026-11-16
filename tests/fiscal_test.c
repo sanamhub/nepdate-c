@@ -193,6 +193,21 @@ TEST(fiscal_labels) {
     check_label(-1, NEPDATE_ENGLISH, "-1/00");
     check_label(INT32_MIN, NEPDATE_ENGLISH, "-2147483648/47");
     check_label(INT32_MAX, NEPDATE_ENGLISH, "2147483647/48");
+    /* One to five digits, and the powers of ten on each side of a digit count. */
+    check_label(7, NEPDATE_ENGLISH, "7/08");
+    check_label(9, NEPDATE_NEPALI, "९/१०");
+    check_label(10, NEPDATE_ENGLISH, "10/11");
+    check_label(99, NEPDATE_ENGLISH, "99/00");
+    check_label(100, NEPDATE_ENGLISH, "100/01");
+    check_label(999, NEPDATE_NEPALI, "९९९/००");
+    check_label(1000, NEPDATE_ENGLISH, "1000/01");
+    check_label(9999, NEPDATE_ENGLISH, "9999/00");
+    check_label(10000, NEPDATE_ENGLISH, "10000/01");
+    check_label(10009, NEPDATE_NEPALI, "१०००९/१०");
+    check_label(99999, NEPDATE_ENGLISH, "99999/00");
+    check_label(100000, NEPDATE_ENGLISH, "100000/01");
+    check_label(1000000000, NEPDATE_ENGLISH, "1000000000/01");
+    check_label(-10000, NEPDATE_ENGLISH, "-10000/99");
 }
 
 TEST(fiscal_label_truncation) {

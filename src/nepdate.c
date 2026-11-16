@@ -619,6 +619,12 @@ static void put_byte(char *buffer, size_t size, size_t position, char byte) {
     }
 }
 
+/* True when count bytes at position all fit before the terminator, so a writer can store them
+ * with one check instead of one per byte. */
+static bool room_for(const char *buffer, size_t size, size_t position, size_t count) {
+    return buffer != NULL && position < size && count < size - position;
+}
+
 static void put_digit(char *buffer, size_t size, size_t *position, unsigned digit,
                       nepdate_lang lang) {
     if (lang == NEPDATE_NEPALI) {
@@ -627,9 +633,15 @@ static void put_digit(char *buffer, size_t size, size_t *position, unsigned digi
             "\340\245\246", "\340\245\247", "\340\245\250", "\340\245\251", "\340\245\252",
             "\340\245\253", "\340\245\254", "\340\245\255", "\340\245\256", "\340\245\257",
         };
-        put_byte(buffer, size, *position, devanagari[digit][0]);
-        put_byte(buffer, size, *position + 1U, devanagari[digit][1]);
-        put_byte(buffer, size, *position + 2U, devanagari[digit][2]);
+        if (room_for(buffer, size, *position, 3U)) {
+            buffer[*position] = devanagari[digit][0];
+            buffer[*position + 1U] = devanagari[digit][1];
+            buffer[*position + 2U] = devanagari[digit][2];
+        } else {
+            put_byte(buffer, size, *position, devanagari[digit][0]);
+            put_byte(buffer, size, *position + 1U, devanagari[digit][1]);
+            put_byte(buffer, size, *position + 2U, devanagari[digit][2]);
+        }
         *position += 3U;
     } else {
         put_byte(buffer, size, *position, (char)('0' + digit));
@@ -637,34 +649,48 @@ static void put_digit(char *buffer, size_t size, size_t *position, unsigned digi
     }
 }
 
-/* Writes value with at least min_width digits and returns the new position. */
+/* Writes value with at least min_width digits and returns the new position. Precondition:
+ * min_width is at most 4, the widest field of a date. */
 static size_t put_number(char *buffer, size_t size, size_t position, uint32_t value,
                          unsigned min_width, nepdate_lang lang) {
+    if (value < 10000U) {
+        /* Every number of a date: at most four digits, split without a loop. */
+        const uint32_t high = value / 100U;
+        const uint32_t low = value % 100U;
+        const unsigned digits[4] = {high / 10U, high % 10U, low / 10U, low % 10U};
+        unsigned count =
+            1U + (value >= 10U ? 1U : 0U) + (value >= 100U ? 1U : 0U) + (value >= 1000U ? 1U : 0U);
+        if (count < min_width) {
+            count = min_width;
+        }
+        for (unsigned i = 4U - count; i < 4U; i++) {
+            put_digit(buffer, size, &position, digits[i], lang);
+        }
+        return position;
+    }
+    /* Five digits or more, which only a fiscal year label can ask for; no padding applies. */
     unsigned count = 1;
-    uint32_t remaining = value;
-    while (remaining >= 10U) {
-        remaining /= 10U;
-        count++;
-    }
-    if (count < min_width) {
-        count = min_width;
-    }
     uint32_t power = 1U;
-    for (unsigned i = 1; i < count; i++) {
+    while (value / power >= 10U) {
         power *= 10U;
+        count++;
     }
     for (unsigned i = 0; i < count; i++) {
         put_digit(buffer, size, &position, value / power, lang);
         value %= power;
-        if (power > 1U) {
-            power /= 10U;
-        }
+        power = power > 1U ? power / 10U : 1U;
     }
     return position;
 }
 
 /* Writes text and returns the new position. */
 static size_t write_text(char *buffer, size_t size, size_t position, text_span text) {
+    if (room_for(buffer, size, position, text.length)) {
+        for (size_t i = 0; i < text.length; i++) {
+            buffer[position + i] = text.text[i];
+        }
+        return position + text.length;
+    }
     for (size_t i = 0; i < text.length; i++) {
         put_byte(buffer, size, position, text.text[i]);
         position++;
@@ -1426,6 +1452,22 @@ typedef struct scanned_char {
     size_t size;
 } scanned_char;
 
+/* The one-byte separators of PARSING section 2. */
+static bool strict_ascii_separator(char c) {
+    switch (c) {
+    case '-':
+    case '/':
+    case '.':
+    case '_':
+    case '\\':
+    case ' ':
+    case '|':
+        return true;
+    default:
+        return false;
+    }
+}
+
 static scanned_char scan_strict(const char *text, size_t length, size_t i) {
     scanned_char result = {SCANNED_OTHER, 0, 1};
     const unsigned char c = (unsigned char)text[i];
@@ -1447,20 +1489,32 @@ static scanned_char scan_strict(const char *text, size_t length, size_t i) {
             return result;
         }
     }
-    switch (c) {
-    case '-':
-    case '/':
-    case '.':
-    case '_':
-    case '\\':
-    case ' ':
-    case '|':
+    if (strict_ascii_separator((char)c)) {
         result.kind = SCANNED_SEPARATOR;
-        break;
-    default:
-        break;
     }
     return result;
+}
+
+/* The canonical shape, ten bytes of `YYYY/MM/DD` with ASCII digits and any one-byte separator.
+ * The scanner below reads this shape as the same three numbers, so the shortcut changes no
+ * answer. Precondition: text has at least ten bytes. */
+static bool parse_canonical(const char *text, unsigned *year, unsigned *month, unsigned *day) {
+    static const unsigned char digit_at[8] = {0, 1, 2, 3, 5, 6, 8, 9};
+    unsigned digits[8];
+    for (size_t i = 0; i < 8U; i++) {
+        /* Unsigned, so a byte below '0' wraps to a large value and fails the one test. */
+        digits[i] = (unsigned)(unsigned char)text[digit_at[i]] - (unsigned)'0';
+        if (digits[i] > 9U) {
+            return false;
+        }
+    }
+    if (!strict_ascii_separator(text[4]) || !strict_ascii_separator(text[7])) {
+        return false;
+    }
+    *year = digits[0] * 1000U + digits[1] * 100U + digits[2] * 10U + digits[3];
+    *month = digits[4] * 10U + digits[5];
+    *day = digits[6] * 10U + digits[7];
+    return true;
 }
 
 static nepdate_status parse_strict(const char *text, size_t length, nepdate_date *out) {
@@ -1470,6 +1524,9 @@ static nepdate_status parse_strict(const char *text, size_t length, nepdate_date
     size_t group = 0;
     size_t digits = 0;
     size_t i = 0;
+    if (length == 10U && parse_canonical(text, &group0, &group1, &group2)) {
+        return nepdate_from_bs((int)group0, (int)group1, (int)group2, out);
+    }
     while (i < length) {
         const scanned_char c = scan_strict(text, length, i);
         i += c.size;

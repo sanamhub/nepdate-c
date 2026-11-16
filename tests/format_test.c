@@ -258,6 +258,59 @@ TEST(null_and_truncated_buffers) {
     CHECK_EQ_INT(nepdate_format_long(date, options, NEPDATE_ENGLISH, NULL, 4), 16);
 }
 
+/* The writers store a whole name or digit at once when it fits and byte by byte when it doesn't.
+ * Every buffer size from 0 to past the full text must keep the same prefix, end it with NUL and
+ * leave the bytes after the terminator alone. */
+static void sweep_long(nepdate_date date, nepdate_long_options options, nepdate_lang lang,
+                       const char *expected) {
+    const size_t full = strlen(expected);
+    for (size_t size = 0; size <= full + 2U; size++) {
+        char buffer[160];
+        memset(buffer, 0x5A, sizeof buffer);
+        CHECK_EQ_INT(nepdate_format_long(date, options, lang, buffer, size), full);
+        if (size == 0) {
+            CHECK_EQ_INT((unsigned char)buffer[0], 0x5A);
+        } else {
+            const size_t kept = size - 1U < full ? size - 1U : full;
+            CHECK_EQ_INT(memcmp(buffer, expected, kept), 0);
+            CHECK_EQ_INT((unsigned char)buffer[kept], 0);
+            CHECK_EQ_INT((unsigned char)buffer[kept + 1U], 0x5A);
+        }
+    }
+}
+
+static void sweep_short(nepdate_date date, bool pad, nepdate_lang lang, const char *expected) {
+    const size_t full = strlen(expected);
+    for (size_t size = 0; size <= full + 2U; size++) {
+        char buffer[64];
+        memset(buffer, 0x5A, sizeof buffer);
+        CHECK_EQ_INT(
+            nepdate_format_short(date, NEPDATE_YMD, NEPDATE_SEP_SLASH, pad, lang, buffer, size),
+            full);
+        if (size == 0) {
+            CHECK_EQ_INT((unsigned char)buffer[0], 0x5A);
+        } else {
+            const size_t kept = size - 1U < full ? size - 1U : full;
+            CHECK_EQ_INT(memcmp(buffer, expected, kept), 0);
+            CHECK_EQ_INT((unsigned char)buffer[kept], 0);
+            CHECK_EQ_INT((unsigned char)buffer[kept + 1U], 0x5A);
+        }
+    }
+}
+
+TEST(every_buffer_size_keeps_the_same_prefix) {
+    const nepdate_long_options all = {true, true, true};
+    const nepdate_long_options bare = {false, false, false};
+    sweep_long(date_of(2081, 4, 15), all, NEPDATE_NEPALI, "मङ्गलवार, साउन १५, २०८१");
+    sweep_long(date_of(2081, 4, 15), all, NEPDATE_ENGLISH, "Tuesday, Shrawan 15, 2081");
+    sweep_long(date_of(2081, 4, 5), bare, NEPDATE_NEPALI, "साउन ५");
+    sweep_long(date_of(2081, 4, 5), bare, NEPDATE_ENGLISH, "Shrawan 5");
+    sweep_short(date_of(2081, 4, 5), true, NEPDATE_NEPALI, "२०८१/०४/०५");
+    sweep_short(date_of(2081, 4, 5), false, NEPDATE_NEPALI, "२०८१/४/५");
+    sweep_short(date_of(1901, 12, 30), true, NEPDATE_ENGLISH, "1901/12/30");
+    sweep_short(date_of(2199, 1, 9), false, NEPDATE_ENGLISH, "2199/1/9");
+}
+
 TEST(invalid_date_writes_nothing) {
     const nepdate_date invalid = {-1};
     const nepdate_long_options options = {false, true, true};
@@ -280,6 +333,7 @@ int main(void) {
     RUN_TEST(long_format_examples);
     RUN_TEST(pattern_tokens);
     RUN_TEST(null_and_truncated_buffers);
+    RUN_TEST(every_buffer_size_keeps_the_same_prefix);
     RUN_TEST(invalid_date_writes_nothing);
     return harness_finish();
 }

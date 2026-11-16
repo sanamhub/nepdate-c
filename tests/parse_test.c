@@ -199,9 +199,67 @@ TEST(edge_cases) {
                  NEPDATE_E_UNRECOGNIZED);
 }
 
+static void check_strict(const char *text, nepdate_status expected) {
+    nepdate_date out = {0};
+    CHECK_EQ_INT(nepdate_parse(text, strlen(text), &out), expected);
+    if (expected == NEPDATE_OK) {
+        nepdate_ymd ymd = {0};
+        CHECK_EQ_INT(nepdate_to_bs(out, &ymd), NEPDATE_OK);
+        CHECK(ymd.year == 2081 && ymd.month == 4 && ymd.day == 15);
+    }
+}
+
+/* The ten-byte canonical shape is read by a shortcut. It must accept exactly what the scanner
+ * accepts for that shape, and every near miss must get the scanner's answer. */
+TEST(canonical_shape_and_its_near_misses) {
+    static const char separators[] = {'/', '-', '.', '_', '\\', ' ', '|'};
+    for (size_t i = 0; i < sizeof separators; i++) {
+        for (size_t j = 0; j < sizeof separators; j++) {
+            char text[11] = "2081/04/15";
+            text[4] = separators[i];
+            text[7] = separators[j];
+            check_strict(text, NEPDATE_OK);
+        }
+    }
+
+    /* A byte that is not a digit at each digit position, below '0' and above '9'. */
+    static const size_t digit_at[] = {0, 1, 2, 3, 5, 6, 8, 9};
+    for (size_t i = 0; i < sizeof digit_at / sizeof digit_at[0]; i++) {
+        char text[11] = "2081/04/15";
+        text[digit_at[i]] = 'x';
+        check_strict(text, NEPDATE_E_INVALID_CHARACTER);
+        text[digit_at[i]] = '+';
+        check_strict(text, NEPDATE_E_INVALID_CHARACTER);
+        text[digit_at[i]] = ':';
+        check_strict(text, NEPDATE_E_INVALID_CHARACTER);
+    }
+
+    /* A digit or another byte where a separator belongs. */
+    check_strict("2081x04/15", NEPDATE_E_INVALID_CHARACTER);
+    check_strict("2081/04x15", NEPDATE_E_INVALID_CHARACTER);
+    check_strict("2081004/15", NEPDATE_E_NUMBER_TOO_LONG);
+    check_strict("2081/04015", NEPDATE_E_NUMBER_TOO_LONG);
+
+    /* Ten bytes in another arrangement still parse through the scanner. */
+    check_strict("2081/4//15", NEPDATE_OK);
+    check_strict(" 2081 4 15", NEPDATE_OK);
+    check_strict("2081 4 15 ", NEPDATE_OK);
+    check_strict("2081/4/1/5", NEPDATE_E_WRONG_GROUP_COUNT);
+
+    /* The shortcut reports a bad date as the scanner does. */
+    check_strict("2081/13/15", NEPDATE_E_INVALID_MONTH);
+    check_strict("2081/00/15", NEPDATE_E_INVALID_MONTH);
+    check_strict("2081/04/33", NEPDATE_E_INVALID_DAY);
+    check_strict("2081/04/00", NEPDATE_E_INVALID_DAY);
+    check_strict("1900/01/01", NEPDATE_E_OUT_OF_RANGE);
+    check_strict("2200/01/01", NEPDATE_E_OUT_OF_RANGE);
+    check_strict("0000/00/00", NEPDATE_E_OUT_OF_RANGE);
+}
+
 int main(void) {
     RUN_TEST(golden_parse_rows);
     RUN_TEST(edge_cases);
+    RUN_TEST(canonical_shape_and_its_near_misses);
     RUN_TEST(shorter_length_stops_at_the_length);
     RUN_TEST(null_arguments);
     return harness_finish();
