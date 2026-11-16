@@ -3,6 +3,15 @@
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 Versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## Unreleased
+
+### Changed
+
+- Faster text. Strict parsing reads the canonical ten-byte `YYYY/MM/DD` shape directly, about twice
+  as fast, and formatting stores a whole name or digit with one bounds check when it fits, about a
+  quarter faster for the long Nepali form. Results, truncation and the bytes after the terminator
+  are unchanged.
+
 ## [1.0.0-rc.1] - 2026-11-04
 
 ### Changed
