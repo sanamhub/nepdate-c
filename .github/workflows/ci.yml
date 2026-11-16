@@ -45,8 +45,11 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        version: [13, 14]
-    runs-on: ubuntu-24.04
+        include:
+          - {version: 13, runner: ubuntu-24.04}
+          - {version: 14, runner: ubuntu-24.04}
+          - {version: 15, runner: ubuntu-26.04}
+    runs-on: ${{ matrix.runner }}
     timeout-minutes: 30
     env:
       CC: gcc-${{ matrix.version }}
@@ -59,19 +62,29 @@ jobs:
         run: cmake -DONLY=build-and-test,no-libc,api-surface,amalgamation,isolation -P tools/ci.cmake
 
   clang:
-    runs-on: ubuntu-24.04
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - {version: 18, runner: ubuntu-24.04}
+          - {version: 22, runner: ubuntu-26.04}
+    runs-on: ${{ matrix.runner }}
     timeout-minutes: 30
     env:
-      CC: clang-18
+      CC: clang-${{ matrix.version }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
-      - run: sudo apt-get update && sudo apt-get install -y ninja-build pkg-config clang-18
+      - run: sudo apt-get update && sudo apt-get install -y ninja-build pkg-config clang-${{ matrix.version }}
       - name: Gates 4, 13, 14 and 15
         run: cmake -DONLY=build-and-test,no-libc,api-surface,amalgamation -P tools/ci.cmake
 
   zig:
+    strategy:
+      fail-fast: false
+      matrix:
+        version: [0.17.0, 0.17.1]
     runs-on: ubuntu-24.04
     timeout-minutes: 30
     steps:
@@ -80,7 +93,7 @@ jobs:
           persist-credentials: false
       - uses: mlugg/setup-zig@d1434d08867e3ee9daa34448df10607b98908d29 # v2.2.1
         with:
-          version: 0.17.0
+          version: ${{ matrix.version }}
       - name: Install Ninja and a zig cc wrapper
         run: |
           sudo apt-get update && sudo apt-get install -y ninja-build pkg-config
@@ -100,7 +113,11 @@ jobs:
           grep -F "BS 2081-04-15" "$RUNNER_TEMP/zig-consumer.log"
 
   apple:
-    runs-on: macos-15
+    strategy:
+      fail-fast: false
+      matrix:
+        runner: [macos-15, macos-26]
+    runs-on: ${{ matrix.runner }}
     timeout-minutes: 30
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -130,51 +147,51 @@ jobs:
         run: cmake -DONLY=format,ascii,codegen,tidy,cppcheck,analyzer -P tools/ci.cmake
 
   sanitizers:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     timeout-minutes: 30
     env:
-      CC: clang-18
+      CC: clang-22
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
-      - name: Install Clang 18
+      - name: Install Clang 22
         run: |
           sudo apt-get update
-          sudo apt-get install -y ninja-build clang-18
-          # Ubuntu 24.04 kernels use 32 random mmap bits, which the sanitizers in Clang 18 can't map.
+          sudo apt-get install -y ninja-build clang-22 libclang-rt-22-dev
+          # Runner kernels use 32 random mmap bits, which some sanitizer runtimes can't map.
           sudo sysctl vm.mmap_rnd_bits=28
       - name: Gates 9 and 10
         run: cmake -DONLY=sanitizers,msan -P tools/ci.cmake
 
   valgrind:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     timeout-minutes: 30
     env:
-      CC: gcc-14
+      CC: gcc-15
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
-      - run: sudo apt-get update && sudo apt-get install -y ninja-build gcc-14 valgrind
+      - run: sudo apt-get update && sudo apt-get install -y ninja-build gcc-15 valgrind
       - name: Gate 11
         run: cmake -DONLY=valgrind -P tools/ci.cmake
 
   coverage:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     timeout-minutes: 30
     env:
-      CC: gcc-14
-      GCOV: gcov-14
+      CC: gcc-15
+      GCOV: gcov-15
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
-      - name: Install GCC 14 and gcovr
+      - name: Install GCC 15 and gcovr
         run: |
           sudo apt-get update
-          sudo apt-get install -y ninja-build gcc-14
-          pipx install gcovr==8.6
+          sudo apt-get install -y ninja-build gcc-15
+          pipx install gcovr==8.8
       - name: Gate 12
         run: cmake -DONLY=coverage -P tools/ci.cmake
 
@@ -257,7 +274,7 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 60
     env:
-      VCPKG_COMMIT: 0699a19d0c6386247ce50d4dedbb8217d484d536
+      VCPKG_COMMIT: 9eec002df1cd109f8f104cd966a763daf9751489
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -285,7 +302,7 @@ jobs:
           NEPDATE_C_SOURCE: ${{ github.workspace }}
         run: |
           set -euo pipefail
-          pipx install conan==2.33.0
+          pipx install conan==2.34.0
           conan profile detect --force
           conan create conan/nepdate-c --build=missing
           conan create conan/nepdate-c-patro --build=missing

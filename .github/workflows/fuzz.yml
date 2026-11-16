@@ -17,8 +17,8 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  CC: clang-18
-  CXX: clang-18
+  CC: clang-22
+  CXX: clang-22
 
 jobs:
   fuzz:
@@ -26,13 +26,13 @@ jobs:
       fail-fast: false
       matrix:
         target: [parse_strict, parse_lenient, format_pattern, from_unix]
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     timeout-minutes: 45
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
-      - run: sudo apt-get update && sudo apt-get install -y clang-18 ninja-build
+      - run: sudo apt-get update && sudo apt-get install -y clang-22 libclang-rt-22-dev ninja-build
       - name: Configure with the fuzz preset
         run: cmake --preset fuzz
       - name: Build the target
