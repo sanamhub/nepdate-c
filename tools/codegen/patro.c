@@ -81,7 +81,8 @@ static bool summary_day(const json_value *doc, const char *key, char out[11], ch
 }
 
 static int year_of(const char *day) {
-    return (day[0] - '0') * 1000 + (day[1] - '0') * 100 + (day[2] - '0') * 10 + (day[3] - '0');
+    return ((day[0] - '0') * 1000) + ((day[1] - '0') * 100) + ((day[2] - '0') * 10) +
+           (day[3] - '0');
 }
 
 bool codegen_patro_summary_parse(const json_value *doc, codegen_patro_summary *out, char *error,
@@ -236,7 +237,7 @@ static int two_digits(const char *text) {
     if (text[0] < '0' || text[0] > '9' || text[1] < '0' || text[1] > '9') {
         return -1;
     }
-    return (text[0] - '0') * 10 + (text[1] - '0');
+    return ((text[0] - '0') * 10) + (text[1] - '0');
 }
 
 /* "2081-01-01" to its parts; false when the key is not exactly that shape. */
@@ -248,7 +249,8 @@ static bool parse_date_key(const char *key, int *year, int *month, int *day) {
         key[2] > '9' || key[3] < '0' || key[3] > '9') {
         return false;
     }
-    *year = (key[0] - '0') * 1000 + (key[1] - '0') * 100 + (key[2] - '0') * 10 + (key[3] - '0');
+    *year =
+        ((key[0] - '0') * 1000) + ((key[1] - '0') * 100) + ((key[2] - '0') * 10) + (key[3] - '0');
     *month = two_digits(key + 5);
     *day = two_digits(key + 8);
     return *year > 0 && *month > 0 && *day > 0;
@@ -346,7 +348,7 @@ static bool serial_of(const codegen_calendar *calendar, const codegen_patro_day 
     if (day->year < CODEGEN_MIN_YEAR || day->year > CODEGEN_MAX_YEAR) {
         return false;
     }
-    const uint32_t index = years * (uint32_t)CODEGEN_MONTHS + (uint32_t)day->month - 1U;
+    const uint32_t index = (years * (uint32_t)CODEGEN_MONTHS) + (uint32_t)day->month - 1U;
     if (day->month < 1 || day->month > CODEGEN_MONTHS || index >= (uint32_t)CODEGEN_ALL_MONTHS) {
         return false;
     }
@@ -424,7 +426,7 @@ static bool build_names(codegen_patro_tables *tables, const codegen_patro_summar
                     (unsigned)summary->name_bytes);
     }
     tables->name_blob = malloc(total);
-    tables->name_offsets = malloc((2U * tables->name_count + 1U) * sizeof *tables->name_offsets);
+    tables->name_offsets = malloc(((2U * tables->name_count) + 1U) * sizeof *tables->name_offsets);
     if (tables->name_blob == NULL || tables->name_offsets == NULL) {
         return fail(error, error_size, "out of memory");
     }
@@ -792,7 +794,7 @@ static void append_name_offsets(builder *b, const codegen_patro_tables *tables) 
            tables->name_offset_count);
     for (size_t i = 0; i < tables->name_count; i++) {
         append(b, "    %u, %u, /* %zu: %s */\n", tables->name_offsets[2U * i],
-               tables->name_offsets[2U * i + 1U], i, tables->names[i].en);
+               tables->name_offsets[(2U * i) + 1U], i, tables->names[i].en);
     }
     append(b, "    %u,\n", tables->name_offsets[tables->name_offset_count - 1U]);
     append(b, "};\n");

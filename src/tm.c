@@ -30,12 +30,12 @@ static int64_t tm_floor_div(int64_t value, int64_t divisor) {
 static int64_t tm_days_from_civil(int64_t year, int64_t month, int64_t day) {
     const int64_t y = month <= 2 ? year - 1 : year;
     const int64_t era = tm_floor_div(y, 400);
-    const int64_t year_of_era = y - era * 400;
+    const int64_t year_of_era = y - (era * 400);
     const int64_t month_prime = (month + 9) % 12;
-    const int64_t day_of_year = (153 * month_prime + 2) / 5 + day - 1;
+    const int64_t day_of_year = (((153 * month_prime) + 2) / 5) + day - 1;
     const int64_t day_of_era =
-        year_of_era * 365 + year_of_era / 4 - year_of_era / 100 + day_of_year;
-    return era * 146097 + day_of_era - 719468;
+        (year_of_era * 365) + (year_of_era / 4) - (year_of_era / 100) + day_of_year;
+    return (era * 146097) + day_of_era - 719468;
 }
 
 nepdate_status nepdate_from_tm(const struct tm *tm, nepdate_date *out) {

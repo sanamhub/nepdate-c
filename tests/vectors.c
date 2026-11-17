@@ -28,7 +28,8 @@ bool vector_open(vector_reader *reader, const char *relative) {
         (void)fclose(file);
         return false;
     }
-    char *data = malloc((size_t)size + 1);
+    /* calloc, so the byte after the data is already its terminator. */
+    char *data = calloc((size_t)size + 1U, 1);
     if (data == NULL) {
         (void)fclose(file);
         return false;
@@ -39,7 +40,6 @@ bool vector_open(vector_reader *reader, const char *relative) {
         free(data);
         return false;
     }
-    data[read] = '\0';
     reader->data = data;
     reader->length = read;
     reader->offset = 0;

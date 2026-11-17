@@ -437,7 +437,7 @@ TEST(day_of_week_matches_english) {
             const nepdate_date date = date_of(year, month, 15);
             const nepdate_ymd ad = to_ad(date);
             const int days = reference_days_from_civil(ad.year, ad.month, ad.day);
-            const int expected = (days % 7 + 7 + 4) % 7;
+            const int expected = ((days % 7) + 7 + 4) % 7;
             CHECK_EQ_INT(weekday(date), expected);
         }
     }

@@ -100,11 +100,11 @@ static long floor_div(long a, long b) { return (a >= 0 ? a : a - (b - 1)) / b; }
 long codegen_days_from_civil(long year, long month, long day) {
     const long y = month <= 2 ? year - 1 : year;
     const long era = floor_div(y, 400);
-    const long yoe = y - era * 400;
+    const long yoe = y - (era * 400);
     const long mp = (month + 9) % 12;
-    const long doy = (153 * mp + 2) / 5 + day - 1;
-    const long doe = yoe * 365 + yoe / 4 - yoe / 100 + doy;
-    return era * 146097 + doe - 719468;
+    const long doy = (((153 * mp) + 2) / 5) + day - 1;
+    const long doe = (yoe * 365) + (yoe / 4) - (yoe / 100) + doy;
+    return (era * 146097) + doe - 719468;
 }
 
 /* True when estimate is never a later month than day s is in, and at most one month earlier. */
@@ -163,7 +163,7 @@ bool codegen_derive_tables(codegen_calendar *calendar, char *error, size_t error
     for (int j = 0; j < CODEGEN_AD_MONTHS; j++) {
         const int k = j + CODEGEN_AD_FIRST_MONTH - 1;
         calendar->ad_month_start[j] =
-            codegen_days_from_civil(CODEGEN_AD_FIRST_YEAR + k / 12, k % 12 + 1, 1) -
+            codegen_days_from_civil(CODEGEN_AD_FIRST_YEAR + (k / 12), (k % 12) + 1, 1) -
             calendar->epoch_unix_days;
     }
 
@@ -182,8 +182,8 @@ bool codegen_derive_tables(codegen_calendar *calendar, char *error, size_t error
         if (estimate < month - 1 || estimate > month + 1 || estimate >= CODEGEN_ALL_MONTHS) {
             return fail(error, error_size,
                         "year %d month %d: the month estimate for day %ld is %ld months off",
-                        CODEGEN_MIN_YEAR + month / CODEGEN_MONTHS, month % CODEGEN_MONTHS + 1, s,
-                        estimate - month);
+                        CODEGEN_MIN_YEAR + (month / CODEGEN_MONTHS), (month % CODEGEN_MONTHS) + 1,
+                        s, estimate - month);
         }
     }
 
@@ -260,7 +260,7 @@ static void append_table(builder *b, const table *t) {
             append(b, " %ld,", t->values[i]);
             i++;
         }
-        append(b, " /* %d */\n", t->first_year + line * t->years_per_line);
+        append(b, " /* %d */\n", t->first_year + (line * t->years_per_line));
     }
     append(b, "};\n");
 }

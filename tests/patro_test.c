@@ -40,7 +40,7 @@ static bool day_parts(const char *text, int *year, int *month, int *day) {
             if (*text < '0' || *text > '9') {
                 return false;
             }
-            value = value * 10 + (*text - '0');
+            value = (value * 10) + (*text - '0');
         }
         *parts[part] = value;
         if (*text != (part < 2 ? '-' : '\0')) {
