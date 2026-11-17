@@ -12,7 +12,7 @@ files at runtime.
 | `NOTICE` | MIT notice of the upstream NepDate project, rendered from `tools/NOTICE.template` by the importer |
 
 Rules:
-- Data comes from C# NepDate through the weekly sync PR. Hand edits only when upstream can't
+- Data comes from C# NepDate through the upstream sync PR. Hand edits only when upstream can't
   take a fix in time, with a source for every change. Procedure, sources and one-time setup:
   [`docs/runbooks/data-update.md`](https://github.com/sanamhub/nepdate/blob/main/docs/runbooks/data-update.md).
 - After any change: `py tools/make_vectors.py`, then `py spec/reference/verify_vectors.py`.
@@ -26,7 +26,7 @@ Rules:
 
 | Years | Finding | Likely cause |
 |---|---|---|
-| Metadata provenance (`data/patro/`) | Upstream's generator projects are git-ignored, so the source and licence of the tithi, holiday and event data aren't published | confirm the source and terms before any port ships `nepdate-patro` in a public release; if redistribution isn't allowed, rebuild from primary sources (the government holiday notice and the Panchanga Samiti panchang). See `docs/upstream/proposals.md`, U-04 |
+| Metadata provenance (`data/patro/`) | Upstream's generator projects are git-ignored, so the source and licence of the tithi, holiday and event data aren't published | the owner approved shipping `nepdate-patro` on 2026-11-16: the NepDate family is free, open source and not commercial, and its code and data are public. The source is still not recorded upstream, so the question stays open there (`docs/upstream/proposals.md`, U-04). If the data ever has to be replaced, rebuild it from primary sources (the government holiday notice and the Panchanga Samiti panchang) |
 | Metadata range | Upstream's changelog and XML docs say metadata covers BS 2001–2089; the data covers 2077-01-01 to 2084-08-20 (the 2001–2089 figure is the range of its offset table) | documentation error upstream (U-05) |
 | Tithi `*` / "(K)" | 152 tithi days in BS 2078–2081 have names ending in `*` (np) and " (K)" (en). Nothing upstream defines the mark, and it does not match skipped or repeated tithis in the data | from upstream's unpublished data source (U-04). Ask what it means (U-09); ports show the name unchanged |
 | BS 2087–2090 | 2087 has **367** days and 2090 has **364**; every other year has 365 or 366. BS New Year 2088 falls on AD 2031-04-16, two days later than its neighbours (Apr 14), and 2089–2090 on Apr 15 | probably one day too many in the 2087 projection, taken back in 2090. If so, conversions from about BS 2087-12 to 2090-12 are off by one or two days. Not verified against an official calendar (not yet published for those years) |
@@ -40,4 +40,4 @@ Known correct anchors all match: 2000-01-01 = 1943-04-14, 2065-02-15 = 2008-05-2
 
 Schema gap: holidays for some people only (Kathmandu Valley, women employees, one community) are
 marked only in the event name, and holidays the government announces late are missing until the
-next sync. Proposed fix: schema 2 with `scope` and `tbd` fields (`docs/plan/00-ROADMAP.md`).
+next sync. Proposed fix: schema 2 with `scope` and `tbd` fields.
