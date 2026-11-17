@@ -7,6 +7,7 @@ Versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Changed
 
+- The standalone patro build refuses a core of another version, and CI checks that the patro Conan recipe and vcpkg port name the same core version (ADR-0013).
 - Faster text. Strict parsing reads the canonical ten-byte `YYYY/MM/DD` shape directly, about twice
   as fast, and formatting stores a whole name or digit with one bounds check when it fits, about a
   quarter faster for the long Nepali form. Results, truncation and the bytes after the terminator

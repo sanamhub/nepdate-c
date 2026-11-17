@@ -71,3 +71,41 @@ foreach(mode IN LISTS modes)
     run("${CMAKE_COMMAND}" --build "${dir}")
     run("${dir}/consumer")
 endforeach()
+
+# The standalone patro package builds against the installed core, and refuses a core of another
+# version (ADR-0013). The fake prefix holds a core config that reports 9.9.9 and nothing else, so
+# the version check must stop the configure before it looks for a target.
+# The package installed above also carries nepdate-c::patro, so the standalone build needs a
+# core-only install, the way the vcpkg and Conan packages have it.
+set(root_source "${SOURCE_DIR}/../..")
+set(patro_source "${root_source}/patro")
+set(core_prefix "${WORK}/core-only-prefix")
+run("${CMAKE_COMMAND}" -S "${root_source}" -B "${WORK}/core-only" ${configure_args}
+    -DNEPDATE_C_BUILD_PATRO=OFF -DNEPDATE_C_BUILD_TESTS=OFF)
+run("${CMAKE_COMMAND}" --build "${WORK}/core-only")
+run("${CMAKE_COMMAND}" --install "${WORK}/core-only" --prefix "${core_prefix}")
+set(patro_args ${configure_args})
+list(FILTER patro_args EXCLUDE REGEX "^-DCMAKE_PREFIX_PATH=")
+run("${CMAKE_COMMAND}" -S "${patro_source}" -B "${WORK}/patro-standalone" ${patro_args}
+    "-DCMAKE_PREFIX_PATH=${core_prefix}")
+run("${CMAKE_COMMAND}" --build "${WORK}/patro-standalone")
+
+set(fake_core "${WORK}/fake-core/lib/cmake/nepdate-c")
+file(MAKE_DIRECTORY "${fake_core}")
+file(WRITE "${fake_core}/nepdate-cConfig.cmake" "")
+file(WRITE "${fake_core}/nepdate-cConfigVersion.cmake"
+    "set(PACKAGE_VERSION 9.9.9)\nset(PACKAGE_VERSION_COMPATIBLE TRUE)\n")
+set(mismatch_args ${configure_args})
+list(FILTER mismatch_args EXCLUDE REGEX "^-DCMAKE_PREFIX_PATH=")
+execute_process(
+    COMMAND "${CMAKE_COMMAND}" -S "${patro_source}" -B "${WORK}/patro-mismatch" ${mismatch_args}
+        "-DCMAKE_PREFIX_PATH=${WORK}/fake-core"
+    RESULT_VARIABLE mismatch_rc
+    ERROR_VARIABLE mismatch_error)
+if(mismatch_rc EQUAL 0)
+    message(FATAL_ERROR "the standalone patro configured against a core of another version")
+endif()
+if(NOT mismatch_error MATCHES "needs nepdate-c [^ ]+, found 9\.9\.9")
+    message(FATAL_ERROR "the standalone patro failed for another reason:\n${mismatch_error}")
+endif()
+message(STATUS "install_consumer: the standalone patro refused core 9.9.9")

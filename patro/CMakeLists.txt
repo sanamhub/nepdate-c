@@ -10,7 +10,17 @@ if(CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR)
     set(CMAKE_C_EXTENSIONS OFF)
     include(GNUInstallDirs)
     include(CMakePackageConfigHelpers)
+    # The patro reads the core's internals, so it needs the core of the same version (ADR-0013).
+    # Not find_package(... EXACT): Conan's generated config reports the full "1.0.0-rc.1", which
+    # never equals project()'s numeric "1.0.0", while this tree's own config reports "1.0.0".
+    # Compare the X.Y.Z part instead; tools/release_check.cmake keeps the pre-release part equal
+    # in every recipe and port.
     find_package(nepdate-c CONFIG REQUIRED)
+    string(REGEX MATCH "^[0-9]+\\.[0-9]+\\.[0-9]+" _nepdate_core_version "${nepdate-c_VERSION}")
+    if(NOT _nepdate_core_version VERSION_EQUAL PROJECT_VERSION)
+        message(FATAL_ERROR
+            "nepdate-c-patro ${PROJECT_VERSION} needs nepdate-c ${PROJECT_VERSION}, found ${nepdate-c_VERSION}")
+    endif()
     set(NEPDATE_C_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/..")
     set(NEPDATE_C_PATRO_STANDALONE ON)
 else()
