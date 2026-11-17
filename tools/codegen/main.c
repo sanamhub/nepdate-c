@@ -55,21 +55,22 @@ static char *read_file(const char *path, size_t *length) {
     size_t capacity = 4096;
     char *data = malloc(capacity);
     while (data != NULL) {
-        const size_t n = fread(data + size, 1, capacity - size - 1, file);
+        const size_t wanted = capacity - size - 1;
+        const size_t n = fread(data + size, 1, wanted, file);
         size += n;
-        if (n == 0) {
+        /* A short read means the end of the file or an error, and ferror below tells which. Reading
+         * on after it would touch a stream whose state is already settled. */
+        if (n < wanted) {
             break;
         }
-        if (capacity - size - 1 == 0) {
-            char *bigger = realloc(data, capacity * 2);
-            if (bigger == NULL) {
-                free(data);
-                data = NULL;
-                break;
-            }
-            data = bigger;
-            capacity *= 2;
+        char *bigger = realloc(data, capacity * 2);
+        if (bigger == NULL) {
+            free(data);
+            data = NULL;
+            break;
         }
+        data = bigger;
+        capacity *= 2;
     }
     const bool read_error = ferror(file) != 0;
     if (fclose(file) != 0 || read_error) {

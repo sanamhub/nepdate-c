@@ -9,7 +9,7 @@ Immutable once Accepted; supersede with a new ADR.
 | [0001](0001-language-and-toolchain.md) | Language, toolchain and generated tables | Accepted |
 | [0002](0002-api-and-abi.md) | API and ABI conventions | Accepted |
 | [0003](0003-names.md) | Names that never collide with nepdate-cpp | Accepted |
-| [0004](0004-gates.md) | Quality gates and CI | Accepted, gate 13 amended by 0007, CI jobs by 0009 |
+| [0004](0004-gates.md) | Quality gates and CI | Accepted, gate 13 amended by 0007, CI jobs by 0009, gate 6 by 0014 |
 | [0005](0005-packaging.md) | Packaging | Accepted |
 | [0006](0006-date-layout.md) | The date holds a day number | Accepted, BS to AD amended by 0008 |
 | [0007](0007-no-libc-linker-symbols.md) | The no-libc gate allows linker symbols | Accepted, amended by 0012 |
@@ -19,3 +19,4 @@ Immutable once Accepted; supersede with a new ADR.
 | [0011](0011-patro-counts-from-summary.md) | The patro counts come from the hub's generated summary | Accepted, amends 0001 |
 | [0012](0012-no-libc-stack-protector-symbols.md) | The no-libc gate allows the stack protector's symbols | Accepted, amends 0007 |
 | [0013](0013-patro-pins-the-exact-core-version.md) | The patro requires exactly the same core version | Accepted, amends 0010 |
+| [0014](0014-clang-tidy-22.md) | The tidy gate runs clang-tidy 22 | Accepted, amends 0004 |

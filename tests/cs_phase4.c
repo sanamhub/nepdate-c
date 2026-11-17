@@ -25,8 +25,8 @@ static uint32_t serial_of(nepdate_date date) { return (uint32_t)date.value - 1U;
 static nepdate_patro_name table_name(uint16_t index) {
     nepdate_patro_name name;
     const uint32_t start = nepdate_patro_name_offsets[(size_t)index * 2U];
-    const uint32_t middle = nepdate_patro_name_offsets[(size_t)index * 2U + 1U];
-    const uint32_t end = nepdate_patro_name_offsets[(size_t)index * 2U + 2U];
+    const uint32_t middle = nepdate_patro_name_offsets[((size_t)index * 2U) + 1U];
+    const uint32_t end = nepdate_patro_name_offsets[((size_t)index * 2U) + 2U];
     name.np = nepdate_patro_name_blob + start;
     name.np_length = (size_t)(middle - start);
     name.en = nepdate_patro_name_blob + middle;
@@ -46,7 +46,7 @@ TEST(calendar_strings_pool_is_not_empty) { CHECK(nepdate_patro_name_blob[0] != '
 
 TEST(calendar_strings_have_non_empty_names) {
     const size_t names = sizeof nepdate_patro_name_offsets / sizeof nepdate_patro_name_offsets[0];
-    CHECK_EQ_INT(names, 2U * summary_number("names") + 1U);
+    CHECK_EQ_INT(names, (2U * summary_number("names")) + 1U);
     size_t failures = 0;
     for (size_t k = 0; k + 1 < names; k += 2) {
         failures += nepdate_patro_name_offsets[k] < nepdate_patro_name_offsets[k + 1] ? 0U : 1U;
@@ -57,7 +57,7 @@ TEST(calendar_strings_have_non_empty_names) {
 
 TEST(month_start_has_expected_length) {
     CHECK_EQ_INT(sizeof nepdate_cal_month_start / sizeof nepdate_cal_month_start[0],
-                 299U * 12U + 1U);
+                 (299U * 12U) + 1U);
 }
 
 TEST(month_start_is_strictly_monotonic) {

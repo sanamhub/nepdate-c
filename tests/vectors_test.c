@@ -5,6 +5,7 @@
 
 #include <nepdate.h>
 
+#include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
 #include <stdlib.h>
@@ -44,7 +45,13 @@ TEST(month_boundaries) {
     const int ad_column = column(header, header_count, "ad");
     const int weekday_column = column(header, header_count, "weekday");
     const int length_column = column(header, header_count, "month_length");
-    CHECK(bs_column >= 0 && ad_column >= 0 && weekday_column >= 0 && length_column >= 0);
+    const bool have_columns =
+        bs_column >= 0 && ad_column >= 0 && weekday_column >= 0 && length_column >= 0;
+    CHECK(have_columns);
+    if (!have_columns) {
+        vector_close(&reader);
+        return;
+    }
 
     int rows = 0;
     while ((line = vector_next(&reader)) != NULL) {
@@ -96,8 +103,13 @@ TEST(csharp_golden_dates) {
     const int weekday_column = column(header, header_count, "weekday");
     const int day_of_year_column = column(header, header_count, "day_of_year");
     const int length_column = column(header, header_count, "month_length");
-    CHECK(bs_column >= 0 && ad_column >= 0 && weekday_column >= 0 && day_of_year_column >= 0 &&
-          length_column >= 0);
+    const bool have_columns = bs_column >= 0 && ad_column >= 0 && weekday_column >= 0 &&
+                              day_of_year_column >= 0 && length_column >= 0;
+    CHECK(have_columns);
+    if (!have_columns) {
+        vector_close(&reader);
+        return;
+    }
 
     int rows = 0;
     while ((line = vector_next(&reader)) != NULL) {
@@ -254,7 +266,7 @@ TEST(every_serial_round_trips) {
 
         nepdate_weekday weekday = NEPDATE_SUNDAY;
         CHECK_EQ_INT(nepdate_weekday_of(date, &weekday), NEPDATE_OK);
-        CHECK_EQ_INT(weekday, ((s + epoch_days) % 7 + 7 + 4) % 7);
+        CHECK_EQ_INT(weekday, (((s + epoch_days) % 7) + 7 + 4) % 7);
     }
 }
 

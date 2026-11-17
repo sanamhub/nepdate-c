@@ -18,8 +18,8 @@ enum {
     LAST_VALUE = NEPDATE_CAL_DAYS,
     /* The last AD month with a supported day: the AD table ends at 2143-04. */
     AD_LAST_YEAR = NEPDATE_CAL_AD_FIRST_YEAR +
-                   (NEPDATE_CAL_AD_FIRST_MONTH - 1 + NEPDATE_CAL_AD_MONTHS - 1) / 12,
-    AD_LAST_MONTH = (NEPDATE_CAL_AD_FIRST_MONTH - 1 + NEPDATE_CAL_AD_MONTHS - 1) % 12 + 1
+                   ((NEPDATE_CAL_AD_FIRST_MONTH - 1 + NEPDATE_CAL_AD_MONTHS - 1) / 12),
+    AD_LAST_MONTH = ((NEPDATE_CAL_AD_FIRST_MONTH - 1 + NEPDATE_CAL_AD_MONTHS - 1) % 12) + 1
 };
 
 /* A text and its length in bytes, so writing it needs no scan for the terminator, which a compiler
@@ -181,7 +181,7 @@ nepdate_status nepdate_from_bs(int year, int month, int day, nepdate_date *out) 
     if (m >= 12U) {
         return NEPDATE_E_INVALID_MONTH;
     }
-    const unsigned i = y * 12U + m;
+    const unsigned i = (y * 12U) + m;
     const unsigned d = (unsigned)day - 1U;
     if (d >= nepdate_cal_month_length[i]) {
         return NEPDATE_E_INVALID_DAY;
@@ -237,9 +237,9 @@ nepdate_status nepdate_from_ad(int year, int month, int day, nepdate_date *out) 
     if (year == AD_LAST_YEAR && month > AD_LAST_MONTH) {
         return NEPDATE_E_OUT_OF_RANGE;
     }
-    const unsigned j = (unsigned)(year - NEPDATE_CAL_AD_FIRST_YEAR) * 12U +
-                       (unsigned)(month - NEPDATE_CAL_AD_FIRST_MONTH);
-    const int32_t serial = nepdate_cal_ad_month_start[j] + day - 1;
+    /* Signed, so a month before April adds a negative offset to a later year and no step wraps. */
+    const int j = ((year - NEPDATE_CAL_AD_FIRST_YEAR) * 12) + (month - NEPDATE_CAL_AD_FIRST_MONTH);
+    const int32_t serial = nepdate_cal_ad_month_start[(unsigned)j] + day - 1;
     if (serial < 0 || serial >= NEPDATE_CAL_DAYS) {
         return NEPDATE_E_OUT_OF_RANGE;
     }
@@ -290,7 +290,7 @@ nepdate_status nepdate_month_of(nepdate_date date, nepdate_month *out) {
         return NEPDATE_E_INVALID_DATE;
     }
     const uint32_t i = month_index_of((uint32_t)s);
-    *out = (nepdate_month)(i % 12U + 1U);
+    *out = (nepdate_month)((i % 12U) + 1U);
     return NEPDATE_OK;
 }
 
@@ -539,7 +539,7 @@ nepdate_status nepdate_fiscal_year_end(int fiscal_year, nepdate_date *out) {
         return NEPDATE_E_OUT_OF_RANGE;
     }
     /* year is 1901..2199 here, so Ashad exists. */
-    const uint32_t ashad = (uint32_t)(year - NEPDATE_CAL_MIN_YEAR) * 12U + 2U;
+    const uint32_t ashad = ((uint32_t)(year - NEPDATE_CAL_MIN_YEAR) * 12U) + 2U;
     out->value = (int32_t)nepdate_cal_month_start[ashad + 1U];
     return NEPDATE_OK;
 }
@@ -552,8 +552,8 @@ nepdate_status nepdate_quarter_of(nepdate_date date, nepdate_quarter *out) {
     if (serial < 0) {
         return NEPDATE_E_INVALID_DATE;
     }
-    const uint32_t month = month_index_of((uint32_t)serial) % 12U + 1U;
-    *out = (nepdate_quarter)((month + 8U) % 12U / 3U + 1U);
+    const uint32_t month = (month_index_of((uint32_t)serial) % 12U) + 1U;
+    *out = (nepdate_quarter)(((month + 8U) % 12U / 3U) + 1U);
     return NEPDATE_OK;
 }
 
@@ -607,7 +607,7 @@ nepdate_status nepdate_quarter_end(int fiscal_year, nepdate_quarter quarter, nep
         return NEPDATE_E_OUT_OF_RANGE;
     }
     const int month = quarter_first_month(quarter) + 2;
-    const uint32_t i = (uint32_t)(year - NEPDATE_CAL_MIN_YEAR) * 12U + (uint32_t)(month - 1);
+    const uint32_t i = ((uint32_t)(year - NEPDATE_CAL_MIN_YEAR) * 12U) + (uint32_t)(month - 1);
     out->value = (int32_t)nepdate_cal_month_start[i + 1U];
     return NEPDATE_OK;
 }
@@ -732,7 +732,7 @@ static size_t write_short(char *buffer, size_t size, size_t position, nepdate_da
                           nepdate_lang lang) {
     const uint32_t index = month_index_of((uint32_t)day_count(date));
     const uint32_t year = (uint32_t)(NEPDATE_CAL_MIN_YEAR + (int)(index / 12U));
-    const uint32_t month = index % 12U + 1U;
+    const uint32_t month = (index % 12U) + 1U;
     const uint32_t day = (uint32_t)day_count(date) - nepdate_cal_month_start[index] + 1U;
     uint32_t first = year;
     uint32_t second = month;
@@ -835,7 +835,7 @@ static size_t write_pattern(char *buffer, size_t size, size_t position, nepdate_
                             const char *pattern, nepdate_lang lang) {
     const uint32_t index = month_index_of((uint32_t)day_count(date));
     const uint32_t year = (uint32_t)(NEPDATE_CAL_MIN_YEAR + (int)(index / 12U));
-    const uint32_t month = index % 12U + 1U;
+    const uint32_t month = (index % 12U) + 1U;
     const uint32_t day = (uint32_t)day_count(date) - nepdate_cal_month_start[index] + 1U;
     const unsigned language = lang == NEPDATE_NEPALI ? 1U : 0U;
     size_t i = 0;
@@ -959,7 +959,7 @@ nepdate_status nepdate_from_unix(int64_t unix_seconds, int32_t utc_offset_minute
         days--;
         second_of_day += INT64_C(86400);
     }
-    const int64_t local_second = second_of_day + (int64_t)utc_offset_minutes * INT64_C(60);
+    const int64_t local_second = second_of_day + ((int64_t)utc_offset_minutes * INT64_C(60));
     days += floor_divide(local_second, INT64_C(86400));
     const int64_t value = days - (int64_t)NEPDATE_CAL_EPOCH_UNIX_DAYS + 1;
     if (value < 1 || value > LAST_VALUE) {
@@ -1286,7 +1286,7 @@ static digit_run read_digits(const char *text, size_t length) {
         i += size;
         count++;
         if (count <= 4U) {
-            number = number * 10U + digit;
+            number = (number * 10U) + digit;
         }
     }
     const digit_run run = {count, number};
@@ -1511,9 +1511,9 @@ static bool parse_canonical(const char *text, unsigned *year, unsigned *month, u
     if (!strict_ascii_separator(text[4]) || !strict_ascii_separator(text[7])) {
         return false;
     }
-    *year = digits[0] * 1000U + digits[1] * 100U + digits[2] * 10U + digits[3];
-    *month = digits[4] * 10U + digits[5];
-    *day = digits[6] * 10U + digits[7];
+    *year = (digits[0] * 1000U) + (digits[1] * 100U) + (digits[2] * 10U) + digits[3];
+    *month = (digits[4] * 10U) + digits[5];
+    *day = (digits[6] * 10U) + digits[7];
     return true;
 }
 
@@ -1538,11 +1538,11 @@ static nepdate_status parse_strict(const char *text, size_t length, nepdate_date
                 return NEPDATE_E_NUMBER_TOO_LONG;
             }
             if (group == 0U) {
-                group0 = group0 * 10U + c.digit;
+                group0 = (group0 * 10U) + c.digit;
             } else if (group == 1U) {
-                group1 = group1 * 10U + c.digit;
+                group1 = (group1 * 10U) + c.digit;
             } else {
-                group2 = group2 * 10U + c.digit;
+                group2 = (group2 * 10U) + c.digit;
             }
             digits++;
         } else if (c.kind == SCANNED_SEPARATOR) {
@@ -1616,8 +1616,8 @@ nepdate_status nepdate_to_ymd_int(nepdate_date date, int64_t *out) {
     if (status != NEPDATE_OK) {
         return status;
     }
-    *out =
-        (int64_t)ymd.year * INT64_C(10000) + (int64_t)ymd.month * INT64_C(100) + (int64_t)ymd.day;
+    *out = ((int64_t)ymd.year * INT64_C(10000)) + ((int64_t)ymd.month * INT64_C(100)) +
+           (int64_t)ymd.day;
     return NEPDATE_OK;
 }
 
@@ -1747,7 +1747,7 @@ nepdate_status nepdate_range_of_month(int year, int month, nepdate_range *out) {
     if (status != NEPDATE_OK) {
         return status;
     }
-    const uint32_t i = (uint32_t)(year - NEPDATE_CAL_MIN_YEAR) * 12U + (uint32_t)(month - 1);
+    const uint32_t i = ((uint32_t)(year - NEPDATE_CAL_MIN_YEAR) * 12U) + (uint32_t)(month - 1);
     out->start = first;
     out->end.value = (int32_t)nepdate_cal_month_start[i + 1U];
     return NEPDATE_OK;
@@ -2081,15 +2081,15 @@ static uint32_t quarter_last_month(uint32_t i) {
     const uint32_t month = i % 12U;
     const uint32_t year = i / 12U;
     if (month >= 3U && month <= 5U) {
-        return year * 12U + 5U;
+        return (year * 12U) + 5U;
     }
     if (month >= 6U && month <= 8U) {
-        return year * 12U + 8U;
+        return (year * 12U) + 8U;
     }
     if (month >= 9U) {
-        return year * 12U + 11U;
+        return (year * 12U) + 11U;
     }
-    return year * 12U + 2U;
+    return (year * 12U) + 2U;
 }
 
 nepdate_status nepdate_range_split_by_fiscal_quarter(nepdate_range range, nepdate_range *out,
@@ -2194,7 +2194,7 @@ bool nepdate_range_day_next(nepdate_range_day_cursor *cursor, nepdate_date *out)
         return false;
     }
     uint32_t position = current;
-    while (position <= last && (cursor->skip & (1U << (((position + 4U) % 7U)))) != 0U) {
+    while (position <= last && (cursor->skip & (1U << ((position + 4U) % 7U))) != 0U) {
         position++;
     }
     if (position > last) {

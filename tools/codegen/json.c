@@ -96,7 +96,7 @@ static bool read_hex4(parser *p, unsigned *out) {
             fail(p, "bad \\u escape");
             return false;
         }
-        value = value * 16U + (unsigned)digit;
+        value = (value * 16U) + (unsigned)digit;
         p->pos++;
     }
     *out = value;
@@ -255,7 +255,7 @@ static void read_number(parser *p, json_value *out) {
         if (value < (LLONG_MIN + digit) / 10) {
             fits = false;
         } else {
-            value = value * 10 - digit;
+            value = (value * 10) - digit;
         }
         p->pos++;
     }

@@ -31,8 +31,8 @@ static bool patro_serial(nepdate_date date, uint32_t *serial) {
 static nepdate_patro_name name_at(uint16_t index) {
     nepdate_patro_name name;
     const uint32_t start = nepdate_patro_name_offsets[(size_t)index * 2U];
-    const uint32_t middle = nepdate_patro_name_offsets[(size_t)index * 2U + 1U];
-    const uint32_t end = nepdate_patro_name_offsets[(size_t)index * 2U + 2U];
+    const uint32_t middle = nepdate_patro_name_offsets[((size_t)index * 2U) + 1U];
+    const uint32_t end = nepdate_patro_name_offsets[((size_t)index * 2U) + 2U];
     name.np = nepdate_patro_name_blob + start;
     name.np_length = (size_t)(middle - start);
     name.en = nepdate_patro_name_blob + middle;

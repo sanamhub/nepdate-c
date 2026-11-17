@@ -35,7 +35,7 @@ CI sets `NEPDATE_C_CI=1`, which turns a skip into a failure.
 | Gate | Needs |
 |---|---|
 | `format` | clang-format 18 |
-| `tidy` | clang-tidy 18 |
+| `tidy` | clang-tidy 22 |
 | `cppcheck` | cppcheck |
 | `analyzer`, `coverage` | GCC (and gcovr for `coverage`) |
 | `sanitizers` | Clang or GCC with ASan and UBSan, or MSVC |
@@ -47,6 +47,32 @@ CI sets `NEPDATE_C_CI=1`, which turns a skip into a failure.
 On a machine where the default compiler is not the one you want, copy `CMakePresets.json` to the
 gitignored `CMakeUserPresets.json` and add `local-*` presets that inherit the public ones; the
 script uses them when it sees `local-dev`.
+
+## CI jobs
+
+`.github/workflows/ci.yml` runs the gates on these toolchains. The ADRs record the versions at the
+time of each decision; this table and the workflow are the current ones.
+
+| Job | Runner | Toolchain | Gates |
+|---|---|---|---|
+| `msvc` | `windows-2022`, `windows-2025-vs2026` | MSVC | 3, 4, 5, 9, 13, 14, 15 |
+| `gcc` | `ubuntu-24.04`, `ubuntu-26.04` | GCC 13, 14 and 15 | 4, 13, 14, 15, 16 |
+| `clang` | `ubuntu-24.04`, `ubuntu-26.04` | Clang 18 and 22 | 4, 13, 14, 15 |
+| `zig` | `ubuntu-24.04` | `zig cc` 0.17.0 and 0.17.1 | 4, 15 and a Zig consumer |
+| `apple` | `macos-15`, `macos-26` | Apple Clang | 4, 9, 14 |
+| `lint` | `ubuntu-24.04` | clang-format 18, cppcheck, GCC 14 | 1, 2, 3, 7, 8 |
+| `tidy` | `ubuntu-26.04` | clang-tidy 22, Clang 22 | 6 |
+| `sanitizers` | `ubuntu-26.04` | Clang 22 | 9, 10 |
+| `valgrind` | `ubuntu-26.04` | GCC 15, Valgrind | 11 |
+| `coverage` | `ubuntu-26.04` | GCC 15, gcovr 8.8 | 12 |
+| `i686` | `ubuntu-24.04` | GCC 14 `-m32` | 4, 15 |
+| `s390x` | `ubuntu-24.04` | cross GCC under QEMU (big-endian) | the tests |
+| `cxx-headers` | `ubuntu-24.04` | GCC 14 | 5 |
+| `fetch-content` | `ubuntu-24.04` | GCC 14 | nepdate-c and nepdate-cpp in one build |
+| `packages` | `ubuntu-24.04` | vcpkg, Conan 2.34.0 | the package recipes |
+
+`fuzz.yml` runs libFuzzer with Clang 22 on `ubuntu-26.04`, and `codeql.yml` runs CodeQL on
+`ubuntu-24.04`.
 
 ## Pull requests
 

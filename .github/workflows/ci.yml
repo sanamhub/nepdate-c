@@ -131,20 +131,37 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 30
     env:
-      # GCC for -fanalyzer; clang-tidy reads the same compile commands.
+      # GCC for -fanalyzer.
       CC: gcc-14
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
-      - name: Install clang-format, clang-tidy, cppcheck and GCC 14
+      - name: Install clang-format, cppcheck and GCC 14
         run: |
           sudo apt-get update
-          sudo apt-get install -y ninja-build gcc-14 clang-format-18 clang-tidy-18 cppcheck
+          sudo apt-get install -y ninja-build gcc-14 clang-format-18 cppcheck
+      - name: Gates 1, 2, 3, 7 and 8
+        run: cmake -DONLY=format,ascii,codegen,cppcheck,analyzer -P tools/ci.cmake
+
+  # clang-tidy 22 comes from the Ubuntu 26.04 archive, like Clang 22 in the sanitizers job.
+  tidy:
+    runs-on: ubuntu-26.04
+    timeout-minutes: 30
+    env:
+      CC: clang-22
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Install clang-tidy 22 and Clang 22
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ninja-build clang-22 clang-tidy-22
           # The tidy preset calls plain clang-tidy.
-          sudo ln -sf /usr/bin/clang-tidy-18 /usr/local/bin/clang-tidy
-      - name: Gates 1, 2, 3, 6, 7 and 8
-        run: cmake -DONLY=format,ascii,codegen,tidy,cppcheck,analyzer -P tools/ci.cmake
+          sudo ln -sf /usr/bin/clang-tidy-22 /usr/local/bin/clang-tidy
+      - name: Gate 6
+        run: cmake -DONLY=tidy -P tools/ci.cmake
 
   sanitizers:
     runs-on: ubuntu-26.04

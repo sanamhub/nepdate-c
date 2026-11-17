@@ -639,7 +639,7 @@ TEST(interval_two) {
     int count = 0;
     nepdate_date date = {0};
     while (nepdate_range_day_next(&cursor, &date)) {
-        expect(date, 2080, 5, 1 + 2 * count);
+        expect(date, 2080, 5, 1 + (2 * count));
         count++;
     }
     CHECK_EQ_INT(count, 4);

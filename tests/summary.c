@@ -24,7 +24,8 @@ static char *summary_text(void) {
         (void)fclose(file);
         exit(1);
     }
-    char *text = malloc((size_t)size + 1U);
+    /* calloc, so the byte after the text is already its terminator. */
+    char *text = calloc((size_t)size + 1U, 1);
     if (text == NULL || fread(text, 1, (size_t)size, file) != (size_t)size) {
         (void)fprintf(stderr, "cannot read %s\n", path);
         free(text);
@@ -32,7 +33,6 @@ static char *summary_text(void) {
         exit(1);
     }
     (void)fclose(file);
-    text[size] = '\0';
     return text;
 }
 

@@ -219,8 +219,8 @@ TEST(diff_days_is_signed) {
 
 TEST(diff_days_antisymmetry_sample) {
     for (uint32_t i = 0; i < 10000U; i++) {
-        const uint32_t a_value = 1U + (i * 2654435761U) % 109212U;
-        const uint32_t b_value = 1U + ((i + 5000U) * 40503U) % 109212U;
+        const uint32_t a_value = 1U + ((i * 2654435761U) % 109212U);
+        const uint32_t b_value = 1U + (((i + 5000U) * 40503U) % 109212U);
         const nepdate_date a = {(int32_t)a_value};
         const nepdate_date b = {(int32_t)b_value};
         int32_t forward = 0;

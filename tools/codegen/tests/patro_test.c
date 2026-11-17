@@ -19,21 +19,22 @@ static char *read_file(const char *path, size_t *length) {
     size_t size = 0;
     char *text = malloc(capacity);
     while (text != NULL) {
-        const size_t n = fread(text + size, 1, capacity - size - 1U, file);
+        const size_t wanted = capacity - size - 1U;
+        const size_t n = fread(text + size, 1, wanted, file);
         size += n;
-        if (n == 0) {
+        /* A short read means the end of the file or an error; reading on would touch a stream
+         * whose state is already settled. */
+        if (n < wanted) {
             break;
         }
-        if (capacity - size - 1U == 0) {
-            capacity *= 2U;
-            char *bigger = realloc(text, capacity);
-            if (bigger == NULL) {
-                free(text);
-                text = NULL;
-                break;
-            }
-            text = bigger;
+        capacity *= 2U;
+        char *bigger = realloc(text, capacity);
+        if (bigger == NULL) {
+            free(text);
+            text = NULL;
+            break;
         }
+        text = bigger;
     }
     (void)fclose(file);
     if (text != NULL) {
@@ -101,13 +102,6 @@ static bool load_patro(const codegen_patro_summary *summary, codegen_patro_input
     return true;
 }
 
-static uint32_t serial_of(const codegen_calendar *calendar, int year, int month, int day) {
-    const uint32_t index =
-        ((uint32_t)year - (uint32_t)CODEGEN_MIN_YEAR) * (uint32_t)CODEGEN_MONTHS + (uint32_t)month -
-        1U;
-    return (uint32_t)(calendar->month_start[index] + (long)day - 1L);
-}
-
 /* The year, month and day of a "YYYY-MM-DD" text, read digit by digit: sscanf reports no
  * conversion errors and MSVC rejects it. False when text has another shape. */
 static bool day_parts(const char *text, int *year, int *month, int *day) {
@@ -122,7 +116,7 @@ static bool day_parts(const char *text, int *year, int *month, int *day) {
             if (*text < '0' || *text > '9') {
                 return false;
             }
-            value = value * 10 + (*text - '0');
+            value = (value * 10) + (*text - '0');
         }
         *parts[part] = value;
         if (*text != (part < 2 ? '-' : '\0')) {
@@ -131,6 +125,41 @@ static bool day_parts(const char *text, int *year, int *month, int *day) {
         text++;
     }
     return true;
+}
+
+/* The day count of the BS date in a "YYYY-MM-DD" text. False when text is not a date of the
+ * calendar's years. */
+static bool serial_of(const codegen_calendar *calendar, const char *text, uint32_t *serial) {
+    int year = 0;
+    int month = 0;
+    int day = 0;
+    if (!day_parts(text, &year, &month, &day) || year < CODEGEN_MIN_YEAR ||
+        year > CODEGEN_MAX_YEAR || month < 1 || month > CODEGEN_MONTHS) {
+        return false;
+    }
+    const uint32_t index =
+        (((uint32_t)year - (uint32_t)CODEGEN_MIN_YEAR) * (uint32_t)CODEGEN_MONTHS) +
+        (uint32_t)month - 1U;
+    *serial = (uint32_t)(calendar->month_start[index] + (long)day - 1L);
+    return true;
+}
+
+/* The summary's first and last tithi days carry a tithi, and the day before the first does not. */
+static void check_tithi_days(const codegen_calendar *calendar, const codegen_patro_summary *summary,
+                             const codegen_patro_tables *tables) {
+    uint32_t first_serial = 0;
+    uint32_t last_serial = 0;
+    const bool have_days = serial_of(calendar, summary->tithi_first_day, &first_serial) &&
+                           serial_of(calendar, summary->tithi_last_day, &last_serial);
+    CHECK(have_days);
+    if (!have_days) {
+        return;
+    }
+    const uint32_t first_tithi = first_serial - tables->first;
+    const uint32_t last_tithi = last_serial - tables->first;
+    CHECK(tables->day_tithi[first_tithi] != 0xFF);
+    CHECK(tables->day_tithi[last_tithi] != 0xFF);
+    CHECK(first_tithi == 0 || tables->day_tithi[first_tithi - 1U] == 0xFF);
 }
 
 /* True when every event of day has a name that another day carries too. Removing such a day's
@@ -196,16 +225,7 @@ TEST(shared_patro_builds) {
     CHECK_EQ_INT(tables.holiday_count, summary->holidays);
     CHECK_EQ_INT(tables.event_count, summary->events);
 
-    int ty = 0;
-    int tm = 0;
-    int td = 0;
-    CHECK(day_parts(summary->tithi_first_day, &ty, &tm, &td));
-    const uint32_t first_tithi = serial_of(calendar, ty, tm, td) - tables.first;
-    CHECK(day_parts(summary->tithi_last_day, &ty, &tm, &td));
-    const uint32_t last_tithi = serial_of(calendar, ty, tm, td) - tables.first;
-    CHECK(tables.day_tithi[first_tithi] != 0xFF);
-    CHECK(tables.day_tithi[last_tithi] != 0xFF);
-    CHECK(first_tithi == 0 || tables.day_tithi[first_tithi - 1U] == 0xFF);
+    check_tithi_days(calendar, summary, &tables);
     CHECK(tables.name_offsets[0] == 0);
 
     char *header = codegen_render_patro_tables(&tables, calendar, summary);
