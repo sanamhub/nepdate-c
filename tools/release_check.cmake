@@ -93,6 +93,22 @@ foreach(recipe IN LISTS recipes)
     endif()
 endforeach()
 
+# The patro packages require the core of the same version (ADR-0013). The CMake standalone build
+# checks the numeric part itself; here the full version, pre-release included, must match.
+file(READ "${root}/ports/nepdate-c-patro/vcpkg.json" text)
+string(JSON core_floor ERROR_VARIABLE json_error GET "${text}" dependencies 0 "version>=")
+if(json_error)
+    list(APPEND problems "ports/nepdate-c-patro/vcpkg.json: no version>= on the nepdate-c dependency")
+elseif(NOT core_floor STREQUAL VERSION)
+    list(APPEND problems "ports/nepdate-c-patro/vcpkg.json: requires nepdate-c ${core_floor}, want ${VERSION}")
+endif()
+file(READ "${root}/conan/nepdate-c-patro/conanfile.py" text)
+if(NOT text MATCHES "self\\.requires\\(\"nepdate-c/([^\"]*)\"")
+    list(APPEND problems "conan/nepdate-c-patro/conanfile.py: no self.requires(\"nepdate-c/...\")")
+elseif(NOT CMAKE_MATCH_1 STREQUAL VERSION)
+    list(APPEND problems "conan/nepdate-c-patro/conanfile.py: requires nepdate-c/${CMAKE_MATCH_1}, want ${VERSION}")
+endif()
+
 file(READ "${root}/CHANGELOG.md" text)
 string(REPLACE "." "\\." escaped "${VERSION}")
 if(NOT text MATCHES "\n## \\[${escaped}\\] - [0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]\n")

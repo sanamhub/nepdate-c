@@ -18,3 +18,4 @@ Immutable once Accepted; supersede with a new ADR.
 | [0010](0010-patro-standalone-package.md) | The patro has a standalone package for package managers | Proposed, would amend 0003 |
 | [0011](0011-patro-counts-from-summary.md) | The patro counts come from the hub's generated summary | Accepted, amends 0001 |
 | [0012](0012-no-libc-stack-protector-symbols.md) | The no-libc gate allows the stack protector's symbols | Accepted, amends 0007 |
+| [0013](0013-patro-pins-the-exact-core-version.md) | The patro requires exactly the same core version | Accepted, amends 0010 |

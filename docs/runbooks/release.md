@@ -8,7 +8,9 @@ releases the core and the patro.
 1. `main` is green on every CI job, including `packages`, `amalgamation` and `isolation`.
    `cmake -P tools/ci.cmake` passes locally.
 2. The version is `0.1.0-rc.1` in `CMakeLists.txt`, `include/nepdate.h`,
-   `patro/CMakeLists.txt`, `ports/*/vcpkg.json` and `conan/*/conanfile.py`:
+   `patro/CMakeLists.txt`, `ports/*/vcpkg.json` and `conan/*/conanfile.py`. The patro packages
+   require exactly that core version: `ports/nepdate-c-patro/vcpkg.json` and
+   `conan/nepdate-c-patro/conanfile.py` name it too (ADR-0013):
    `cmake "-DVERSION=0.1.0-rc.1" -P tools/release_check.cmake` passes.
 3. `CHANGELOG.md` has `## [0.1.0-rc.1] - YYYY-MM-DD`; the release notes are that section.
 4. `cmake -DCHECK=ON -P tools/amalgamate.cmake` passes.

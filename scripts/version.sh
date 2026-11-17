@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
-# Prints the version in build.zig.zon, after checking the CMake project, the public header and the
-# Conan recipes agree with it. The pre-release part lives in the manifests and the header, because a
-# CMake project() holds numbers only.
+# Prints the version in build.zig.zon, after checking the CMake project, the public header, the Conan
+# recipes and the patro's core requirement (Conan and vcpkg) agree with it. The pre-release part
+# lives in the manifests and the header, because a CMake project() holds numbers only.
 set -euo pipefail
 
 root="$(cd "$(dirname "$0")/.." && pwd)"
@@ -32,5 +32,17 @@ for recipe in "$root"/conan/*/conanfile.py; do
     exit 1
   fi
 done
+
+found="$(sed -n 's/.*self\.requires("nepdate-c\/\([^"]*\)".*/\1/p' "$root/conan/nepdate-c-patro/conanfile.py" | head -n1)"
+if [ "$found" != "$version" ]; then
+  echo "version: conan/nepdate-c-patro/conanfile.py requires nepdate-c $found, want exactly $version" >&2
+  exit 1
+fi
+
+found="$(sed -n 's/.*"version>=": "\([^"]*\)".*/\1/p' "$root/ports/nepdate-c-patro/vcpkg.json" | head -n1)"
+if [ "$found" != "$version" ]; then
+  echo "version: ports/nepdate-c-patro/vcpkg.json requires nepdate-c $found, want $version" >&2
+  exit 1
+fi
 
 printf '%s\n' "$version"
