@@ -14,8 +14,8 @@ lists each C# member and the C function or functions that replace it.
 #define NEPDATE_VERSION_MAJOR 1
 #define NEPDATE_VERSION_MINOR 0
 #define NEPDATE_VERSION_PATCH 0
-#define NEPDATE_VERSION_PRERELEASE "rc.1"
-#define NEPDATE_VERSION_STRING "1.0.0-rc.1"
+#define NEPDATE_VERSION_PRERELEASE ""
+#define NEPDATE_VERSION_STRING "1.0.0"
 
 const char *nepdate_version(void);
 ```
@@ -28,7 +28,7 @@ a pre-release such as `1.0.0-rc.1`, and empty for a stable version.
 fail.
 
 ```c
-/* prints 1.0.0-rc.1 */
+/* prints 1.0.0 */
 printf("%s\n", nepdate_version());
 ```
 
