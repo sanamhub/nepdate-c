@@ -3,9 +3,7 @@
 Time and allocation of the C library on operations B1 to B8 of
 [`shared/spec/BENCHMARK.md`](../shared/spec/BENCHMARK.md), measured with the harness in
 [`bench/`](../bench/). C has no mature competitor that passes [`docs/competitors.md`](competitors.md),
-so this run reports this port only. The C# column is the .NET 10 column of the hub's
-[`docs/benchmarks/dotnet.md`](https://github.com/sanamhub/nepdate/blob/main/docs/benchmarks/dotnet.md),
-run 2026-11-20.
+so this run reports this port only.
 
 ## Machine
 
@@ -44,19 +42,20 @@ log is [`raw/2026-11-16/bench-msvc.log`](raw/2026-11-16/bench-msvc.log).
 Time is nanoseconds per single operation (the harness's median of 25 runs over the 64 inputs,
 divided by 64). The harness reports no allocation for any operation.
 
-| ID | Operation | nepdate ns/op | bytes/op | C# .NET 10 ns/op | C# bytes/op |
-|---|---|---:|---:|---:|---:|
-| B1 | BS to AD | 5.40 | 0 | 5.60 | 0 |
-| B2 | AD to BS | 7.42 | 0 | 5.90 | 0 |
-| B3 | add 1000 days | 8.29 | 0 | 2.79 | 0 |
-| B4 | add 13 months, Clamp | 11.08 | 0 | 2.45 | 0 |
-| B5 | long Nepali date with weekday | 32.75 | 0 | 29.96 | 69 |
-| B6 | strict parse `YYYY/MM/DD` | 11.92 | 0 | 7.28 | 0 |
-| B7 | patro info of a day | 16.57 | 0 | 16.46 | 51 |
-| B8 | patro month grid | 540.18 | 0 | 633.13 | 1,429 |
+The comparison with C# NepDate, the original library, and the target check from `spec/BENCHMARK.md` section 6 are in the hub: [performance page](https://nepdate.com/docs/project/performance/).
 
-B1 and B8 are faster than C# NepDate, the other rows are slower, and every row allocates nothing. BENCHMARK section 6 gives C no fixed
-target: the numbers are reported beside C# NepDate, as above.
+| ID | Operation | nepdate ns/op | bytes/op |
+|---|---|---:|---:|
+| B1 | BS to AD | 5.40 | 0 |
+| B2 | AD to BS | 7.42 | 0 |
+| B3 | add 1000 days | 8.29 | 0 |
+| B4 | add 13 months, Clamp | 11.08 | 0 |
+| B5 | long Nepali date with weekday | 32.75 | 0 |
+| B6 | strict parse `YYYY/MM/DD` | 11.92 | 0 |
+| B7 | patro info of a day | 16.57 | 0 |
+| B8 | patro month grid | 540.18 | 0 |
+
+Every row allocates nothing.
 
 Against the 2026-11-02 run, B6 is half the time (23.70 ns then) and B2 and B4 are about 20 percent
 slower (6.05 and 9.14 ns then). The source did not change; the MSVC compiler did (19.51.36260 then,
