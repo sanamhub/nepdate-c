@@ -5,7 +5,7 @@ Time and allocation of the C library on operations B1 to B8 of
 [`bench/`](../bench/). C has no mature competitor that passes [`docs/competitors.md`](competitors.md),
 so this run reports this port only. The C# column is the .NET 10 column of the hub's
 [`docs/benchmarks/dotnet.md`](https://github.com/sanamhub/nepdate/blob/main/docs/benchmarks/dotnet.md),
-run 2026-11-16.
+run 2026-11-20.
 
 ## Machine
 
@@ -46,16 +46,16 @@ divided by 64). The harness reports no allocation for any operation.
 
 | ID | Operation | nepdate ns/op | bytes/op | C# .NET 10 ns/op | C# bytes/op |
 |---|---|---:|---:|---:|---:|
-| B1 | BS to AD | 5.40 | 0 | 13.27 | 0 |
-| B2 | AD to BS | 7.42 | 0 | 18.70 | 0 |
-| B3 | add 1000 days | 8.29 | 0 | 20.06 | 0 |
-| B4 | add 13 months, Clamp | 11.08 | 0 | 19.30 | 0 |
-| B5 | long Nepali date with weekday | 32.75 | 0 | 139.04 | 435 |
-| B6 | strict parse `YYYY/MM/DD` | 11.92 | 0 | 21.13 | 0 |
-| B7 | patro info of a day | 16.57 | 0 | 48.63 | 51 |
-| B8 | patro month grid | 540.18 | 0 | 3,274.50 | 1,429 |
+| B1 | BS to AD | 5.40 | 0 | 5.60 | 0 |
+| B2 | AD to BS | 7.42 | 0 | 5.90 | 0 |
+| B3 | add 1000 days | 8.29 | 0 | 2.79 | 0 |
+| B4 | add 13 months, Clamp | 11.08 | 0 | 2.45 | 0 |
+| B5 | long Nepali date with weekday | 32.75 | 0 | 29.96 | 69 |
+| B6 | strict parse `YYYY/MM/DD` | 11.92 | 0 | 7.28 | 0 |
+| B7 | patro info of a day | 16.57 | 0 | 16.46 | 51 |
+| B8 | patro month grid | 540.18 | 0 | 633.13 | 1,429 |
 
-Every row is faster than C# NepDate and allocates nothing. BENCHMARK section 6 gives C no fixed
+B1 and B8 are faster than C# NepDate, the other rows are slower, and every row allocates nothing. BENCHMARK section 6 gives C no fixed
 target: the numbers are reported beside C# NepDate, as above.
 
 Against the 2026-11-02 run, B6 is half the time (23.70 ns then) and B2 and B4 are about 20 percent
