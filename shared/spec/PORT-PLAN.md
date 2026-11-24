@@ -80,11 +80,12 @@ marker that names it.
   PATRO §4 anchor; `ymd-int.tsv` (14 rows), `bulk.tsv` (6 rows, input order asserted) and
   `serialization.tsv` (11 rows) pass; the core
   package's manifest has no dependency on `nepdate-patro`, and its built artefact doesn't contain
-  the string `World Day Against Human Trafficking` (CI checks it; the artefact is the release binary
-  of a small program that uses only the core for Rust, Go and Swift, the core jar for Kotlin, the
-  core npm tarball for TypeScript and the core wheel for Python); the patro package and the core
-  build and test on their own and are released together with the same version; with a clock at
-  2024-07-30 18:30 UTC, today is BS 2081-04-15 in UTC and 2081-04-16 in Nepal.
+  the string `World Day Against Human Trafficking` (CI checks it; the artefact is the core package
+  as the registry ships it, such as the jar, the npm tarball, the wheel, the gem or the pub and
+  Composer archives, and for a language that links its packages into the program, such as Rust,
+  Go and Swift, the release binary of a small program that uses only the core); the patro package
+  and the core build and test on their own and are released together with the same version; with
+  a clock at 2024-07-30 18:30 UTC, today is BS 2081-04-15 in UTC and 2081-04-16 in Nepal.
 
 ## Phase 5: docs, benchmarks, release
 
@@ -94,7 +95,7 @@ marker that names it.
   and an "agrees with `shared/data`" column, published in `docs/benchmarks.md`.
 - AC: every BENCHMARK §6 target met, or the miss reported to the maintainer with the numbers.
 - Release workflow with preflight (version, tag and changelog agree), approval gate, notes from the
-  changelog; the maintainer tags version 0.1.0.
+  changelog; the maintainer tags the version of the current line (`spec/versions.json`).
 
 ## Scheduled published check
 

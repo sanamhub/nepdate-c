@@ -202,3 +202,9 @@ The two C# conversion tables and `CalendarOffsets` encode the same month lengths
 metadata month starts), and `tools/compare_exhaustive.py` checks the result against the running
 C# code for all 109,212 days in both directions and every metadata day. Both pass on `cb05cb65`
 with zero differences.
+
+A later C# NepDate layout drops both conversion tables for one, `MonthTable.Start`: the serial of
+the first day of every BS month, counted from 1901-01-01 BS = 1844-04-11 AD, ending with the total
+of 109,212 days. That is the serial-day model of this spec. The importer reads month lengths from
+`MonthTable.Start` when the file exists and from `NepaliToEnglish` otherwise; both layouts give the
+same `data/` byte for byte, and `CalendarOffsets` is checked the same way in both.

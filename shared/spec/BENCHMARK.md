@@ -80,9 +80,11 @@ Research on why C# NepDate is fast and where it allocates: `docs/research/dotnet
 | Port | Target for B1, B2, B7 |
 |---|---|
 | Rust, C++ | faster than C# NepDate, zero bytes allocated |
-| Go, Swift, Kotlin | within 1.5× of C# NepDate, zero bytes allocated per operation where the language allows (Kotlin: the date object itself only) |
+| Go, Swift, Kotlin, Java | within 1.5× of C# NepDate, zero bytes allocated per operation where the language allows (Kotlin and Java: the date object itself only) |
 | TypeScript | within 3× of C# NepDate |
 | Python | the fastest pure-Python option among its competitors |
+| Ruby | every operation within 1.5× of the Python port, without YJIT |
+| C, Dart, PHP, Zig | no fixed target: the numbers are reported beside C# NepDate and the selected competitors |
 
 A port that misses its target reports the numbers to the maintainer before release; it doesn't drop
 features to get there.
@@ -97,8 +99,9 @@ language, including languages added after this section was written.
 
 Search the language's main package registry and GitHub for every library that converts between
 Bikram Sambat and Gregorian dates. The registries are nuget.org, crates.io, pkg.go.dev, npm, PyPI,
-Packagist, Swift Package Index, Maven Central, vcpkg and Conan. Leave out the NepDate family itself,
-and forks or copies of another candidate.
+Packagist, Swift Package Index, Maven Central, pub.dev, RubyGems, vcpkg and Conan. Zig has no
+registry, so its search is GitHub alone. Leave out the NepDate family itself, and forks or copies
+of another candidate.
 
 ### Usage
 
@@ -116,7 +119,10 @@ Each ecosystem exposes a different measure, so each has its own minimum. The min
 | Go | "Imported by" on pkg.go.dev | 3 importing packages |
 | Maven | dependents on deps.dev | 1 dependent |
 | Swift | GitHub stars and dependents, and whether the package is in the Swift Package Index | 10 stars, or listed in the Swift Package Index |
+| pub.dev | downloads in the last 30 days from the package score | 1,000 |
+| RubyGems | total downloads | 10,000 |
 | C, C++ | GitHub stars and dependents, and whether the library is in vcpkg or Conan | 25 stars, or a vcpkg or Conan port |
+| Zig | GitHub stars and dependents | 25 stars |
 
 ### Maturity bar
 
